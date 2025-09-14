@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FurMaskGenerator マニュアル</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        h6 {
+            font-weight: bold;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            color: white;
+            padding: 1.2rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .step-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .icon-large {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .alert-custom {
+            border-left: 4px solid var(--info-color);
+            background: #e7f3ff;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .toc {
+            position: sticky;
+            top: 5.4rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .toc a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--primary-color);
+        }
+
+        .screenshot {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e0e0e0;
+            }
+            
+            .card {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+            }
+            
+            .code-block {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+                border-color: #444;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#top">
+                FurMaskGenerator
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#basic">基本操作</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#advanced">各種機能</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#troubleshooting">トラブルシューティング</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ヒーローセクション -->
+    <section id="top" class="hero-section">
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <!-- 目次 -->
+            <div class="col-lg-3 mb-4">
+                <div class="toc">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-list-ul"></i> 目次
+                    </h5>
+                    <ul>
+                        <li><a href="#installation">導入手順と起動方法</a></li>
+                        <li><a href="#basic">基本操作</a></li>
+                        <li><a href="#advanced">各種機能</a></li>
+                        <li><a href="#troubleshooting">トラブルシューティング</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- メインコンテンツ -->
+            <div class="col-lg-9">
+                <!-- インストール -->
+                <section id="installation" class="mb-5">
+                    <h2 class="h3 mb-4">
+                        導入手順と起動方法
+                    </h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <ol class="mb-0">
+                                <li>Unityを開く</li>
+                                <li>FurMaskGenerator.unitypackageをUnityのProjectウィンドウ内にドラッグ&ドロップ</li>
+                                <li>Tools → NolaTools → FurMaskGeneratorを選択</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 基本操作 -->
+                <section id="basic" class="mb-5">
+                    <h2 class="h3 mb-4">
+                        基本操作
+                    </h2>
+                    
+                    <div class="row">
+                        <!-- ステップ1 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="step-number">1</div>
+                                    <h5 class="card-title">アバターをセット</h5>
+                                    <p class="card-text">
+                                        FurMaskGeneratorウィンドウにアバターを指定
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ステップ2 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="step-number">2</div>
+                                    <h5 class="card-title">体と服の自動設定</h5>
+                                    <p class="card-text">
+                                        アバターと服を表示させた状態で<br>
+                                        「表示中のレンダラーのみ自動設定」ボタンをクリック
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ステップ3 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="step-number">3</div>
+                                    <h5 class="card-title">マスクを生成</h5>
+                                    <p class="card-text">
+                                        「マスクを生成」ボタンをクリックしてマスクを生成
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ステップ4 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="step-number">4</div>
+                                    <h5 class="card-title">マスクを保存</h5>
+                                    <p class="card-text">
+                                        「マスクを保存」ボタンをクリックしてマスク画像を保存
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success mt-4">
+                        <p class="mb-0">
+                            これで基本的なマスクの生成が完了です！<br>
+                            より詳細な調整が必要な場合は、下記の「高度な機能」をご参照ください。
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 高度な機能 -->
+                <section id="advanced" class="mb-5">
+                    <h2 class="h3 mb-4">
+                        各種機能
+                    </h2>
+
+                    <!-- 詳細設定 -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div>
+                                <h6>アバター</h6>
+                                <p class="ps-3">
+                                    マスクを生成したいアバターを指定します。
+                                </p>
+                                <div class="alert alert-warning alert-sm">
+                                    <small>
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        Humanoidアバターである必要があります。
+                                    </small>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>レンダラー自動設定</h6>
+                                <p class="ps-3">アバターのレンダラーを自動的に分類・設定する機能です。</p>
+                                
+                                <ul>
+                                    <li><strong>全レンダラー自動設定</strong>：アバター内のすべてのレンダラーを自動分類して追加します。</li>
+                                    <li><strong>表示中のレンダラーのみ自動設定</strong>：現在表示されているレンダラーのみを自動分類して追加します。</li>
+                                </ul>
+                                
+                                <div class="alert alert-warning alert-sm mt-3">
+                                    <small>
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        自動分類が正しく動作しない場合は、手動でレンダラーを追加・削除してください。
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6>テクスチャサイズ</h6>
+                                <p class="ps-3">生成するマスクのサイズです。<br>
+                                    「自動設定」ボタンを使用すると、アバターのマテリアルに設定されたテクスチャサイズを参照して自動設定します。</p>
+                            </div>
+                            <div class="mt-3">
+                                <h6>透過モード</h6>
+                                <p class="ps-3">有効にすると白い部分を透明にして出力します。</p>
+                            </div>
+                            <div class="mt-3">
+                                <h6>マスクを生成</h6>
+                                <p class="ps-3">
+                                    設定した内容でマスクを生成します。<br>
+                                    生成されたマスクはプレビューで確認でき、「マスクを保存」ボタンで保存できます。<br>
+                                    マスクはアバターのマテリアルごとに生成されます。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ノーマルマップ -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                ファー設定
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>ファーの長さや傾きを考慮したマスクを生成する機能です。</p>
+                            
+                            <h6>長さ</h6>
+                            <p class="ps-3">
+                                ファーが服に届くまでの判定の長さです。<br>
+                                ファーシェーダーに設定したファーの長さと同じか、それより少し大きい値を設定してください。
+                            </p>
+                            
+                            <h6>傾き設定</h6>
+                            <p class="ps-3">
+                                マテリアルごとにファーの傾きを設定できます。<br>
+                                「自動設定」ボタンを使用すると、アバターのマテリアルからファーシェーダーのノーマルマップを検出して自動設定します。
+                            </p>
+                            <ul>
+                                <li><strong>マテリアル</strong>：ファーの傾きを適用するマテリアルを選択します。</li>
+                                <li><strong>ノーマルマップ</strong>：ファーシェーダーに設定されているノーマルマップを指定します。</li>
+                                <li><strong>強度</strong>：ノーマルマップによる傾きの影響度です。</li>
+                            </ul>
+
+                            <div class="alert alert-warning alert-sm">
+                                <small>
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    ノーマルマップは読み取り可能になっている必要があります
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- スフィアマスク -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                スフィアマスク
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                指定箇所に球状のマスクをかける機能です。<br>
+                                顔や毛先など、部分的にマスクしたい時に使用します。
+                            </p>
+                            
+                            <h6>スフィアの追加方法</h6>
+                            <ol>
+                                <li>「スフィアを追加（Scene上でマスクしたい位置をクリック）」ボタンをクリック</li>
+                                <li>Sceneビューでマスクしたい位置をクリック</li>
+                            </ol>
+
+                            <h6>スフィアの設定項目</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li><strong>位置</strong>：スフィアの中心座標</li>
+                                        <li><strong>半径</strong>：スフィアのサイズ</li>
+                                        <li><strong>ぼかし</strong>：中心からのぼかし</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li><strong>濃さ</strong>：マスクの強度</li>
+                                        <li><strong>ミラー</strong>：左右対称でマスクを生成</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UVマスク -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                UVマスク
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                指定箇所のUVアイランドと隣接したメッシュにマスクを生成する機能です。<br>
+                                にくきゅうや爪など、UVアイランド単位でマスクしたい時に使用します。
+                            </p>
+                            
+                            <h6>UVマスクの追加方法1</h6>
+                            <ol>
+                                <li>「UVマスクをテクスチャ上で操作」ボタンをクリック</li>
+                                <li>開いたウィンドウでマスクしたい位置をクリック</li>
+                            </ol>
+
+                            <h6>UVマスクの追加方法2</h6>
+                            <ol>
+                                <li>「マスクを追加（Scene上でマスクしたい位置をクリック）」ボタンをクリック</li>
+                                <li>Sceneビューでマスクしたい位置をクリック</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- ボーンマスク -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                ボーンマスク
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p>
+                                アバターの部位別にマスクを生成する機能です。<br>
+                                顔の毛を消したい時や手の毛を短くしたい時に使用します。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- トラブルシューティング -->
+                <section id="troubleshooting" class="mb-5">
+                    <h2 class="h3 mb-4">
+                        <i class="bi bi-exclamation-triangle text-warning"></i> トラブルシューティング
+                    </h2>
+
+                    <div class="accordion" id="troubleshootingAccordion">
+                        <!-- よくあるエラー1 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="error1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                    「アバターが設定されていません」エラー
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                                <div class="accordion-body">
+                                    <h6>原因</h6>
+                                    <p>アバターオブジェクトが選択されていないか、Humanoidアバターではありません。</p>
+                                    <h6>解決方法</h6>
+                                    <ol>
+                                        <li>アバターオブジェクトを選択してください</li>
+                                        <li>AnimatorコンポーネントがHumanoidに設定されているか確認</li>
+                                        <li>アバターの設定でHumanoidが正しく設定されているか確認</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- よくあるエラー2 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="error2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                    「レンダラーが設定されていません」エラー
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                                <div class="accordion-body">
+                                    <h6>原因</h6>
+                                    <p>アバターのレンダラーが正しく検出されていません。</p>
+                                    <h6>解決方法</h6>
+                                    <ol>
+                                        <li>手動でレンダラーを追加</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- よくあるエラー3 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="error3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                    マスクが生成されない
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                                <div class="accordion-body">
+                                    <h6>原因</h6>
+                                    <p>レンダラーの設定やマスクの設定に問題がある可能性があります。</p>
+                                    <h6>解決方法</h6>
+                                    <ol>
+                                        <li>アバターと服のレンダラーが正しく設定されているか確認</li>
+                                        <li>ファー設定の「長さ」の値を調整</li>
+                                        <li>スフィアマスクやUVマスクが適切に設定されているか確認</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- よくあるエラー4 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="error4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                    ノーマルマップが読み取れない
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#troubleshootingAccordion">
+                                <div class="accordion-body">
+                                    <h6>原因</h6>
+                                    <p>ノーマルマップテクスチャの読み取り設定が無効になっています。</p>
+                                    <h6>解決方法</h6>
+                                    <ol>
+                                        <li>ノーマルマップテクスチャを選択</li>
+                                        <li>Inspectorで「Read/Write」を有効にする</li>
+                                        <li>「Apply」ボタンをクリック</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ダークモード対応
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>

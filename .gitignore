@@ -1,0 +1,26 @@
+# Unity generated files
+*.meta
+
+# 一時ファイル
+*.tmp
+*.temp
+
+# ログファイル
+*.log
+
+# バックアップファイル
+*.bak
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Cursor IDE files
+.cursor/
+
+# Unity asset files (設定ファイル)
+*.asset
+
+# 特定の設定ファイルフォルダを除外
+AvatarSettings/
