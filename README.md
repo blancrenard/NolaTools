@@ -1,18 +1,13 @@
-# FurMaskGenerator
+# NolaTools
 
-Unity Editor 拡張ツール - VRChat アバター用のファーマスク生成ツール
+Unity Editor 拡張ツール - VRChat アバター制作を支援するツール
 
-## 機能
-- アバターのファーマスク自動生成
+### FurMaskGenerator
+VRChat アバター用のファーマスク自動生成ツール
 
-## 使用方法
-1. Unity Editor で `Window > NolaTools > FurMaskGenerator` を開く
-2. アバターを選択
-3. 設定を調整してマスクを生成
-
-## 要件
-- Unity 2022.3 LTS 以降
-- VRChat SDK3
+- **機能**: アバターのファーマスク自動生成
+- **使用方法**: Unity Editor で `Tools > NolaTools > FurMaskGenerator` を開く
+- **要件**: Unity 2022.3 LTS 以降、VRChat SDK3
 
 ## ライセンス
-[ライセンス情報を記載]
+MIT License - 詳細は [LICENSE](LICENSE) ファイルを参照してください。
