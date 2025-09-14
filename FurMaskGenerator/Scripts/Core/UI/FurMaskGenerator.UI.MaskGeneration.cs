@@ -28,7 +28,19 @@ namespace Mask.Generator
                 }
                 EditorGUILayout.EndHorizontal();
 
-                // マスクの濃さは固定値2（UI非表示）: ベイク時にローカル適用（設定には書き込まない）
+                // マスクの濃さ設定
+                settings.gamma = EditorGUILayout.Slider(
+                    UIConstants.MASK_INTENSITY_LABEL,
+                    settings.gamma,
+                    0.1f,
+                    5.0f);
+
+                // スムージング回数設定
+                settings.uvIslandVertexSmoothIterations = EditorGUILayout.IntSlider(
+                    "スムージング回数",
+                    settings.uvIslandVertexSmoothIterations,
+                    0,
+                    8);
 
                 // 透過モード設定
                 settings.useTransparentMode = EditorGUILayout.Toggle(

@@ -46,7 +46,7 @@ namespace Mask.Generator
 
         #region Constructor
 
-        public TextureProcessor(List<Vector3> verts, List<Vector2> uvs, List<(int[] tri, string mat)> subDatas, float[] vDist, int texSize, float gamma, List<UVIslandMaskData> uvIslandMasks = null, List<string> subRendererPaths = null, List<int> subMeshIndices = null, float neighborMinValue = 0.0f, int vertexSmoothIterations = 1, bool useTransparentMode = false)
+        public TextureProcessor(List<Vector3> verts, List<Vector2> uvs, List<(int[] tri, string mat)> subDatas, float[] vDist, int texSize, float gamma, List<UVIslandMaskData> uvIslandMasks = null, List<string> subRendererPaths = null, List<int> subMeshIndices = null, int vertexSmoothIterations = 1, bool useTransparentMode = false)
         {
             this.verts = verts;
             this.uvs = uvs;
@@ -58,7 +58,6 @@ namespace Mask.Generator
             this.subRendererPaths = subRendererPaths ?? new List<string>();
             this.subMeshIndices = subMeshIndices ?? new List<int>();
             this.useTransparentMode = useTransparentMode;
-            // 近傍ブリードはレイ判定統合により廃止
             
             // ラスタライズ最適化の初期化
             CalculateAdaptiveProgressInterval();

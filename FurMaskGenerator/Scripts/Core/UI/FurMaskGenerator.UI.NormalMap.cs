@@ -143,12 +143,6 @@ namespace Mask.Generator
 
                     // ファーの傾きは法線の傾き量で制御（UI非表示）
                     normalMapData.intensity = 1.0f;
-
-                    // Tangent Spaceは常に使用（UI非表示）
-                    normalMapData.useTangentSpace = true;
-
-                    // 形式の自動判別は常にON（UI非表示）
-                    normalMapData.autoDetectFormat = true;
                     
                     // G(Y)反転はUnity側で処理されるため、ツールでは非対応（UI非表示）
                     if (EditorGUI.EndChangeCheck())

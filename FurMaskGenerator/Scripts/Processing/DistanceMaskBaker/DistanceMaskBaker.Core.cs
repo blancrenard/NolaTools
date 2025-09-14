@@ -118,7 +118,6 @@ namespace Mask.Generator
                     settings.UVIslandMasks,
                     subRendererPaths,
                     subMeshIndices,
-                    settings.UvIslandBleedMinValue,
                     settings.UvIslandVertexSmoothIterations,
                     settings.UseTransparentMode
                 );

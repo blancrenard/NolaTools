@@ -47,8 +47,7 @@ namespace Mask.Generator.Data
         // 隣接グラデーション距離（メートル）
         public float uvIslandNeighborRadius = 0.015f; // デフォルト1.5cm
 
-        // UV島{UIConstants.COMMENT_UV_BLEED}詳細パラメータ
-        [Range(0f, 1f)] public float uvIslandBleedMinValue = 0.0f; // 接触近傍の最小値（黒さ）固定: 0.0f
+        // UV島詳細パラメータ
         [Range(0, 8)] public int uvIslandVertexSmoothIterations = 1; // 頂点ラプラシアン平滑回数 固定: 1
 
         // ボーンマスク (Transformパスで指定、0=黒く強くマスク、1=影響なし)
@@ -67,7 +66,6 @@ namespace Mask.Generator.Data
             gamma = DEFAULT_GAMMA;
             useTransparentMode = false; // デフォルトは白背景モード
             uvIslandNeighborRadius = 0.015f;
-            uvIslandBleedMinValue = 0.0f;
             uvIslandVertexSmoothIterations = 2;
             tempSubdivisionIterations = 1;
         }
@@ -227,12 +225,9 @@ namespace Mask.Generator.Data
         public string materialName; // マテリアル名（一意識別用）
         public Texture2D normalMap; // ノーマルマップテクスチャ
         [Range(0f, 1f)] public float intensity = 1.0f; // ノーマルマップの影響強度
-        public bool useTangentSpace = true; // Tangent Spaceを使用するか（通常はtrue）
         // 追加設定: フォーマット差異と強度調整
         public bool isPackedAG = false; // DXT5nm等のAGパック (A=X, G=Y, Z再構築)
         [Range(-10f, 10f)] public float normalStrength = 1.0f; // XY強度スケール（法線の傾き量）
-        // 自動判別
-        public bool autoDetectFormat = true; // ノーマル形式(AG/RGB)の自動判別
 
         public MaterialNormalMapData Clone()
         {
@@ -261,7 +256,6 @@ namespace Mask.Generator.Data
         public readonly float Gamma;
         public readonly int TempSubdivisionIterations;
         public readonly float UvIslandNeighborRadius;
-        public readonly float UvIslandBleedMinValue;
         public readonly int UvIslandVertexSmoothIterations;
         public readonly bool UseTransparentMode;
         public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
@@ -279,7 +273,6 @@ namespace Mask.Generator.Data
             float gamma,
             int tempSubdivisionIterations,
             float uvIslandNeighborRadius,
-            float uvIslandBleedMinValue,
             int uvIslandVertexSmoothIterations,
             bool useTransparentMode,
             Action<Dictionary<string, Texture2D>> onCompleted,
@@ -296,7 +289,6 @@ namespace Mask.Generator.Data
             Gamma = gamma;
             TempSubdivisionIterations = Mathf.Clamp(tempSubdivisionIterations, 0, 3);
             UvIslandNeighborRadius = uvIslandNeighborRadius;
-            UvIslandBleedMinValue = Mathf.Clamp01(uvIslandBleedMinValue);
             UvIslandVertexSmoothIterations = Mathf.Clamp(uvIslandVertexSmoothIterations, 0, 8);
             UseTransparentMode = useTransparentMode;
             OnCompleted = onCompleted;

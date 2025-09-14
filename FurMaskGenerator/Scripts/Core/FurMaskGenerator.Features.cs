@@ -70,9 +70,7 @@ namespace Mask.Generator
             // UIの値に0.01を加算して内部計算に使用
             float internalMaxDistance = settings.maxDistance + 0.01f;
             // ベイク時のみ固定値を適用（恒久設定は変更しない）
-            const float gammaValue = 2f;
             const int tempSubdivisionIterations = 1;
-            const int uvVertexSmoothIterations = 1;
             
             var bakerSettings = new DistanceBakerSettings(
                 avatarRenderers,
@@ -83,11 +81,10 @@ namespace Mask.Generator
                 new List<MaterialNormalMapData>(settings.materialNormalMaps),
                 settings.textureSizeIndex,
                 internalMaxDistance,
-                gammaValue,
+                settings.gamma,
                 tempSubdivisionIterations,
                 settings.uvIslandNeighborRadius,
-                settings.uvIslandBleedMinValue,
-                uvVertexSmoothIterations,
+                settings.uvIslandVertexSmoothIterations,
                 settings.useTransparentMode,
                 OnBakeCompleted,
                 OnBakeCancelled

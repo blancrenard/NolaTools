@@ -216,10 +216,8 @@ namespace Mask.Generator.Utils
                     materialName = materialName,
                     normalMap = furNormalMap,
                     intensity = 1.0f,
-                    useTangentSpace = true,
                     isPackedAG = false, // ファーノーマルマップは通常RGB形式
-                    normalStrength = materialScaleMap.TryGetValue(materialName, out float scale) ? scale : 1.0f,
-                    autoDetectFormat = true
+                    normalStrength = materialScaleMap.TryGetValue(materialName, out float scale) ? scale : 1.0f
                 };
                 
                 normalMapDataList.Add(normalMapData);

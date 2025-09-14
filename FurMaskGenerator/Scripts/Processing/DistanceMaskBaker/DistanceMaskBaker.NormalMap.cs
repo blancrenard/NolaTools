@@ -37,7 +37,7 @@ namespace Mask.Generator
                 return originalNormal;
             }
 
-            if (normalMapData.autoDetectFormat && !cachedIsPackedAG.ContainsKey(materialName))
+            if (!cachedIsPackedAG.ContainsKey(materialName))
             {
                 TryAutoDetectMaterialFlags(materialName, normalMapData);
             }
@@ -46,7 +46,7 @@ namespace Mask.Generator
 
             Vector3 tangentSpaceNormal;
 
-            bool usePackedAG = normalMapData.autoDetectFormat && cachedIsPackedAG.TryGetValue(materialName, out bool cIsAG)
+            bool usePackedAG = cachedIsPackedAG.TryGetValue(materialName, out bool cIsAG)
                 ? cIsAG : normalMapData.isPackedAG;
             if (usePackedAG)
             {
@@ -119,8 +119,8 @@ namespace Mask.Generator
             }
             if (candidates.Count == 0) return;
 
-            (bool ag, bool inv)[] combos = new (bool, bool)[] { (false,false), (true,false) };
-            float bestScore = -1f; (bool ag, bool inv) best = (false,false);
+            bool[] combos = new bool[] { false, true };
+            float bestScore = -1f; bool best = false;
 
             foreach (var combo in combos)
             {
@@ -130,7 +130,7 @@ namespace Mask.Generator
                     Vector2 uv = (vi < uvs.Count) ? uvs[vi] : Vector2.zero;
                     Color c = data.normalMap.GetPixelBilinear(uv.x, uv.y);
                     float xr, yr;
-                    if (combo.ag)
+                    if (combo)
                     {
                         xr = c.a * 2f - 1f; yr = c.g * 2f - 1f;
                     }
@@ -173,8 +173,8 @@ namespace Mask.Generator
                 }
             }
 
-            cachedIsPackedAG[materialName] = best.ag;
-            data.isPackedAG = best.ag;
+            cachedIsPackedAG[materialName] = best;
+            data.isPackedAG = best;
         }
 
         #endregion
