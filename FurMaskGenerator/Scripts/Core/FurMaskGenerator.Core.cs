@@ -318,6 +318,12 @@ namespace Mask.Generator
 
             try
             {
+                // フォルダが存在しない場合は早期リターン
+                if (!AssetDatabase.IsValidFolder(AvatarSettingsRoot))
+                {
+                    return false;
+                }
+
                 string[] guids = AssetDatabase.FindAssets("t:FurMaskSettings", new[] { AvatarSettingsRoot });
 
                 FurMaskSettings bestSettings = null;
