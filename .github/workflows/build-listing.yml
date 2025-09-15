@@ -53,11 +53,17 @@ jobs:
       - name: Build Package Version Listing
         run: |
           mkdir -p Website
+          echo "Creating index.json with the following info:"
+          echo "Repository: ${{ github.repository }}"
+          echo "Repository Owner: ${{ github.repository_owner }}"
+          echo "Version: ${{ steps.package.outputs.version }}"
+          echo "Name: ${{ steps.package.outputs.name }}"
+          
           cat > Website/index.json << EOF
           {
             "name": "NolaTools VPM Repository",
             "id": "com.nolatools.packages", 
-            "url": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.json",
+            "url": "https://${{ github.repository_owner }}.github.io/FurMaskGenerator/index.json",
             "packages": {
               "${{ steps.package.outputs.name }}": {
                 "versions": {
@@ -78,6 +84,12 @@ jobs:
             }
           }
           EOF
+          
+          echo "Generated index.json:"
+          cat Website/index.json
+          
+          echo "Website directory contents:"
+          ls -la Website/
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
