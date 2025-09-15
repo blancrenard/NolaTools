@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace Mask.Generator.Constants
+namespace NolaTools.FurMaskGenerator.Constants
 {
     /// <summary>
     /// ファイル関連の定数とパスを管理
@@ -27,8 +27,8 @@ namespace Mask.Generator.Constants
         #endregion
 
         #region EditorPrefs キー
-        public const string LAST_SAVE_DIRECTORY_KEY = "Mask.Generator.LastSaveDirectory";
-        public const string LAST_AVATAR_PATH_KEY = "Mask.Generator.LastAvatarPath";
+        public const string LAST_SAVE_DIRECTORY_KEY = "NolaTools.FurMaskGenerator.LastSaveDirectory";
+        public const string LAST_AVATAR_PATH_KEY = "NolaTools.FurMaskGenerator.LastAvatarPath";
         #endregion
 
         #region ファイル名関連

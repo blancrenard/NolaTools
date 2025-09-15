@@ -2,9 +2,9 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// ファイルダイアログ操作専用のユーティリティクラス

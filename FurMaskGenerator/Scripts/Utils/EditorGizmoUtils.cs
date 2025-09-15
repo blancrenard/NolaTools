@@ -3,7 +3,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
 	/// <summary>
 	/// Gizmo/Handles 描画の共通ユーティリティ

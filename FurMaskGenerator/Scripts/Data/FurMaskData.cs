@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Mask.Generator.Constants;
-using Mask.Generator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
 
-namespace Mask.Generator.Data
+namespace NolaTools.FurMaskGenerator.Data
 {
     #region Main Settings
 

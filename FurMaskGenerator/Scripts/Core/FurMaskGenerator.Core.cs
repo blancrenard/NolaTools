@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Data;
-using Mask.Generator.Utils;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator : EditorWindow
     {
@@ -209,8 +209,8 @@ namespace Mask.Generator
             Selection.selectionChanged -= OnEditorSelectionChanged;
             Selection.selectionChanged += OnEditorSelectionChanged;
 
-            Mask.Generator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
-            Mask.Generator.Utils.EditorMeshUtils.DirectionSphereSelected += OnDirectionSphereSelected;
+            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
+            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected += OnDirectionSphereSelected;
         }
 
         private void UnregisterEvents()
@@ -219,11 +219,11 @@ namespace Mask.Generator
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.hierarchyChanged -= OnHierarchyChange;
             Selection.selectionChanged -= OnEditorSelectionChanged;
-            Mask.Generator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
+            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
         }
 
         // Persistence methods
-        private const string AvatarSettingsRoot = Mask.Generator.Utils.EditorAssetPaths.FurMaskGenerator.AvatarSettingsRoot;
+        private const string AvatarSettingsRoot = NolaTools.FurMaskGenerator.Utils.EditorAssetPaths.FurMaskGenerator.AvatarSettingsRoot;
 
         private void StoreAvatarAndRendererReferences()
         {

@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
-using Mask.Generator.Utils;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {

@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Constants;
 using UnityEngine.Rendering;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
@@ -49,7 +49,7 @@ namespace Mask.Generator
                     int seed = FindSeedTriangleByUV(tri, m.seedUV);
                     if (seed < 0) continue;
 
-                    var adj = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
+                    var adj = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
                     var island = new System.Collections.Generic.HashSet<int>();
                     var stack = new System.Collections.Generic.Stack<int>();
                     var visited = new System.Collections.Generic.HashSet<int>();

@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace Mask.Generator.Constants
+namespace NolaTools.FurMaskGenerator.Constants
 {
     /// <summary>
     /// エラーメッセージとログメッセージを管理

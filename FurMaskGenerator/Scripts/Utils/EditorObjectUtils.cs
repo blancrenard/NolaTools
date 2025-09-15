@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     public static class EditorObjectUtils
     {

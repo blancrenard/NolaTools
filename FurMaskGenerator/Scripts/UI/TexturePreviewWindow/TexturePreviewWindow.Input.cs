@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Data;
-using Mask.Generator.Utils;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Utils;
 
-namespace Mask.Generator.UI
+namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {
@@ -201,7 +201,7 @@ namespace Mask.Generator.UI
                 return;
             }
 
-            if (uvMasks == null) uvMasks = new List<Mask.Generator.Data.UVIslandMaskData>();
+            if (uvMasks == null) uvMasks = new List<NolaTools.FurMaskGenerator.Data.UVIslandMaskData>();
             uvMasks.Add(data);
             if (showUVMasks)
             {

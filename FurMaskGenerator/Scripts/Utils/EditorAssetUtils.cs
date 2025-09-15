@@ -6,9 +6,9 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// Extended asset utilities for Unity Editor operations

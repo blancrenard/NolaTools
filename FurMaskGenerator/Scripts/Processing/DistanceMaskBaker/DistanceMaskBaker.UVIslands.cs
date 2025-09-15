@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
@@ -37,7 +37,7 @@ namespace Mask.Generator
                 foreach (int si in subList)
                 {
                     var (tri, _) = subDatas[si];
-                    triAdjBySub[si] = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
+                    triAdjBySub[si] = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
                 }
                 var edgeMap = BuildPositionEdgeMap(subList);
 
@@ -89,7 +89,7 @@ namespace Mask.Generator
         private int FindSeedTriangleByUV(int[] tri, Vector2 seedUV)
         {
             var uvsArr = (uvs != null) ? uvs.ToArray() : System.Array.Empty<Vector2>();
-            return Mask.Generator.Utils.EditorUvUtils.FindSeedTriangleByUV(tri, uvsArr, seedUV);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.FindSeedTriangleByUV(tri, uvsArr, seedUV);
         }
 
         private bool IsPointInUVTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
@@ -103,7 +103,7 @@ namespace Mask.Generator
             var island = new HashSet<(int, int)>();
             // 起点サブメッシュのアイランドをまず列挙
             if (!triAdjBySub.TryGetValue(startSub, out var startAdj)) return island;
-            var localIsland = Mask.Generator.Utils.EditorUvUtils.EnumerateUVIslandTriangles(subDatas[startSub].tri, startAdj, seedTri);
+            var localIsland = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.EnumerateUVIslandTriangles(subDatas[startSub].tri, startAdj, seedTri);
             foreach (int t in localIsland) island.Add((startSub, t));
 
             return island;
@@ -112,7 +112,7 @@ namespace Mask.Generator
         private bool AreUVTrianglesConnected(int subIdx, int triA, int triB, float uvThreshold)
         {
             var tri = subDatas[subIdx].tri;
-            return Mask.Generator.Utils.EditorUvUtils.AreUVTrianglesConnected(tri, uvs.ToArray(), triA, triB, uvThreshold);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.AreUVTrianglesConnected(tri, uvs.ToArray(), triA, triB, uvThreshold);
         }
 
         private Dictionary<(Vector3, Vector3), List<(int, int)>> BuildPositionEdgeMap(List<int> subList)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// UV三角形の隣接構築・シード探索・接続判定の共通ユーティリティ

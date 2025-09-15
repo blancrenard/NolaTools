@@ -1,12 +1,12 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
+using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
 using UnityEngine.Rendering;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator
     {
@@ -566,7 +566,7 @@ namespace Mask.Generator
                         else if (selectedUVIslandIndex == existingIndex) { selectedUVIslandIndex = 0; }
                         // 保存はヘルパがスケジュール済み
                         Repaint();
-                        Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                        NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
                         e.Use();
                         return;
                     }
@@ -592,7 +592,7 @@ namespace Mask.Generator
                     selectedUVIslandIndex = Mathf.Max(0, settings.uvIslandMasks.Count - 1);
                     UndoRedoUtils.SetDirtyAndScheduleSaveOnly(settings);
                     Repaint();
-                    Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                    NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
                     e.Use();
             }
             else

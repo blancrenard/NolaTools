@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 
-namespace Mask.Generator.Constants
+namespace NolaTools.FurMaskGenerator.Constants
 {
     /// <summary>
     /// UI表示用のラベルとメッセージを管理

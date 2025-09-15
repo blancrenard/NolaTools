@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// 色生成専用のユーティリティクラス
@@ -29,8 +29,8 @@ namespace Mask.Generator.Utils
         
         // ゴールデンアングル分散システム
         private const float GOLDEN_ANGLE = 0.618033988749895f;
-        private const string PREFS_HUE_INDEX_KEY = "Mask.Generator.Utils.ColorGenerator.HueIndex";
-        private const string PREFS_HUE_OFFSET_KEY = "Mask.Generator.Utils.ColorGenerator.HueOffset";
+        private const string PREFS_HUE_INDEX_KEY = "NolaTools.FurMaskGenerator.Utils.ColorGenerator.HueIndex";
+        private const string PREFS_HUE_OFFSET_KEY = "NolaTools.FurMaskGenerator.Utils.ColorGenerator.HueOffset";
         private static int _hueIndex = -1;
         private static float _hueOffset = -1f;
 

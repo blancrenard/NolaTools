@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
-using Mask.Generator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator
     {

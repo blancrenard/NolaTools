@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Data;
-using Mask.Generator.Utils;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
@@ -29,7 +29,7 @@ namespace Mask.Generator
                 if (!masksBySub.TryGetValue((key.Item1, key.Item2), out var targets) || targets == null || targets.Count == 0) continue;
 
                 int triangleCount = tri.Length / 3;
-                var adjacency = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
+                var adjacency = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
 
                 if (!subIndexToTexLocator.TryGetValue(subIndex, out var locator)) continue;
                 if (!matTex.TryGetValue(locator.mat, out var textures) || locator.texIdx < 0 || locator.texIdx >= textures.Count) continue;
@@ -67,7 +67,7 @@ namespace Mask.Generator
             if (seed < 0) return (new HashSet<int>(), new HashSet<int>());
 
             var islandVertices = new HashSet<int>();
-            var islandVisitedTris = Mask.Generator.Utils.EditorUvUtils.EnumerateUVIslandTriangles(tri, adjacency, seed);
+            var islandVisitedTris = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.EnumerateUVIslandTriangles(tri, adjacency, seed);
 
             Color[] targetBuffer = null;
             int bufferWidth = 0, bufferHeight = 0;

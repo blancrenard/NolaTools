@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
 	/// <summary>
 	/// テクスチャ操作の共通ユーティリティ（Editor専用）

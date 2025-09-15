@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
@@ -218,7 +218,7 @@ namespace Mask.Generator
             if (subDatas.Count == 0) return;
 
             var (tri, _) = subDatas[0];
-            var adjacency = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
+            var adjacency = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(tri);
             int triangleCount = tri.Length / 3;
 
             // UV座標からシード三角形を見つける
@@ -237,7 +237,7 @@ namespace Mask.Generator
         private int FindSeedTriangleByUV(int[] tri, Vector2 uv)
         {
             var uvsArr = (uvs != null) ? uvs.ToArray() : System.Array.Empty<Vector2>();
-            return Mask.Generator.Utils.EditorUvUtils.FindSeedTriangleByUV(tri, uvsArr, uv);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.FindSeedTriangleByUV(tri, uvsArr, uv);
         }
 
         

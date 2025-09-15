@@ -1,11 +1,11 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator
     {

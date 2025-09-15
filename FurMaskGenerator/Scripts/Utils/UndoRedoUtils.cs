@@ -1,9 +1,9 @@
 #if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// Undo/Redo操作専用のユーティリティクラス

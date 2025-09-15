@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
-using Mask.Generator.UI;
+using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.UI;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// テクスチャ操作専用のユーティリティクラス

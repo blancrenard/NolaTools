@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Utils;
+using NolaTools.FurMaskGenerator.Utils;
 
-namespace Mask.Generator.UI
+namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {

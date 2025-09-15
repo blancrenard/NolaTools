@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator.UI
+namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {
@@ -66,17 +66,17 @@ namespace Mask.Generator.UI
 
         private int FindSeedTriangleByUV(int[] triangles, Vector2[] uvs, Vector2 seedUV)
         {
-            return Mask.Generator.Utils.EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
         }
 
         private System.Collections.Generic.List<System.Collections.Generic.List<int>> BuildTriangleAdjacency(int[] triangles)
         {
-            return Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
         }
 
         private bool AreUVTrianglesConnected(int[] triangles, Vector2[] uvs, int triA, int triB, float uvThreshold)
         {
-            return Mask.Generator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, triA, triB, uvThreshold);
+            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, triA, triB, uvThreshold);
         }
     }
 }

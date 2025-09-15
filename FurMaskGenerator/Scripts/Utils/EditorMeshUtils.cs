@@ -5,9 +5,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator.Utils
+namespace NolaTools.FurMaskGenerator.Utils
 {
     /// <summary>
     /// Extended mesh utilities for Unity Editor operations

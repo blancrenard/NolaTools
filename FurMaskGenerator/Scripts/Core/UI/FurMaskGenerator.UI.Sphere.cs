@@ -2,11 +2,11 @@
 using System;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Constants;
-using Mask.Generator.Utils;
-using Mask.Generator.Data;
+using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Data;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator
     {

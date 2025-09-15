@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEngine;
 
-namespace Mask.Generator.Constants
+namespace NolaTools.FurMaskGenerator.Constants
 {
     /// <summary>
     /// アプリケーション設定値と定数を管理

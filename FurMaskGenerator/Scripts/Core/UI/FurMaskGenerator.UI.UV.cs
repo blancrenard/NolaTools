@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Mask.Generator.Data;
-using Mask.Generator.Utils;
-using Mask.Generator.Constants;
+using NolaTools.FurMaskGenerator.Data;
+using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
-namespace Mask.Generator
+namespace NolaTools.FurMaskGenerator
 {
     public partial class FurMaskGenerator
     {
@@ -147,7 +147,7 @@ namespace Mask.Generator
                 settings.uvIslandMasks.RemoveAt(index);
                 if (selectedUVIslandIndex >= index) selectedUVIslandIndex = Mathf.Max(0, selectedUVIslandIndex - 1);
                 UIDrawingUtils.RefreshUI();
-                Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -208,7 +208,7 @@ namespace Mask.Generator
                     return;
                 }
 
-                Mask.Generator.UI.TexturePreviewWindow.ShowWindowWithTargets(
+                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.ShowWindowWithTargets(
                     settings.uvIslandMasks,
                     multiTargets,
                     0,
@@ -284,7 +284,7 @@ namespace Mask.Generator
                 }
             }
 
-            Mask.Generator.UI.TexturePreviewWindow.ShowWindowWithTargets(
+            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.ShowWindowWithTargets(
                 settings.uvIslandMasks,
                 allTargets,
                 initialIndex,
@@ -309,7 +309,7 @@ namespace Mask.Generator
             if (settings.uvIslandMasks == null) { settings.uvIslandMasks = new List<UVIslandMaskData>(); }
             settings.uvIslandMasks.Add(newMask);
             UIDrawingUtils.RefreshUI();
-            Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
         }
 
         private void RemoveUvIslandMask(UVIslandMaskData removeMask)
@@ -317,7 +317,7 @@ namespace Mask.Generator
             UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
             settings.uvIslandMasks.Remove(removeMask);
             UIDrawingUtils.RefreshUI();
-            Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
         }
 
         /// <summary>
@@ -350,7 +350,7 @@ namespace Mask.Generator
             try
             {
                 // キャッシュから高速検索を試行（tris/uvs を一度だけ取得して再利用）
-                var perSubCache = Mask.Generator.Utils.EditorUvUtils.GetOrBuildIslandCache(rendererPath, mesh, submeshIndex);
+                var perSubCache = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.GetOrBuildIslandCache(rendererPath, mesh, submeshIndex);
                 
                 if (perSubCache != null)
                 {
@@ -565,7 +565,7 @@ namespace Mask.Generator
 
                 int triangleCount = triangles.Length / 3;
                 var processedTriangles = new bool[triangleCount];
-                var adjacency = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
+                var adjacency = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
 
                 // UV->三角形マッピングを事前構築（高速検索用）
                 for (int ti = 0; ti < triangleCount; ti++)
@@ -610,7 +610,7 @@ namespace Mask.Generator
                             foreach (int neighborTriangle in adjacency[currentTriangle])
                             {
                                 if (!processedTriangles[neighborTriangle] && 
-                                    Mask.Generator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, 0.1f))
+                                    NolaTools.FurMaskGenerator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, 0.1f))
                                 {
                                     processedTriangles[neighborTriangle] = true;
                                     stack.Push(neighborTriangle);
@@ -691,12 +691,12 @@ namespace Mask.Generator
                     return result;
 
                 // シード三角形を見つける
-                int seedTriangle = Mask.Generator.Utils.EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
+                int seedTriangle = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
                 if (seedTriangle < 0)
                     return result;
 
                 // 隣接関係を構築
-                var adjacency = Mask.Generator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
+                var adjacency = NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
                 
                 // フラッドフィルでUVアイランドを展開
                 var visited = new bool[triangles.Length / 3];
@@ -715,7 +715,7 @@ namespace Mask.Generator
                         foreach (int neighborTriangle in adjacency[currentTriangle])
                         {
                             if (!visited[neighborTriangle] && 
-                                Mask.Generator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, 0.1f))
+                                NolaTools.FurMaskGenerator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, 0.1f))
                             {
                                 visited[neighborTriangle] = true;
                                 stack.Push(neighborTriangle);

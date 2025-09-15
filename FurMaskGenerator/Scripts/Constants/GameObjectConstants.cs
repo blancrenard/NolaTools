@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-namespace Mask.Generator.Constants
+namespace NolaTools.FurMaskGenerator.Constants
 {
     /// <summary>
     /// ゲームオブジェクト、ボーン、ブレンドシェイプ関連の定数を管理
