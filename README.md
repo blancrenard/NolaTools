@@ -20,7 +20,3 @@ Unity Editor拡張ツール - VRChatアバター用のファーマスク生成�
 ## システム要件
 
 - Unity 2022.3 LTS 以降
-
-## ライセンス
-
-MIT License
