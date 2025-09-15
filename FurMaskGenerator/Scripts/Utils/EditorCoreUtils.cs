@@ -75,7 +75,7 @@ namespace Mask.Generator.Utils
             {
                 if (!string.IsNullOrEmpty(errorTitle) && !string.IsNullOrEmpty(errorMessage))
                 {
-                    EditorUtility.DisplayDialog(errorTitle, errorMessage + " " + renderer.name, okLabel ?? UIConstants.DEFAULT_OK_LABEL);
+                    EditorUtility.DisplayDialog(errorTitle, errorMessage + " " + renderer.name, okLabel ?? UILabels.ERROR_DIALOG_OK);
                 }
                 return null;
             }

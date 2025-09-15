@@ -16,7 +16,7 @@ namespace Mask.Generator
 
         private void Prepare()
         {
-            texSize = UIConstants.TEXTURE_SIZES[settings.TextureSizeIndex];
+            texSize = AppSettings.TEXTURE_SIZES[settings.TextureSizeIndex];
             maxM = settings.MaxDistance;
 
             PreAllocateMemory();
@@ -66,7 +66,7 @@ namespace Mask.Generator
             bool hasUVMasks = settings.UVIslandMasks != null && settings.UVIslandMasks.Count > 0;
             if (hasCloth || hasUVMasks)
             {
-                clothColliderObject = new GameObject(UIConstants.CLOTH_COLLIDER_OBJECT_NAME);
+                clothColliderObject = new GameObject(GameObjectConstants.CLOTH_COLLIDER_OBJECT_NAME);
                 clothCollider = clothColliderObject.AddComponent<MeshCollider>();
                 clothColliderObject.hideFlags = HideFlags.HideAndDontSave;
 

@@ -14,23 +14,23 @@ namespace Mask.Generator
         // Normal map settings UI
         void DrawNormalMapSettings()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
                 // タイトル付きフォールドアウト（共通ヘルパ使用）
-                foldoutNormalMapSection = EditorUIUtils.DrawSectionFoldout(foldoutNormalMapSection, UIConstants.HAIR_TILT_SECTION_TITLE);
+                foldoutNormalMapSection = UIDrawingUtils.DrawSectionFoldout(foldoutNormalMapSection, UILabels.HAIR_TILT_SECTION_TITLE);
 
                 // データ初期化
                 if (settings.materialNormalMaps == null)
                 {
                     settings.materialNormalMaps = new List<MaterialNormalMapData>();
-                    EditorUIUtils.RecordUndoAndSetDirty(settings, "Initialize Material Normal Maps");
+                    UndoRedoUtils.RecordUndoAndSetDirty(settings, "Initialize Material Normal Maps");
                 }
 
                 if (!foldoutNormalMapSection) return;
 
                 // 自動設定ボタン
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button(UIConstants.AUTO_SET_HAIR_TILT_BUTTON))
+                if (GUILayout.Button(UILabels.AUTO_SET_HAIR_TILT_BUTTON))
                 {
                     AutoSetHairTiltFromFurNormalMaps();
                 }
@@ -40,10 +40,10 @@ namespace Mask.Generator
 
                 // ファーの長さ設定
                 settings.maxDistance = EditorGUILayout.Slider(
-                    UIConstants.DISTANCE_LABEL,
+                    UILabels.DISTANCE_LABEL,
                     settings.maxDistance,
-                    UIConstants.MIN_DISTANCE,
-                    UIConstants.MAX_DISTANCE);
+                    AppSettings.MIN_DISTANCE,
+                    AppSettings.MAX_DISTANCE);
                 
                 EditorGUILayout.Space();
 
@@ -80,12 +80,12 @@ namespace Mask.Generator
                     var normalMapData = settings.materialNormalMaps[i];
                     if (normalMapData == null) continue;
 
-                    EditorUIUtils.DrawInUIBox(() =>
+                    UIDrawingUtils.DrawInUIBox(() =>
                     {
                     EditorGUILayout.BeginHorizontal();
 
                     // マテリアル選択ドロップダウン
-                    var materialNames = new List<string> { UIConstants.SELECT_MATERIAL_PLACEHOLDER };
+                    var materialNames = new List<string> { UILabels.SELECT_MATERIAL_PLACEHOLDER };
                     materialNames.AddRange(allMaterials);
 
                     int currentIndex = 0;
@@ -95,16 +95,16 @@ namespace Mask.Generator
                         if (currentIndex == -1) currentIndex = 0; // 見つからない場合はデフォルト
                     }
 
-                    int newIndex = EditorGUILayout.Popup(UIConstants.MATERIAL_LABEL, currentIndex, materialNames.ToArray());
+                    int newIndex = EditorGUILayout.Popup(UILabels.MATERIAL_LABEL, currentIndex, materialNames.ToArray());
                     if (newIndex != currentIndex && newIndex > 0)
                     {
                         normalMapData.materialName = materialNames[newIndex];
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        UndoRedoUtils.SetDirtyOnly(settings);
                     }
 
                     // 削除ボタン（削除対象を記録）
                     bool deleted = false;
-                    if (GUILayout.Button(UIConstants.DELETE_BUTTON, GUILayout.Width(UIConstants.DELETE_BUTTON_WIDTH)))
+                    if (GUILayout.Button(UILabels.DELETE_BUTTON, GUILayout.Width(AppSettings.DELETE_BUTTON_WIDTH)))
                     {
                         indicesToRemove.Add(i);
                         deleted = true;
@@ -117,19 +117,19 @@ namespace Mask.Generator
                     EditorGUI.BeginChangeCheck();
                     var prevTexture = normalMapData.normalMap;
                     normalMapData.normalMap = (Texture2D)EditorGUILayout.ObjectField(
-                        UIConstants.NORMAL_MAP_SECTION_TITLE,
+                        UILabels.NORMAL_MAP_SECTION_TITLE,
                         normalMapData.normalMap,
                         typeof(Texture2D),
                         false);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        UndoRedoUtils.SetDirtyOnly(settings);
 
                         // 新しくテクスチャが設定された場合、readableかどうかをチェック
                         if (normalMapData.normalMap != null && !normalMapData.normalMap.isReadable)
                         {
                             EditorGUILayout.HelpBox(
-                                string.Format(UIConstants.ERROR_TEXTURE_NOT_READABLE, normalMapData.normalMap.name),
+                                string.Format(ErrorMessages.ERROR_TEXTURE_NOT_READABLE, normalMapData.normalMap.name),
                                 MessageType.Warning);
                         }
                     }
@@ -137,7 +137,7 @@ namespace Mask.Generator
                     {
                         // 既存のテクスチャがreadableでない場合も警告を表示
                         EditorGUILayout.HelpBox(
-                            string.Format(UIConstants.ERROR_TEXTURE_NOT_READABLE, normalMapData.normalMap.name),
+                            string.Format(ErrorMessages.ERROR_TEXTURE_NOT_READABLE, normalMapData.normalMap.name),
                             MessageType.Warning);
                     }
 
@@ -147,7 +147,7 @@ namespace Mask.Generator
                     // G(Y)反転はUnity側で処理されるため、ツールでは非対応（UI非表示）
                     if (EditorGUI.EndChangeCheck())
                     {
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        UndoRedoUtils.SetDirtyOnly(settings);
                     }
 
                     // ノーマル強度スライダー
@@ -159,10 +159,10 @@ namespace Mask.Generator
                         10f);
                     if (EditorGUI.EndChangeCheck())
                     {
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        UndoRedoUtils.SetDirtyOnly(settings);
                     }
 
-                    }, UIConstants.SPHERE_ITEM_BACKGROUND);
+                    }, AppSettings.SPHERE_ITEM_BACKGROUND);
                     EditorGUILayout.Space();
                 }
 
@@ -172,15 +172,15 @@ namespace Mask.Generator
                     if (index < settings.materialNormalMaps.Count)
                     {
                         settings.materialNormalMaps.RemoveAt(index);
-                        EditorUIUtils.RecordUndoAndSetDirty(settings, "Remove Material Normal Map");
+                        UndoRedoUtils.RecordUndoAndSetDirty(settings, "Remove Material Normal Map");
                     }
                 }
 
                 // 新規追加ボタン
-                if (GUILayout.Button(UIConstants.ADD_HAIR_TILT_BUTTON))
+                if (GUILayout.Button(UILabels.ADD_HAIR_TILT_BUTTON))
                 {
                     settings.materialNormalMaps.Add(new MaterialNormalMapData());
-                    EditorUIUtils.RecordUndoAndSetDirty(settings, "Add Material Normal Map");
+                    UndoRedoUtils.RecordUndoAndSetDirty(settings, "Add Material Normal Map");
                 }
             });
         }

@@ -21,14 +21,14 @@ namespace Mask.Generator
         {
             if (string.IsNullOrEmpty(tail)) return "";
             string t = tail.ToLowerInvariant();
-            if (t.Contains(UIConstants.BONE_GROUP_HIPS) || t.Contains(UIConstants.BONE_GROUP_SPINE) || t.Contains(UIConstants.BONE_GROUP_CHEST) || t.Contains(UIConstants.BONE_GROUP_UPPERCHEST)) return UIConstants.BONE_GROUP_BODY;
-            if (t.Contains(UIConstants.BONE_GROUP_NECK) || t.Contains(UIConstants.BONE_GROUP_HEAD) || t.Contains(UIConstants.BONE_GROUP_JAW) || t.Contains(UIConstants.BONE_GROUP_LEFTEYE) || t.Contains(UIConstants.BONE_GROUP_RIGHTEYE) || t.Contains(UIConstants.BONE_GROUP_EYE)) return UIConstants.BONE_GROUP_HEAD_GROUP;
-            if (t.Contains(UIConstants.BONE_GROUP_UPPERARM) || t.Contains(UIConstants.BONE_GROUP_LOWERARM) || t.Contains(UIConstants.BONE_GROUP_SHOULDER)) return UIConstants.BONE_GROUP_ARM;
-            if (t.Contains(UIConstants.BONE_GROUP_HAND) || t.Contains(UIConstants.BONE_GROUP_INDEX) || t.Contains(UIConstants.BONE_GROUP_MIDDLE) || t.Contains(UIConstants.BONE_GROUP_RING) || t.Contains(UIConstants.BONE_GROUP_LITTLE) || t.Contains(UIConstants.BONE_GROUP_THUMB)) return UIConstants.BONE_GROUP_HAND_GROUP;
-            if (t.Contains(UIConstants.BONE_GROUP_UPPERLEG) || t.Contains(UIConstants.BONE_GROUP_LOWERLEG)) return UIConstants.BONE_GROUP_LEG;
-            if (t.Contains(UIConstants.BONE_GROUP_FOOT) || t.Contains(UIConstants.BONE_GROUP_TOES)) return UIConstants.BONE_GROUP_FOOT_GROUP;
-            if (t.Contains(UIConstants.FILTER_EAR)) return UIConstants.BONE_GROUP_EAR_GROUP;
-            if (t.Contains(UIConstants.FILTER_TAIL)) return UIConstants.BONE_GROUP_TAIL_GROUP;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_HIPS) || t.Contains(GameObjectConstants.BONE_GROUP_SPINE) || t.Contains(GameObjectConstants.BONE_GROUP_CHEST) || t.Contains(GameObjectConstants.BONE_GROUP_UPPERCHEST)) return GameObjectConstants.BONE_GROUP_BODY;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_NECK) || t.Contains(GameObjectConstants.BONE_GROUP_HEAD) || t.Contains(GameObjectConstants.BONE_GROUP_JAW) || t.Contains(GameObjectConstants.BONE_GROUP_LEFTEYE) || t.Contains(GameObjectConstants.BONE_GROUP_RIGHTEYE) || t.Contains(GameObjectConstants.BONE_GROUP_EYE)) return GameObjectConstants.BONE_GROUP_HEAD_GROUP;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_UPPERARM) || t.Contains(GameObjectConstants.BONE_GROUP_LOWERARM) || t.Contains(GameObjectConstants.BONE_GROUP_SHOULDER)) return GameObjectConstants.BONE_GROUP_ARM;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_HAND) || t.Contains(GameObjectConstants.BONE_GROUP_INDEX) || t.Contains(GameObjectConstants.BONE_GROUP_MIDDLE) || t.Contains(GameObjectConstants.BONE_GROUP_RING) || t.Contains(GameObjectConstants.BONE_GROUP_LITTLE) || t.Contains(GameObjectConstants.BONE_GROUP_THUMB)) return GameObjectConstants.BONE_GROUP_HAND_GROUP;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_UPPERLEG) || t.Contains(GameObjectConstants.BONE_GROUP_LOWERLEG)) return GameObjectConstants.BONE_GROUP_LEG;
+            if (t.Contains(GameObjectConstants.BONE_GROUP_FOOT) || t.Contains(GameObjectConstants.BONE_GROUP_TOES)) return GameObjectConstants.BONE_GROUP_FOOT_GROUP;
+            if (t.Contains(GameObjectConstants.FILTER_EAR)) return GameObjectConstants.BONE_GROUP_EAR_GROUP;
+            if (t.Contains(GameObjectConstants.FILTER_TAIL)) return GameObjectConstants.BONE_GROUP_TAIL_GROUP;
             return tail;
         }
 
@@ -113,7 +113,7 @@ namespace Mask.Generator
             add(HumanBodyBones.RightFoot);
             add(HumanBodyBones.LeftToes);
             add(HumanBodyBones.RightToes);
-            EditorUIUtils.RecordUndoAndSetDirty(settings, "Add Humanoid Preset");
+            UndoRedoUtils.RecordUndoAndSetDirty(settings, "Add Humanoid Preset");
         }
 
         void EnsureHumanoidPreset()
@@ -144,13 +144,13 @@ namespace Mask.Generator
                 if (t == null || t.gameObject == null) continue;
                 string name = t.gameObject.name;
                 string grp = GetGroupLabel(name);
-                if (grp != UIConstants.BONE_GROUP_EAR_GROUP && grp != UIConstants.BONE_GROUP_TAIL_GROUP) continue;
+                if (grp != GameObjectConstants.BONE_GROUP_EAR_GROUP && grp != GameObjectConstants.BONE_GROUP_TAIL_GROUP) continue;
                 string path = EditorPathUtils.GetGameObjectPath(t.gameObject);
                 if (settings.boneMasks.Exists(b => b.bonePath == path)) continue;
                 float v = GetDefaultValueForGroup(grp);
                 settings.boneMasks.Add(new BoneMaskData { bonePath = path, value = v });
             }
-            EditorUIUtils.RecordUndoAndSetDirty(settings, "Remove Humanoid Preset");
+            UndoRedoUtils.RecordUndoAndSetDirty(settings, "Remove Humanoid Preset");
         }
     }
 }

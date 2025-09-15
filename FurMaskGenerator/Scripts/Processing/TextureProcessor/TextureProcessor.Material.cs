@@ -42,7 +42,7 @@ namespace Mask.Generator
                     if ((i % (adaptiveProgressInterval * 3)) == 0)
                     {
                         float p = 0.62f + 0.06f * ((float)i / Mathf.Max(1, tri.Length));
-                        if (EditorCoreUtils.ShowCancelableProgressThrottledAutoClear(UIConstants.PROGRESS_BAR_TITLE, UIConstants.RASTERIZING_LABEL, p)) break;
+                        if (EditorCoreUtils.ShowCancelableProgressThrottledAutoClear(UILabels.PROGRESS_BAR_TITLE, UILabels.RASTERIZING_LABEL, p)) break;
                     }
                 }
 
@@ -54,7 +54,7 @@ namespace Mask.Generator
                 {
                     materialToRasterizedPixels[mat] = rasterizedPixels;
                 }
-                Texture2D t = EditorUIUtils.CreateAndApplyTexture(texSize, texSize, buffer, false);
+                Texture2D t = TextureOperationUtils.CreateAndApplyTexture(texSize, texSize, buffer, false);
 
                 if (!matTex.ContainsKey(mat)) matTex[mat] = new List<Texture2D>();
                 int texIdx = matTex[mat].Count;

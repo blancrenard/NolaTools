@@ -35,11 +35,11 @@ namespace Mask.Generator.UI
                     }
                 }
 
-                EditorUIUtils.UpdateTexturePixels(overlayTexture, pixels);
+                TextureOperationUtils.UpdateTexturePixels(overlayTexture, pixels);
             }
             catch (System.Exception ex)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_UV_MASK_OVERLAY_GENERATION, ex.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_UV_MASK_OVERLAY_GENERATION, ex.Message));
                 ClearOverlayTexture();
             }
         }

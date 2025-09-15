@@ -13,16 +13,16 @@ namespace Mask.Generator
         // Mask generation settings UI
         void DrawMaskGenerationSettings()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
                 // Texture size with auto-detection
                 EditorGUILayout.BeginHorizontal();
                 settings.textureSizeIndex = EditorGUILayout.Popup(
-                    UIConstants.TEXTURE_SIZE_LABEL,
+                    UILabels.TEXTURE_SIZE_LABEL,
                     settings.textureSizeIndex,
-                    UIConstants.TEXTURE_SIZE_LABELS);
+                    AppSettings.TEXTURE_SIZE_LABELS);
                 
-                if (GUILayout.Button(UIConstants.AUTO_DETECT_BUTTON, GUILayout.Width(80)))
+                if (GUILayout.Button(UILabels.AUTO_DETECT_BUTTON, GUILayout.Width(80)))
                 {
                     AutoDetectTextureSize();
                 }
@@ -30,7 +30,7 @@ namespace Mask.Generator
 
                 // マスクの濃さ設定
                 settings.gamma = EditorGUILayout.Slider(
-                    UIConstants.MASK_INTENSITY_LABEL,
+                    UILabels.MASK_INTENSITY_LABEL,
                     settings.gamma,
                     0.1f,
                     5.0f);
@@ -44,12 +44,12 @@ namespace Mask.Generator
 
                 // 透過モード設定
                 settings.useTransparentMode = EditorGUILayout.Toggle(
-                    new GUIContent(UIConstants.TRANSPARENT_MODE_LABEL, UIConstants.TRANSPARENT_MODE_TOOLTIP),
+                    new GUIContent(UILabels.TRANSPARENT_MODE_LABEL, UILabels.TRANSPARENT_MODE_TOOLTIP),
                     settings.useTransparentMode);
 
                 // Generate button
                 GUI.enabled = !baking;
-                if (GUILayout.Button(UIConstants.GENERATE_MASK_BUTTON))
+                if (GUILayout.Button(UILabels.GENERATE_MASK_BUTTON))
                 {
                     if (ValidateInputs())
                     {
@@ -86,7 +86,7 @@ namespace Mask.Generator
             }
             
             // 一般的なメインテクスチャプロパティを試行
-            foreach (string property in UIConstants.MAIN_TEXTURE_PROPERTIES)
+            foreach (string property in GameObjectConstants.MAIN_TEXTURE_PROPERTIES)
             {
                 // プロパティ名が有効かチェック
                 if (string.IsNullOrEmpty(property) || !property.StartsWith("_"))
@@ -248,7 +248,7 @@ namespace Mask.Generator
         {
             if (avatarRenderers == null || avatarRenderers.Count == 0)
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RENDERERS_NOT_SET, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERERS_NOT_SET, UILabels.ERROR_DIALOG_OK);
                 return;
             }
             
@@ -291,19 +291,19 @@ namespace Mask.Generator
             
             if (detectedSizes.Count == 0)
             {
-                EditorUtility.DisplayDialog(UIConstants.TEXTURE_AUTO_DETECT_TITLE, 
-                    UIConstants.TEXTURE_AUTO_DETECT_NO_TEXTURE, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(ErrorMessages.TEXTURE_AUTO_DETECT_TITLE, 
+                    ErrorMessages.TEXTURE_AUTO_DETECT_NO_TEXTURE, UILabels.ERROR_DIALOG_OK);
                 return;
             }
             
             // 最も多く使用されているサイズを取得（bodyレンダラーは重み10倍）
             var mostCommonSize = detectedSizes.OrderByDescending(kvp => kvp.Value).First();
             
-            // UIConstants.TEXTURE_SIZESの中から最適なサイズインデックスを見つける
+            // AppSettings.TEXTURE_SIZESの中から最適なサイズインデックスを見つける
             int bestIndex = -1;
-            for (int i = 0; i < UIConstants.TEXTURE_SIZES.Length; i++)
+            for (int i = 0; i < AppSettings.TEXTURE_SIZES.Length; i++)
             {
-                if (UIConstants.TEXTURE_SIZES[i] == mostCommonSize.Key)
+                if (AppSettings.TEXTURE_SIZES[i] == mostCommonSize.Key)
                 {
                     bestIndex = i;
                     break;
@@ -314,9 +314,9 @@ namespace Mask.Generator
             if (bestIndex == -1)
             {
                 int minDiff = int.MaxValue;
-                for (int i = 0; i < UIConstants.TEXTURE_SIZES.Length; i++)
+                for (int i = 0; i < AppSettings.TEXTURE_SIZES.Length; i++)
                 {
-                    int diff = Mathf.Abs(UIConstants.TEXTURE_SIZES[i] - mostCommonSize.Key);
+                    int diff = Mathf.Abs(AppSettings.TEXTURE_SIZES[i] - mostCommonSize.Key);
                     if (diff < minDiff)
                     {
                         minDiff = diff;
@@ -327,13 +327,13 @@ namespace Mask.Generator
             
             if (bestIndex >= 0)
             {
-                EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_AUTO_DETECT_TEXTURE_SIZE);
+                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.AUTO_DETECT_TEXTURE_SIZE);
                 settings.textureSizeIndex = bestIndex;
             }
             else
             {
-                EditorUtility.DisplayDialog(UIConstants.TEXTURE_AUTO_DETECT_TITLE, 
-                    UIConstants.TEXTURE_AUTO_DETECT_NO_SIZE, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(ErrorMessages.TEXTURE_AUTO_DETECT_TITLE, 
+                    ErrorMessages.TEXTURE_AUTO_DETECT_NO_SIZE, UILabels.ERROR_DIALOG_OK);
             }
         }
         

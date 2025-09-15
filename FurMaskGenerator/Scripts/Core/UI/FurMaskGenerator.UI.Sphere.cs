@@ -13,12 +13,12 @@ namespace Mask.Generator
         // Sphere UI methods
         void DrawSphereMaskSettings()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
                 try
                 {
                 // タイトル付きフォールドアウト（共通ヘルパ使用）
-                foldoutSphereSection = EditorUIUtils.DrawSectionFoldout(foldoutSphereSection, UIConstants.SPHERE_SECTION_TITLE);
+                foldoutSphereSection = UIDrawingUtils.DrawSectionFoldout(foldoutSphereSection, UILabels.SPHERE_SECTION_TITLE);
 
                 if (!foldoutSphereSection)
                 {
@@ -26,10 +26,10 @@ namespace Mask.Generator
                 }
 
                 // スフィア表示・非表示チェックボックス
-                showSphereGizmos = EditorGUILayout.Toggle(UIConstants.SPHERES_SHOW_TOGGLE, showSphereGizmos);
+                showSphereGizmos = EditorGUILayout.Toggle(UILabels.SPHERES_SHOW_TOGGLE, showSphereGizmos);
 
                 // シーン上クリックでスフィアを追加するトグル
-                bool newSphereToggle = GUILayout.Toggle(addSphereOnClick, UIConstants.ADD_SPHERE_ON_SCENE_BUTTON, GUI.skin.button);
+                bool newSphereToggle = GUILayout.Toggle(addSphereOnClick, UILabels.ADD_SPHERE_ON_SCENE_BUTTON, GUI.skin.button);
                 if (newSphereToggle != addSphereOnClick)
                 {
                     addSphereOnClick = newSphereToggle;
@@ -38,7 +38,7 @@ namespace Mask.Generator
                         // UVマスク追加モードと排他にする
                         addUVIslandOnClick = false;
                     }
-                    EditorUIUtils.RefreshUI();
+                    UIDrawingUtils.RefreshUI();
                 }
 
                 if (settings == null || settings.sphereMasks == null)
@@ -46,7 +46,7 @@ namespace Mask.Generator
                     return;
                 }
 
-                EditorUIUtils.EnsureFoldoutCount(sphereFoldoutStates, settings.sphereMasks.Count);
+                UIDrawingUtils.EnsureFoldoutCount(sphereFoldoutStates, settings.sphereMasks.Count);
 
                 for (int i = 0; i < settings.sphereMasks.Count; i++)
                 {
@@ -54,13 +54,13 @@ namespace Mask.Generator
                     // 初期化: マーカー色未設定ならビビットまたはパステルのランダム色を割り当て
                     if (sphere.markerColor.a <= 0f)
                     {
-                        sphere.markerColor = EditorUIUtils.GenerateMarkerColor();
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        sphere.markerColor = ColorGenerator.GenerateMarkerColor();
+                        UndoRedoUtils.SetDirtyOnly(settings);
                     }
 
                     if (i >= sphereFoldoutStates.Count)
                     {
-                        Debug.LogError(string.Format(UIConstants.ERROR_SPHERE_FOLDOUT_INDEX, i, sphereFoldoutStates.Count));
+                        Debug.LogError(string.Format(ErrorMessages.ERROR_SPHERE_FOLDOUT_INDEX, i, sphereFoldoutStates.Count));
                         continue;
                     }
 
@@ -74,7 +74,7 @@ namespace Mask.Generator
                                 }
                             },
                             () => {
-                                EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_FUR_MASK_GENERATOR_CHANGE);
+                                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.FUR_MASK_GENERATOR_CHANGE);
                                 settings.sphereMasks.RemoveAt(i);
                             },
                             sphere.name);
@@ -87,57 +87,57 @@ namespace Mask.Generator
 
                         if (i < settings.sphereMasks.Count && sphereFoldoutStates[i])
                         {
-                            DrawSpherePropertyRow(UIConstants.POSITION_LABEL, () =>
+                            DrawSpherePropertyRow(UILabels.POSITION_LABEL, () =>
                             {
                                 EditorGUI.BeginChangeCheck();
                                 Vector3 newPosition = EditorGUILayout.Vector3Field("", sphere.position);
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_MOVE_SPHERE_MASK);
+                                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.MOVE_SPHERE_MASK);
                                     sphere.position = newPosition;
                                 }
                             });
 
-                            DrawSpherePropertyRow(UIConstants.RADIUS_LABEL, () =>
+                            DrawSpherePropertyRow(UILabels.RADIUS_LABEL, () =>
                             {
                                 EditorGUI.BeginChangeCheck();
                                 sphere.radius = EditorGUILayout.Slider(sphere.radius, 0.001f, 1f);
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_FUR_MASK_GENERATOR_CHANGE);
+                                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.FUR_MASK_GENERATOR_CHANGE);
                                 }
                             });
 
-                            DrawSpherePropertyRow(UIConstants.BLUR_LABEL, () =>
+                            DrawSpherePropertyRow(UILabels.BLUR_LABEL, () =>
                             {
                                 EditorGUI.BeginChangeCheck();
                                 sphere.gradient = EditorGUILayout.Slider(sphere.gradient, 0f, 1f);
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_FUR_MASK_GENERATOR_CHANGE);
+                                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.FUR_MASK_GENERATOR_CHANGE);
                                 }
                             });
 
                             // 濃さ（0.1〜1.0）
-                            DrawSpherePropertyRow(UIConstants.SPHERE_INTENSITY_LABEL, () =>
+                            DrawSpherePropertyRow(UILabels.SPHERE_INTENSITY_LABEL, () =>
                             {
                                 EditorGUI.BeginChangeCheck();
-                                float newIntensity = EditorGUILayout.Slider(sphere.intensity, UIConstants.SPHERE_INTENSITY_MIN, UIConstants.SPHERE_INTENSITY_MAX);
+                                float newIntensity = EditorGUILayout.Slider(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_FUR_MASK_GENERATOR_CHANGE);
+                                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.FUR_MASK_GENERATOR_CHANGE);
                                     sphere.intensity = newIntensity;
                                 }
                             });
 
                             // ミラー機能チェックボックス
-                            DrawSpherePropertyRow(UIConstants.SPHERE_MIRROR_LABEL, () =>
+                            DrawSpherePropertyRow(UILabels.SPHERE_MIRROR_LABEL, () =>
                             {
                                 EditorGUI.BeginChangeCheck();
                                 bool newMirror = EditorGUILayout.Toggle(sphere.useMirror);
                                 if (EditorGUI.EndChangeCheck())
                                 {
-                                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_FUR_MASK_GENERATOR_CHANGE);
+                                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.FUR_MASK_GENERATOR_CHANGE);
                                     sphere.useMirror = newMirror;
                                 }
                             });
@@ -149,7 +149,7 @@ namespace Mask.Generator
             }
             catch (System.Exception e)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_SPHERE_MASK_SETTINGS, e.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_SPHERE_MASK_SETTINGS, e.Message));
             }
             });
         }
@@ -157,7 +157,7 @@ namespace Mask.Generator
         // Helper methods for sphere UI
         private void DrawSphereBox(Action contentAction)
         {
-            EditorUIUtils.DrawInUIBox(() => { contentAction(); }, UIConstants.SPHERE_ITEM_BACKGROUND);
+            UIDrawingUtils.DrawInUIBox(() => { contentAction(); }, AppSettings.SPHERE_ITEM_BACKGROUND);
         }
 
         private void DrawSpherePropertyRow(string label, Action contentAction)
@@ -174,7 +174,7 @@ namespace Mask.Generator
             EditorGUILayout.BeginHorizontal();
 
             // Foldout
-            Rect foldoutRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, GUILayout.Width(UIConstants.FOLDOUT_WIDTH));
+            Rect foldoutRect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight, GUILayout.Width(AppSettings.FOLDOUT_WIDTH));
             foldoutRect.y += 1f;
 
             EditorGUI.BeginChangeCheck();
@@ -192,7 +192,7 @@ namespace Mask.Generator
                 if (clicked)
                 {
                     selectedSphereIndex = sphereIndex;
-                    EditorUIUtils.RefreshUI();
+                    UIDrawingUtils.RefreshUI();
                 }
             }
 
@@ -201,7 +201,7 @@ namespace Mask.Generator
 
             // Delete button
             bool deleteRequested = false;
-            if (GUILayout.Button(UIConstants.DELETE_BUTTON, GUILayout.Width(UIConstants.DELETE_BUTTON_WIDTH)))
+            if (GUILayout.Button(UILabels.DELETE_BUTTON, GUILayout.Width(AppSettings.DELETE_BUTTON_WIDTH)))
             {
                 deleteRequested = true;
             }
@@ -219,7 +219,7 @@ namespace Mask.Generator
 
         private bool DrawClickableColorSwatch(Color color, float height, bool selected, string tooltip = null)
         {
-            var c = (color.a > 0f) ? color : EditorUIUtils.GenerateMarkerColor();
+            var c = (color.a > 0f) ? color : ColorGenerator.GenerateMarkerColor();
             Rect r = EditorGUILayout.GetControlRect(false, height, GUILayout.ExpandWidth(true));
 
             // Draw background if selected
@@ -256,7 +256,7 @@ namespace Mask.Generator
             };
 
             settings.sphereMasks.Add(newSphere);
-            EditorUIUtils.RecordUndoAndSetDirty(settings, "Add Sphere Mask");
+            UndoRedoUtils.RecordUndoAndSetDirty(settings, "Add Sphere Mask");
             Repaint();
         }
     }

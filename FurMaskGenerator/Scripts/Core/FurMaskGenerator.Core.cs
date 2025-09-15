@@ -21,7 +21,7 @@ namespace Mask.Generator
         private List<Renderer> avatarRenderers = new();
         private List<Renderer> clothRenderers = new();
         public List<SphereData> sphereMasks => settings?.sphereMasks;
-        // Note: 内部API依存を排除。リスト描画は EditorUIUtils.DrawRendererList に委譲
+        // Note: 内部API依存を排除。リスト描画は UIDrawingUtils.DrawRendererList に委譲
         private bool baking => currentBaker != null;
         Dictionary<string, Texture2D> preview = new();
         Vector2 scr;
@@ -48,8 +48,8 @@ namespace Mask.Generator
         private Vector3 uvAddHoverPosition = Vector3.zero;
         private bool isShuttingDown = false;
 
-        [MenuItem(UIConstants.MENU_ITEM_PATH)]
-        static void Open() => GetWindow<FurMaskGenerator>(UIConstants.WINDOW_TITLE);
+        [MenuItem(FileConstants.MENU_ITEM_PATH)]
+        static void Open() => GetWindow<FurMaskGenerator>(FileConstants.WINDOW_TITLE);
 
         void OnEnable()
         {
@@ -71,7 +71,7 @@ namespace Mask.Generator
             if (avatarObject != null && !string.IsNullOrEmpty(EditorPathUtils.GetGameObjectPath(avatarObject)))
             {
                 string finalPath = EditorPathUtils.GetGameObjectPath(avatarObject);
-                EditorPrefs.SetString(UIConstants.LAST_AVATAR_PATH_KEY, finalPath);
+                EditorPrefs.SetString(FileConstants.LAST_AVATAR_PATH_KEY, finalPath);
             }
             
             CleanupTextures();
@@ -137,7 +137,7 @@ namespace Mask.Generator
             try
             {
                 // 最後に使用したアバターの設定を復元を試みる
-                string lastAvatarPath = EditorPrefs.GetString(UIConstants.LAST_AVATAR_PATH_KEY, "");
+                string lastAvatarPath = EditorPrefs.GetString(FileConstants.LAST_AVATAR_PATH_KEY, "");
                 
                 if (!string.IsNullOrEmpty(lastAvatarPath))
                 {
@@ -157,19 +157,19 @@ namespace Mask.Generator
                     settings = recentSettings;
                     avatarObject = recentAvatar;
                     // 今回見つけたアバターを次回のために保存
-                    EditorPrefs.SetString(UIConstants.LAST_AVATAR_PATH_KEY, EditorPathUtils.GetGameObjectPath(recentAvatar));
+                    EditorPrefs.SetString(FileConstants.LAST_AVATAR_PATH_KEY, EditorPathUtils.GetGameObjectPath(recentAvatar));
                     return;
                 }
                 
                 // 最後のアバター復元に失敗した場合、デフォルト設定を読み込み
-                settings = EditorAssetUtils.LoadOrCreateAssetAtPath<FurMaskSettings>(UIConstants.SETTINGS_ASSET_PATH);
+                settings = EditorAssetUtils.LoadOrCreateAssetAtPath<FurMaskSettings>(FileConstants.SETTINGS_ASSET_PATH);
                 avatarObject = null;
             }
             catch (System.Exception ex)
             {
                 Debug.LogError($"[FurMaskGenerator] Error in LoadOrCreateSettings: {ex.Message}\n{ex.StackTrace}");
                 // エラーが発生した場合もデフォルト設定を読み込み
-                settings = EditorAssetUtils.LoadOrCreateAssetAtPath<FurMaskSettings>(UIConstants.SETTINGS_ASSET_PATH);
+                settings = EditorAssetUtils.LoadOrCreateAssetAtPath<FurMaskSettings>(FileConstants.SETTINGS_ASSET_PATH);
                 avatarObject = null;
             }
         }
@@ -233,12 +233,12 @@ namespace Mask.Generator
             settings.avatarObjectPath = avatarPath;
             settings.avatarRendererPaths = EditorPathUtils.GetComponentPaths(avatarRenderers);
             settings.clothRendererPaths = EditorPathUtils.GetComponentPaths(clothRenderers);
-            EditorUIUtils.SetDirtyOnly(settings);
+            UndoRedoUtils.SetDirtyOnly(settings);
             
             // 最後に使用したアバターパスをEditorPrefsに保存
             if (avatarObject != null)
             {
-                EditorPrefs.SetString(UIConstants.LAST_AVATAR_PATH_KEY, avatarPath);
+                EditorPrefs.SetString(FileConstants.LAST_AVATAR_PATH_KEY, avatarPath);
             }
         }
 
@@ -305,7 +305,7 @@ namespace Mask.Generator
             avatarRenderers.Clear();
             clothRenderers.Clear();
             selectedSphereIndex = -1;
-            EditorUIUtils.SetDirtyOnly(settings);
+            UndoRedoUtils.SetDirtyOnly(settings);
         }
 
         /// <summary>

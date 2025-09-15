@@ -81,7 +81,7 @@ namespace Mask.Generator
             }
             catch (System.Exception e)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_BAKE_PROCESS, e.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_BAKE_PROCESS, e.Message));
                 Cancel();
             }
         }
@@ -128,7 +128,7 @@ namespace Mask.Generator
             }
             catch (System.Exception e)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_COMPLETE_PROCESS, e.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_COMPLETE_PROCESS, e.Message));
                 PerformCommonCleanup();
             }
         }

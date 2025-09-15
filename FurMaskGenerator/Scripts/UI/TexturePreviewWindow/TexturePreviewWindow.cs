@@ -58,7 +58,7 @@ namespace Mask.Generator.UI
         
         public static void ShowWindow(Texture2D texture)
         {
-            TexturePreviewWindow window = GetWindow<TexturePreviewWindow>(string.Format(UIConstants.TEXTURE_PREVIEW_TITLE_FORMAT, texture.name));
+            TexturePreviewWindow window = GetWindow<TexturePreviewWindow>(string.Format(UILabels.TEXTURE_PREVIEW_TITLE_FORMAT, texture.name));
             window.texture = texture;
             window.minSize = new Vector2(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
             window.showMouseCrosshair = false;
@@ -110,7 +110,7 @@ namespace Mask.Generator.UI
             if (multiTargets == null || multiTargets.Count == 0) return;
             int idx = Mathf.Clamp(initialIndex, 0, multiTargets.Count - 1);
             var t = multiTargets[idx];
-            var window = GetWindow<TexturePreviewWindow>(string.Format(UIConstants.TEXTURE_PREVIEW_TITLE_FORMAT, (t.texture != null ? t.texture.name : "UV") + " (UV Masks)"));
+            var window = GetWindow<TexturePreviewWindow>(string.Format(UILabels.TEXTURE_PREVIEW_TITLE_FORMAT, (t.texture != null ? t.texture.name : "UV") + " (UV Masks)"));
             window.targets = new List<Target>();
             foreach (var mt in multiTargets)
             {
@@ -199,7 +199,7 @@ namespace Mask.Generator.UI
 
             if (texture == null)
             {
-                EditorGUILayout.HelpBox(UIConstants.TEXTURE_PREVIEW_EMPTY, MessageType.Error);
+                EditorGUILayout.HelpBox(UILabels.TEXTURE_PREVIEW_EMPTY, MessageType.Error);
                 return;
             }
             
@@ -284,7 +284,7 @@ namespace Mask.Generator.UI
             if (targets != null && targets.Count > 0)
             {
                 // UVマスク表示トグル
-                bool newShowUVMasks = GUILayout.Toggle(showUVMasks, UIConstants.UV_MASK_TOGGLE, EditorStyles.toolbarButton);
+                bool newShowUVMasks = GUILayout.Toggle(showUVMasks, UILabels.UV_MASK_TOGGLE, EditorStyles.toolbarButton);
                 if (newShowUVMasks != showUVMasks)
                 {
                     showUVMasks = newShowUVMasks;
@@ -299,7 +299,7 @@ namespace Mask.Generator.UI
                 }
 
                 // UVワイヤーフレーム表示トグル
-                bool newShowWire = GUILayout.Toggle(showUVWireframe, UIConstants.UV_WIREFRAME_TOGGLE, EditorStyles.toolbarButton);
+                bool newShowWire = GUILayout.Toggle(showUVWireframe, UILabels.UV_WIREFRAME_TOGGLE, EditorStyles.toolbarButton);
                 if (newShowWire != showUVWireframe)
                 {
                     showUVWireframe = newShowWire;
@@ -315,7 +315,7 @@ namespace Mask.Generator.UI
             }
 
             // ズームコントロール（スライダーはウィンドウ中心を軸に拡縮）
-            GUILayout.Label(UIConstants.ZOOM_LABEL, EditorStyles.toolbarButton);
+            GUILayout.Label(UILabels.ZOOM_LABEL, EditorStyles.toolbarButton);
             bool __deferredSliderChanged = false; float __deferredSliderValue = zoom;
             EditorGUI.BeginChangeCheck();
             float newSliderZoom = GUILayout.HorizontalSlider(zoom, MIN_ZOOM, MAX_ZOOM, GUILayout.Width(100));
@@ -329,7 +329,7 @@ namespace Mask.Generator.UI
             string zoomLabel = $"{zoom:F2}x";
             GUILayout.Label(zoomLabel, EditorStyles.toolbarButton, GUILayout.Width(40));
 
-            if (GUILayout.Button(UIConstants.RESET_BUTTON, EditorStyles.toolbarButton, GUILayout.Width(110)))
+            if (GUILayout.Button(UILabels.RESET_BUTTON, EditorStyles.toolbarButton, GUILayout.Width(110)))
             {
                 // 現在のウィンドウサイズに合わせてテクスチャをフィットさせる
                 float fitZoom = CalculateFitZoom(texture, position);
@@ -510,9 +510,9 @@ namespace Mask.Generator.UI
 
             // 情報表示
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
-            GUILayout.Label($"{UIConstants.SIZE_LABEL} {texture.width} x {texture.height}");
+            GUILayout.Label($"{UILabels.SIZE_LABEL} {texture.width} x {texture.height}");
             GUILayout.FlexibleSpace();
-            GUILayout.Label($"{UIConstants.FORMAT_LABEL} {texture.format}");
+            GUILayout.Label($"{UILabels.FORMAT_LABEL} {texture.format}");
             GUILayout.EndHorizontal();
         }
         

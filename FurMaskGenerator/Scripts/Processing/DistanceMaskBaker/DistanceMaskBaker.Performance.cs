@@ -40,7 +40,7 @@ namespace Mask.Generator
             }
 
             int minBatch = Mathf.Max(50, verts.Count / 100);
-            int maxBatch = Mathf.Min(UIConstants.MAX_BATCH_SIZE, verts.Count / 5);
+            int maxBatch = Mathf.Min(AppSettings.MAX_BATCH_SIZE, verts.Count / 5);
 
             return Mathf.Clamp(baseBatchSize, minBatch, maxBatch);
         }
@@ -202,7 +202,7 @@ namespace Mask.Generator
 
         private void CalculateProgressUpdateInterval()
         {
-            int baseInterval = UIConstants.PROGRESS_UPDATE_INTERVAL;
+            int baseInterval = AppSettings.PROGRESS_UPDATE_INTERVAL;
 
             if (verts.Count > 50000)
             {
@@ -245,7 +245,7 @@ namespace Mask.Generator
                 return false;
             }
 
-            if (EditorCoreUtils.ShowCancelableProgressThrottledAutoClear(UIConstants.PROGRESS_BAR_TITLE, message, progress))
+            if (EditorCoreUtils.ShowCancelableProgressThrottledAutoClear(UILabels.PROGRESS_BAR_TITLE, message, progress))
             {
                 return true;
             }
@@ -290,7 +290,7 @@ namespace Mask.Generator
             float boneMaskValue = 1f - Mathf.Clamp01(boneControl);
 
             float minMaskValue = Mathf.Min(sphereMaskValue, boneMaskValue);
-            if (minMaskValue <= UIConstants.POSITION_PRECISION)
+            if (minMaskValue <= AppSettings.POSITION_PRECISION)
             {
                 cachedDistances[vertexIndex] = 0f;
                 return 0f;
@@ -305,7 +305,7 @@ namespace Mask.Generator
             float hitDistance = maxM;
             Vector3 n = rayDirections[vertexIndex];
 
-            const float rayOffset = UIConstants.POSITION_PRECISION;
+            const float rayOffset = AppSettings.POSITION_PRECISION;
             var ray = new Ray(v - n * rayOffset, n);
 
             if (clothCollider.Raycast(ray, out RaycastHit hitInfo, maxM + rayOffset))

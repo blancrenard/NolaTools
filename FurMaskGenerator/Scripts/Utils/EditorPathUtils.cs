@@ -9,12 +9,12 @@ namespace Mask.Generator.Utils
         public static string GetGameObjectPath(GameObject obj)
         {
             if (obj == null) return null;
-            string path = UIConstants.PATH_SEPARATOR + obj.name;
+            string path = FileConstants.PATH_SEPARATOR + obj.name;
             Transform current = obj.transform;
             while (current.parent != null)
             {
                 current = current.parent;
-                path = UIConstants.PATH_SEPARATOR + current.name + path;
+                path = FileConstants.PATH_SEPARATOR + current.name + path;
             }
             return path;
         }
@@ -30,11 +30,11 @@ namespace Mask.Generator.Utils
         {
             if (string.IsNullOrEmpty(path)) return null;
 
-            // パスが{UIConstants.PATH_SEPARATOR}で始まる場合は除去
-            if (path.StartsWith(UIConstants.PATH_SEPARATOR))
+            // パスが{FileConstants.PATH_SEPARATOR}で始まる場合は除去
+            if (path.StartsWith(FileConstants.PATH_SEPARATOR))
                 path = path.Substring(1);
 
-            string[] pathParts = path.Split(UIConstants.PATH_SEPARATOR_CHAR);
+            string[] pathParts = path.Split(FileConstants.PATH_SEPARATOR_CHAR);
 
             // ルートオブジェクトを探す（より限定的な取得）
             var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();

@@ -15,12 +15,12 @@ namespace Mask.Generator
         // アバター選択＆レンダラー設定UI（統合）
         void DrawAvatarAndRendererSelection()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
                 // アバター選択フィールド
                 EditorGUI.BeginChangeCheck();
                 avatarObject = (GameObject)EditorGUILayout.ObjectField(
-                    UIConstants.AVATAR_LABEL,
+                    UILabels.AVATAR_LABEL,
                     avatarObject,
                     typeof(GameObject),
                     true);
@@ -35,31 +35,31 @@ namespace Mask.Generator
                     EditorGUILayout.Space();
 
                     // アバター検出ボタン
-                    if (GUILayout.Button(UIConstants.DETECT_AVATAR_RENDERERS_BUTTON))
+                    if (GUILayout.Button(UILabels.DETECT_AVATAR_RENDERERS_BUTTON))
                     {
                         AutoDetectRenderers();
                         StoreAvatarAndRendererReferences();
-                        EditorUIUtils.RefreshUI();
+                        UIDrawingUtils.RefreshUI();
                     }
 
                     EditorGUILayout.Space();
 
                     // 表示中のレンダラーのみ追加ボタン（各リストを一度クリアしてから再分類）
-                    if (GUILayout.Button(UIConstants.ADD_VISIBLE_RENDERERS_BUTTON))
+                    if (GUILayout.Button(UILabels.ADD_VISIBLE_RENDERERS_BUTTON))
                     {
                         AddVisibleRenderers();
                         StoreAvatarAndRendererReferences();
-                        EditorUIUtils.RefreshUI();
+                        UIDrawingUtils.RefreshUI();
                     }
 
                     EditorGUILayout.Space();
 
                     // Renderer lists（独自IMGUI版）
-                    EditorUIUtils.DrawRendererList(avatarRenderers, UIConstants.AVATAR_RENDERERS_LABEL);
+                    UIDrawingUtils.DrawRendererList(avatarRenderers, UILabels.AVATAR_RENDERERS_LABEL);
 
                     EditorGUILayout.Space();
 
-                    EditorUIUtils.DrawRendererList(clothRenderers, UIConstants.CLOTH_RENDERERS_LABEL);
+                    UIDrawingUtils.DrawRendererList(clothRenderers, UILabels.CLOTH_RENDERERS_LABEL);
                 }
             });
         }
@@ -72,7 +72,7 @@ namespace Mask.Generator
                 // アバターがクリアされた場合
                 ClearSettingsForNewAvatar();
                 ClearUVIslandCache(); // キャッシュをクリア
-                EditorUIUtils.RefreshUI();
+                UIDrawingUtils.RefreshUI();
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace Mask.Generator
                     Debug.LogWarning($"[FurMaskGenerator] テクスチャサイズの自動検出に失敗しました: {ex.Message}");
                 }
             }
-            EditorUIUtils.RefreshUI();
+            UIDrawingUtils.RefreshUI();
         }
     }
 }

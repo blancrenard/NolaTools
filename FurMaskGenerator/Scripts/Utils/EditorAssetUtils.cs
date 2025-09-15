@@ -50,7 +50,7 @@ namespace Mask.Generator.Utils
             {
                 var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input ?? ""));
                 var sb = new StringBuilder(bytes.Length * 2);
-                for (int i = 0; i < bytes.Length; i++) sb.Append(bytes[i].ToString(UIConstants.HEX_FORMAT_UPPER));
+                for (int i = 0; i < bytes.Length; i++) sb.Append(bytes[i].ToString(FileConstants.HEX_FORMAT_UPPER));
                 return (sb.Length >= 8) ? sb.ToString(0, 8) : sb.ToString();
             }
         }
@@ -61,7 +61,7 @@ namespace Mask.Generator.Utils
         public static string ComputeAvatarScopedAssetPath(string avatarSettingsRoot, string filePrefix, string avatarPath)
         {
             string hash8 = ToHash8(avatarPath);
-            return $"{avatarSettingsRoot}{UIConstants.PATH_SEPARATOR}{filePrefix}_{hash8}{UIConstants.FILE_EXTENSION_ASSET}";
+            return $"{avatarSettingsRoot}{FileConstants.PATH_SEPARATOR}{filePrefix}_{hash8}{FileConstants.FILE_EXTENSION_ASSET}";
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Mask.Generator.Utils
             string avatarPath = EditorPathUtils.GetGameObjectPath(avatar);
             string settingsPath = ComputeAvatarScopedAssetPath(avatarSettingsRoot, filePrefix, avatarPath);
             var created = LoadOrCreateAssetAtPath<T>(settingsPath);
-            EditorUIUtils.SetDirtyAndScheduleSaveOnly(created);
+            UndoRedoUtils.SetDirtyAndScheduleSaveOnly(created);
             return created;
         }
 
@@ -174,7 +174,7 @@ namespace Mask.Generator.Utils
         /// </summary>
         public static string SanitizeFileName(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName)) return UIConstants.DEFAULT_FILE_NAME;
+            if (string.IsNullOrEmpty(fileName)) return FileConstants.DEFAULT_FILE_NAME;
             char[] invalid = Path.GetInvalidFileNameChars();
             char[] result = new char[fileName.Length];
             for (int i = 0; i < fileName.Length; i++)
@@ -197,12 +197,12 @@ namespace Mask.Generator.Utils
     {
         public static class FurMaskGenerator
         {
-            public const string AvatarSettingsRoot = UIConstants.AVATAR_SETTINGS_ROOT;
+            public const string AvatarSettingsRoot = FileConstants.AVATAR_SETTINGS_ROOT;
         }
 
         public static class FurDirectionGenerator
         {
-            public const string AvatarSettingsRoot = UIConstants.FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT;
+            public const string AvatarSettingsRoot = FileConstants.FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT;
         }
     }
 

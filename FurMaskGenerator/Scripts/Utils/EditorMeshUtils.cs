@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering;
+using Mask.Generator.Constants;
 
 namespace Mask.Generator.Utils
 {
@@ -97,7 +98,7 @@ namespace Mask.Generator.Utils
 
         #region Mathematical Calculations Methods
 
-        public const float BARYCENTRIC_DENOM_THRESHOLD = Mask.Generator.Constants.UIConstants.VALID_PIXEL_THRESHOLD;
+        public const float BARYCENTRIC_DENOM_THRESHOLD = AppSettings.VALID_PIXEL_THRESHOLD;
 
         /// <summary>
         /// 重心座標を計算します

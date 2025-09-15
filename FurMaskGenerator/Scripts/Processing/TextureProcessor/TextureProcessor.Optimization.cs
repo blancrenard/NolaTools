@@ -19,7 +19,7 @@ namespace Mask.Generator
                 totalTriangles += tri.Length / 3;
             }
 
-            int baseInterval = UIConstants.PROGRESS_UPDATE_INTERVAL;
+            int baseInterval = AppSettings.PROGRESS_UPDATE_INTERVAL;
             float complexityFactor = (float)totalTriangles / (texSize * texSize);
 
             if (complexityFactor > 0.1f)

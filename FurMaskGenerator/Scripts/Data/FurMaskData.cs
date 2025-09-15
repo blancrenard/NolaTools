@@ -12,13 +12,13 @@ namespace Mask.Generator.Data
     /// Fur Mask Generatorのメイン設定
     /// マスク生成の全設定データを保持
     /// </summary>
-    [CreateAssetMenu(fileName = "FurMaskSettings", menuName = UIConstants.ASSET_MENU_NAME)]
+    [CreateAssetMenu(fileName = "FurMaskSettings", menuName = FileConstants.ASSET_MENU_NAME)]
     public class FurMaskSettings : ScriptableObject
     {
         // Default value constants
-        public const float DEFAULT_MAX_DISTANCE = 0.04f; // 0.01スケールで0.04
-        public const float DEFAULT_GAMMA = 2f;
-        public const int DEFAULT_TEXTURE_SIZE_INDEX = 1; // 1024x1024
+        public const float DEFAULT_MAX_DISTANCE = AppSettings.DEFAULT_MAX_DISTANCE;
+        public const float DEFAULT_GAMMA = AppSettings.DEFAULT_GAMMA;
+        public const int DEFAULT_TEXTURE_SIZE_INDEX = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
 
         // Avatar path (for persistence)
         public string avatarObjectPath;
@@ -81,7 +81,7 @@ namespace Mask.Generator.Data
     [System.Serializable]
     public class SphereData
     {
-        public string name = UIConstants.DEFAULT_SPHERE_NAME;
+        public string name = GameObjectConstants.DEFAULT_SPHERE_NAME;
         public Vector3 position;
         public float radius = 0.01f;
         public float gradientWidth = 0.1f;
@@ -91,7 +91,7 @@ namespace Mask.Generator.Data
             set => gradientWidth = value;
         } // gradientWidthのエイリアス
         // マスクの濃さ（0.1〜1.0） 1.0で従来通り、0.1で最も薄い
-        [Range(UIConstants.SPHERE_INTENSITY_MIN, UIConstants.SPHERE_INTENSITY_MAX)] public float intensity = UIConstants.SPHERE_INTENSITY_DEFAULT;
+        [Range(AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX)] public float intensity = AppSettings.SPHERE_INTENSITY_DEFAULT;
         public Color markerColor = new Color(0, 0, 0, 0); // UI/シーン表示用カラー 未設定時は透明
         public int addedSequence = -1; // 追加順序（統合表示用）
         
@@ -104,7 +104,7 @@ namespace Mask.Generator.Data
         {
             this.position = position;
             this.radius = radius;
-            this.name = $"{UIConstants.SPHERE_POSITION_PREFIX}{position.ToString()}";
+            this.name = $"{GameObjectConstants.SPHERE_POSITION_PREFIX}{position.ToString()}";
         }
 
         public SphereData(string name, Vector3 position, float radius)

@@ -13,16 +13,16 @@ namespace Mask.Generator
 		// Bone mask settings UI
 		void DrawBoneMaskSettings()
 		{
-			EditorUIUtils.DrawInUIBox(() =>
+			UIDrawingUtils.DrawInUIBox(() =>
 			{
 				// タイトル折りたたみ（共通ヘルパ使用）
-				foldoutBoneSection = EditorUIUtils.DrawSectionFoldout(foldoutBoneSection, UIConstants.BONE_SECTION_TITLE);
+				foldoutBoneSection = UIDrawingUtils.DrawSectionFoldout(foldoutBoneSection, UILabels.BONE_SECTION_TITLE);
 
 				// データ初期化とプリセット準備は折りたたみ状態に関わらず維持
 				if (settings.boneMasks == null)
 				{
 					settings.boneMasks = new List<BoneMaskData>();
-					EditorUIUtils.RecordUndoAndSetDirty(settings, "Initialize Bone Masks");
+					UndoRedoUtils.RecordUndoAndSetDirty(settings, "Initialize Bone Masks");
 				}
 				EnsureHumanoidPreset();
 				EnsureNonHumanoidPreset();
@@ -30,7 +30,7 @@ namespace Mask.Generator
 				if (!foldoutBoneSection) return;
 
 				// グループ化表示（Body / Head / Arm / Hand / Leg / Foot / Ear / Tail）
-				var groupOrder = new List<string>(UIConstants.GROUP_ORDER);
+				var groupOrder = new List<string>(GameObjectConstants.GROUP_ORDER);
 				var groups = new Dictionary<string, List<int>>(); // group -> indices
 				for (int i = 0; i < settings.boneMasks.Count; i++)
 				{
@@ -50,7 +50,7 @@ namespace Mask.Generator
 					if (Mathf.Abs(nv - cur) > 1e-6f)
 					{
 						foreach (int k in idxs) settings.boneMasks[k].value = nv;
-						EditorUIUtils.SetDirtyOnly(settings);
+						UndoRedoUtils.SetDirtyOnly(settings);
 					}
 				}
 			});

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Mask.Generator.Constants;
 
 namespace Mask.Generator.UI
 {
@@ -58,7 +59,7 @@ namespace Mask.Generator.UI
             }
             catch (System.Exception ex)
             {
-                Debug.LogError(string.Format(Mask.Generator.Constants.UIConstants.ERROR_UV_ISLAND_ACQUISITION, ex.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_UV_ISLAND_ACQUISITION, ex.Message));
                 return result;
             }
         }

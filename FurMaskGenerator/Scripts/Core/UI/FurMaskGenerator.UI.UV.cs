@@ -66,10 +66,10 @@ namespace Mask.Generator
         // UV UI methods
         void DrawUVIslandClickUI()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
                 // タイトル付きフォールドアウト（共通ヘルパ使用）
-                foldoutUVSection = EditorUIUtils.DrawSectionFoldout(foldoutUVSection, UIConstants.UV_SECTION_TITLE);
+                foldoutUVSection = UIDrawingUtils.DrawSectionFoldout(foldoutUVSection, UILabels.UV_SECTION_TITLE);
 
                 if (!foldoutUVSection)
                 {
@@ -77,10 +77,10 @@ namespace Mask.Generator
                 }
 
                 // UV島表示設定
-                showUVMarkers = EditorGUILayout.Toggle(UIConstants.UV_SHOW_TOGGLE, showUVMarkers);
+                showUVMarkers = EditorGUILayout.Toggle(UILabels.UV_SHOW_TOGGLE, showUVMarkers);
 
                 // UVマスクプレビュー表示ボタン（常時押下可能）
-                if (GUILayout.Button(UIConstants.UV_MASK_PREVIEW_BUTTON))
+                if (GUILayout.Button(UILabels.UV_MASK_PREVIEW_BUTTON))
                 {
                     ShowUVMaskPreview();
                 }
@@ -120,8 +120,8 @@ namespace Mask.Generator
             bool isSelected = (index == selectedUVIslandIndex);
             if (uvIsland.markerColor.a <= 0f)
             {
-                uvIsland.markerColor = EditorUIUtils.GenerateMarkerColor();
-                EditorUIUtils.SetDirtyOnly(settings);
+                uvIsland.markerColor = ColorGenerator.GenerateMarkerColor();
+                UndoRedoUtils.SetDirtyOnly(settings);
             }
             float rowH = EditorGUIUtility.singleLineHeight;
             Rect swatchRect = EditorGUILayout.GetControlRect(false, rowH, GUILayout.ExpandWidth(true));
@@ -130,7 +130,7 @@ namespace Mask.Generator
                 EditorGUI.DrawRect(swatchRect, new Color(0.3f, 0.8f, 1f, 0.4f)); // より鮮やかな青
             }
             Rect colorRect = new Rect(swatchRect.x + 2, swatchRect.y + 2, swatchRect.width - 4, swatchRect.height - 4);
-            EditorGUI.DrawRect(colorRect, uvIsland.markerColor.a > 0f ? uvIsland.markerColor : EditorUIUtils.GenerateMarkerColor());
+            EditorGUI.DrawRect(colorRect, uvIsland.markerColor.a > 0f ? uvIsland.markerColor : ColorGenerator.GenerateMarkerColor());
             Event ev = Event.current;
             if (ev.type == EventType.MouseDown && swatchRect.Contains(ev.mousePosition))
             {
@@ -141,12 +141,12 @@ namespace Mask.Generator
             // ラベルは非表示（旧仕様どおりスウォッチのみ）
 
             // 削除ボタン
-            if (GUILayout.Button(UIConstants.DELETE_BUTTON, GUILayout.Width(UIConstants.DELETE_BUTTON_WIDTH)))
+            if (GUILayout.Button(UILabels.DELETE_BUTTON, GUILayout.Width(AppSettings.DELETE_BUTTON_WIDTH)))
             {
-                EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_UV_ISLAND_MASK);
+                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
                 settings.uvIslandMasks.RemoveAt(index);
                 if (selectedUVIslandIndex >= index) selectedUVIslandIndex = Mathf.Max(0, selectedUVIslandIndex - 1);
-                EditorUIUtils.RefreshUI();
+                UIDrawingUtils.RefreshUI();
                 Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
             }
 
@@ -158,7 +158,7 @@ namespace Mask.Generator
             EditorGUILayout.BeginHorizontal();
 
             // シーン上クリックでUVマスクを追加するトグル（ボタンスタイル）
-            bool newAddToggle = GUILayout.Toggle(addUVIslandOnClick, UIConstants.ADD_UV_ISLAND_BUTTON, GUI.skin.button);
+            bool newAddToggle = GUILayout.Toggle(addUVIslandOnClick, UILabels.ADD_UV_ISLAND_BUTTON, GUI.skin.button);
             if (newAddToggle != addUVIslandOnClick)
             {
                 addUVIslandOnClick = newAddToggle;
@@ -167,7 +167,7 @@ namespace Mask.Generator
                     // スフィア追加モードと排他にする
                     addSphereOnClick = false;
                 }
-                EditorUIUtils.RefreshUI();
+                UIDrawingUtils.RefreshUI();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -186,7 +186,7 @@ namespace Mask.Generator
                 if (clothRenderers != null) rs.AddRange(clothRenderers);
                 if (rs.Count == 0)
                 {
-                    EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RENDERERS_NOT_SET, UIConstants.ERROR_DIALOG_OK);
+                    EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERERS_NOT_SET, UILabels.ERROR_DIALOG_OK);
                     return;
                 }
 
@@ -204,7 +204,7 @@ namespace Mask.Generator
                 }
                 if (multiTargets.Count == 0)
                 {
-                    EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_VALID_UV_MASKS_NOT_FOUND, UIConstants.ERROR_DIALOG_OK);
+                    EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_VALID_UV_MASKS_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
                     return;
                 }
 
@@ -234,7 +234,7 @@ namespace Mask.Generator
             if (clothRenderers != null) allRenderers.AddRange(clothRenderers);
             if (allRenderers.Count == 0)
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RENDERERS_NOT_SET, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERERS_NOT_SET, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
@@ -253,7 +253,7 @@ namespace Mask.Generator
 
             if (allTargets.Count == 0)
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_VALID_UV_MASKS_NOT_FOUND, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_VALID_UV_MASKS_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
@@ -305,18 +305,18 @@ namespace Mask.Generator
 
         private void AddUvIslandMask(UVIslandMaskData newMask)
         {
-            EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_UV_ISLAND_MASK);
+            UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
             if (settings.uvIslandMasks == null) { settings.uvIslandMasks = new List<UVIslandMaskData>(); }
             settings.uvIslandMasks.Add(newMask);
-            EditorUIUtils.RefreshUI();
+            UIDrawingUtils.RefreshUI();
             Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
         }
 
         private void RemoveUvIslandMask(UVIslandMaskData removeMask)
         {
-            EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_UV_ISLAND_MASK);
+            UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
             settings.uvIslandMasks.Remove(removeMask);
-            EditorUIUtils.RefreshUI();
+            UIDrawingUtils.RefreshUI();
             Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
         }
 

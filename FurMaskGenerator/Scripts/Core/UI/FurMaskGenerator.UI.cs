@@ -35,33 +35,33 @@ namespace Mask.Generator
                     // アバターが指定されていない場合は他の項目を非表示
                     if (avatarObject == null)
                     {
-                        EditorGUILayout.Space(UIConstants.LARGE_SPACE);
+                        EditorGUILayout.Space(AppSettings.LARGE_SPACE);
                         EditorGUILayout.HelpBox("アバターオブジェクトを選択してください。", MessageType.Info);
                     }
                     else
                     {
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawNormalMapSettings();
 
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawSphereMaskSettings();
 
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         // クリック島マスクの枠をマスク生成枠より上に移動
                         DrawUVIslandClickUI();
 
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawBoneMaskSettings();
 
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawMaskGenerationSettings();
 
-                        GUILayout.Space(UIConstants.LARGE_SPACE);
+                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawPreview();
                     }
@@ -70,7 +70,7 @@ namespace Mask.Generator
                     {
                         // 何もしていない時は保存しない方針: Dirty のみ。保存は明示操作時や確定操作時に実施
                         // Undo は各入力ハンドラ内で変更前に記録する方針とし、ここでは記録しない
-                        EditorUIUtils.SetDirtyOnly(settings);
+                        UndoRedoUtils.SetDirtyOnly(settings);
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace Mask.Generator
             }
             catch (System.Exception ex)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_GUI_DRAW, ex));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_GUI_DRAW, ex));
             }
             finally
             {

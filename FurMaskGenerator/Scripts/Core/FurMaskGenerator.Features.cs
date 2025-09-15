@@ -61,7 +61,7 @@ namespace Mask.Generator
             ignoreHierarchyChangeDuringBake = true;
 
             preview.Clear();
-            if (!EditorCoreUtils.ValidateNonEmptyRenderers(avatarRenderers, UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_AVATAR_RENDERERS_INVALID, UIConstants.ERROR_DIALOG_OK))
+            if (!EditorCoreUtils.ValidateNonEmptyRenderers(avatarRenderers, UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_AVATAR_RENDERERS_INVALID, UILabels.ERROR_DIALOG_OK))
             {
                 // 検証失敗時はフラグをクリア
                 ignoreHierarchyChangeDuringBake = false;
@@ -91,7 +91,7 @@ namespace Mask.Generator
             );
             foreach (var s in bakerSettings.SphereMasks)
             {
-                if (s != null) s.radius = Mathf.Min(s.radius, UIConstants.SHOW_MAX_RADIUS);
+                if (s != null) s.radius = Mathf.Min(s.radius, AppSettings.SHOW_MAX_RADIUS);
             }
             currentBaker = new DistanceMaskBaker(bakerSettings);
             currentBaker.StartBake();
@@ -122,7 +122,7 @@ namespace Mask.Generator
         {
             if (avatarRenderers.All(r => r == null))
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_AVATAR_RENDERERS_INVALID, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_AVATAR_RENDERERS_INVALID, UILabels.ERROR_DIALOG_OK);
                 return false;
             }
             return true;
@@ -149,9 +149,9 @@ namespace Mask.Generator
             if (targetRenderers.Count == 0)
             {
                 EditorUtility.DisplayDialog(
-                    UIConstants.ERROR_DIALOG_TITLE, 
+                    UILabels.ERROR_DIALOG_TITLE, 
                     "レンダラーが設定されていません。先にアバターとレンダラーを設定してください。", 
-                    UIConstants.ERROR_DIALOG_OK);
+                    UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
@@ -161,9 +161,9 @@ namespace Mask.Generator
             if (furNormalMaps.Count == 0)
             {
                 EditorUtility.DisplayDialog(
-                    UIConstants.INFO_DIALOG_TITLE, 
+                    UILabels.INFO_DIALOG_TITLE, 
                     "対応シェーダーでファーノーマルマップが設定されたマテリアルが見つかりませんでした。", 
-                    UIConstants.ERROR_DIALOG_OK);
+                    UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
@@ -183,7 +183,7 @@ namespace Mask.Generator
             float optimalFurLength = FurNormalMapUtils.GetOptimalFurLength(targetRenderers);
             
             // Undo対応でファーの長さを設定
-            EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの傾きと長さの自動設定");
+            UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの傾きと長さの自動設定");
             settings.maxDistance = optimalFurLength;
 
             // 変更は遅延一括保存に任せる（二重保存を避ける）

@@ -97,7 +97,7 @@ namespace Mask.Generator.UI
                 }
             }
 
-            EditorUIUtils.UpdateTexturePixels(wireframeTexture, pixels);
+            TextureOperationUtils.UpdateTexturePixels(wireframeTexture, pixels);
         }
     }
 }

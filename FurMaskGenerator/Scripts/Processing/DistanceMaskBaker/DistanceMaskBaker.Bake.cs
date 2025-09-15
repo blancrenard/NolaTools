@@ -69,7 +69,7 @@ namespace Mask.Generator
             }
             catch (System.Exception e)
             {
-                Debug.LogError(string.Format(UIConstants.ERROR_BAKE_EXCEPTION, e.Message));
+                Debug.LogError(string.Format(ErrorMessages.ERROR_BAKE_EXCEPTION, e.Message));
                 Cancel();
             }
         }
@@ -101,7 +101,7 @@ namespace Mask.Generator
             
             foreach (var sphere in settings.SphereMasks)
             {
-                float cr = Mathf.Min(sphere.radius, UIConstants.SHOW_MAX_RADIUS);
+                float cr = Mathf.Min(sphere.radius, AppSettings.SHOW_MAX_RADIUS);
                 if (cr <= 0f) continue;
                 
                 // 距離計算の最適化（平方根を避ける）
@@ -158,7 +158,7 @@ namespace Mask.Generator
                 // 最も近い球体のマスク値を計算
                 foreach (var sphere in settings.SphereMasks)
                 {
-                    float cr = Mathf.Min(sphere.radius, UIConstants.SHOW_MAX_RADIUS);
+                    float cr = Mathf.Min(sphere.radius, AppSettings.SHOW_MAX_RADIUS);
                     if (cr <= 0f) continue;
                     
                     float distSquared = (vertexPosition - sphere.position).sqrMagnitude;
@@ -197,7 +197,7 @@ namespace Mask.Generator
         {
             float innerRadius = radius * (1f - sphere.gradientWidth);
             float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(1e-6f, radius - innerRadius));
-            float intensity = Mathf.Clamp(sphere.intensity, UIConstants.SPHERE_INTENSITY_MIN, UIConstants.SPHERE_INTENSITY_MAX);
+            float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
             return Mathf.Lerp(1f, v, intensity);
         }
 
@@ -208,7 +208,7 @@ namespace Mask.Generator
         {
             float innerRadius = radius * (1f - sphere.gradientWidth);
             float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(1e-6f, radius - innerRadius));
-            float intensity = Mathf.Clamp(sphere.intensity, UIConstants.SPHERE_INTENSITY_MIN, UIConstants.SPHERE_INTENSITY_MAX);
+            float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
             return Mathf.Lerp(1f, v, intensity);
         }
 

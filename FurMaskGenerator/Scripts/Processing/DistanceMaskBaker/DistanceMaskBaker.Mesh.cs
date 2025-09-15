@@ -123,7 +123,7 @@ namespace Mask.Generator
 
                 string matName = (r.sharedMaterials != null && smi < r.sharedMaterials.Length && r.sharedMaterials[smi] != null)
                     ? r.sharedMaterials[smi].name
-                    : $"{UIConstants.SUBMESH_NAME_PREFIX}{smi}";
+                    : $"{GameObjectConstants.SUBMESH_NAME_PREFIX}{smi}";
 
                 subDatas.Add((triGlobal.ToArray(), matName));
                 subRendererPaths.Add(rendererPath);
@@ -327,7 +327,7 @@ namespace Mask.Generator
 
                 string matName = (mats != null && smi < mats.Length && mats[smi] != null)
                     ? mats[smi].name
-                    : $"{UIConstants.SUBMESH_NAME_PREFIX}{smi}";
+                    : $"{GameObjectConstants.SUBMESH_NAME_PREFIX}{smi}";
 
                 subDatas.Add((outTriangles.ToArray(), matName));
                 subRendererPaths.Add(rendererPath);

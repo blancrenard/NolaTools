@@ -16,6 +16,9 @@
 .DS_Store
 Thumbs.db
 
+# VSCode IDE files
+.vscode/
+
 # Cursor IDE files
 .cursor/
 

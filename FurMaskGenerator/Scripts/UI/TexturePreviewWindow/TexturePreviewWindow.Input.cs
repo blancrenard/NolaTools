@@ -189,7 +189,7 @@ namespace Mask.Generator.UI
                     : null,
                 seedWorldPos = chosenWorld,
                 displayName = (chosen != null ? chosen.Renderer : targetRenderer) != null ? (chosen != null ? chosen.Renderer : targetRenderer).name : null,
-                markerColor = EditorUIUtils.GenerateMarkerColor(),
+                markerColor = ColorGenerator.GenerateMarkerColor(),
                 uvThreshold = 0.1f
             };
 

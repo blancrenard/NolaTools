@@ -71,14 +71,14 @@ namespace Mask.Generator
         {
             if (uvs == null || verts == null || uvs.Count != verts.Count)
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_UV_NOT_FOUND, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_UV_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
                 return new Dictionary<string, Texture2D>();
             }
-            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UIConstants.PROGRESS_BAR_TITLE, UIConstants.PROGRESS_RASTERIZING_START_JP, 0.62f)) return null;
+            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UILabels.PROGRESS_BAR_TITLE, UILabels.PROGRESS_RASTERIZING_START_JP, 0.62f)) return null;
             var matTex = CreateMaterialTextures();
-            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UIConstants.PROGRESS_BAR_TITLE, UIConstants.RASTERIZING_LABEL, 0.7f)) return null;
+            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UILabels.PROGRESS_BAR_TITLE, UILabels.RASTERIZING_LABEL, 0.7f)) return null;
             // UV島の直接塗りはレイ判定統合に移行したため無効化
-            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UIConstants.PROGRESS_BAR_TITLE, UIConstants.DILATING_LABEL, 0.9f)) return null;
+            if (EditorCoreUtils.ShowCancelableProgressAutoClear(UILabels.PROGRESS_BAR_TITLE, UILabels.DILATING_LABEL, 0.9f)) return null;
             var finalPreview = MergeSubTexturesPerMaterial(matTex);
             EditorCoreUtils.ClearProgress();
             return finalPreview;
@@ -86,8 +86,8 @@ namespace Mask.Generator
 
         public static void SaveTex(Texture2D tex, string m)
         {
-            string defaultName = $"{UIConstants.LENGTH_MASK_PREFIX}{m}";
-            EditorUIUtils.SaveTexturePNG(tex, defaultName, UIConstants.MASK_SAVE_BUTTON);
+            string defaultName = $"{GameObjectConstants.LENGTH_MASK_PREFIX}{m}";
+            FileDialogUtils.SaveTexturePNG(tex, defaultName, UILabels.MASK_SAVE_BUTTON);
         }
 
         #endregion

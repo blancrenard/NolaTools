@@ -33,7 +33,7 @@ namespace Mask.Generator
 
             if (!normalMapData.normalMap.isReadable)
             {
-                Debug.LogWarning(string.Format(UIConstants.WARNING_NORMAL_MAP_NOT_READABLE, normalMapData.normalMap.name));
+                Debug.LogWarning(string.Format(ErrorMessages.WARNING_NORMAL_MAP_NOT_READABLE, normalMapData.normalMap.name));
                 return originalNormal;
             }
 
@@ -79,7 +79,7 @@ namespace Mask.Generator
             {
                 Vector4 tangent4 = tangents[vertexIndex];
                 Vector3 tangent = new Vector3(tangent4.x, tangent4.y, tangent4.z).normalized;
-                if (tangent.sqrMagnitude < UIConstants.POSITION_PRECISION)
+                if (tangent.sqrMagnitude < AppSettings.POSITION_PRECISION)
                 {
                     return Vector3.Lerp(originalNormal, tangentSpaceNormal, 1f).normalized;
                 }
@@ -98,7 +98,7 @@ namespace Mask.Generator
                 return world;
             }
             Vector3 tFallback = Vector3.Cross(normal, Vector3.up);
-            if (tFallback.sqrMagnitude < UIConstants.POSITION_PRECISION * 100f) tFallback = Vector3.Cross(normal, Vector3.right);
+            if (tFallback.sqrMagnitude < AppSettings.POSITION_PRECISION * 100f) tFallback = Vector3.Cross(normal, Vector3.right);
             tFallback.Normalize();
             Vector3 bFallback = Vector3.Cross(normal, tFallback);
             Vector3 rotatedFallback = (tFallback * tangentSpaceNormal.x + bFallback * tangentSpaceNormal.y + normal * tangentSpaceNormal.z).normalized;
@@ -158,7 +158,7 @@ namespace Mask.Generator
                     }
                     else
                     {
-                        Vector3 t = Vector3.Cross(n, Vector3.up); if (t.sqrMagnitude < UIConstants.POSITION_PRECISION * 100f) t = Vector3.Cross(n, Vector3.right);
+                        Vector3 t = Vector3.Cross(n, Vector3.up); if (t.sqrMagnitude < AppSettings.POSITION_PRECISION * 100f) t = Vector3.Cross(n, Vector3.right);
                         t.Normalize(); Vector3 b = Vector3.Cross(n, t);
                         world = (t * ts.x + b * ts.y + n * ts.z).normalized;
                     }

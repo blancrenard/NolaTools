@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mask.Generator.Utils;
+using Mask.Generator.Constants;
 
 namespace Mask.Generator
 {
@@ -25,7 +26,7 @@ namespace Mask.Generator
             // 事前計算でパフォーマンス向上
             float invWidth = 1f / width;
             float invHeight = 1f / height;
-            float threshold = 1.0f - Mask.Generator.Constants.UIConstants.POSITION_PRECISION;
+            float threshold = 1.0f - AppSettings.POSITION_PRECISION;
 
             for (int y = minY; y <= maxY; y++)
             {

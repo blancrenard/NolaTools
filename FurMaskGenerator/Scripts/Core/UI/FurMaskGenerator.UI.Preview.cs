@@ -11,26 +11,26 @@ namespace Mask.Generator
         // Preview UI
         void DrawPreview()
         {
-            EditorUIUtils.DrawInUIBox(() =>
+            UIDrawingUtils.DrawInUIBox(() =>
             {
-                EditorGUILayout.LabelField(UIConstants.PREVIEW_SECTION_TITLE);
+                EditorGUILayout.LabelField(UILabels.PREVIEW_SECTION_TITLE);
 
                 if (preview.Count > 0)
                 {
                     foreach (var kvp in preview)
                     {
-                        EditorUIUtils.DrawTexturePreviewItem(
+                        TextureOperationUtils.DrawTexturePreviewItem(
                             kvp.Value,
                             $"{kvp.Key}",
-                            UIConstants.MASK_SAVE_BUTTON,
+                            UILabels.MASK_SAVE_BUTTON,
                             kvp.Key,
                             128,
-                            UIConstants.SAVE_MASK_BUTTON);
+                            UILabels.SAVE_MASK_BUTTON);
                     }
                 }
                 else
                 {
-                    EditorGUILayout.HelpBox(UIConstants.ERROR_NO_PREVIEW, MessageType.Info);
+                    EditorGUILayout.HelpBox(ErrorMessages.ERROR_NO_PREVIEW, MessageType.Info);
                 }
             });
         }

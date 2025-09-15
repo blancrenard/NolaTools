@@ -19,7 +19,7 @@ namespace Mask.Generator
         {
             if (_raycastHelper == null)
             {
-                _raycastHelper = new GameObject(UIConstants.TEMP_RAYCAST_COLLIDER_NAME);
+                _raycastHelper = new GameObject(GameObjectConstants.TEMP_RAYCAST_COLLIDER_NAME);
                 _raycastHelper.hideFlags = HideFlags.HideAndDontSave;
                 _raycastHelperCollider = _raycastHelper.AddComponent<MeshCollider>();
                 _raycastHelperCollider.convex = false;
@@ -92,11 +92,11 @@ namespace Mask.Generator
             // スフィア/UV追加モード時にSceneビュー枠へ黄色フレームとラベルを表示（クリックもここで処理し、以降のクリック処理を無効化）
             if (addSphereOnClick)
             {
-                DrawAddModeSceneFrameWithLabel(sceneView, UIConstants.ADD_MODE_LABEL_SPHERE);
+                DrawAddModeSceneFrameWithLabel(sceneView, UILabels.ADD_MODE_LABEL_SPHERE);
             }
             else if (addUVIslandOnClick)
             {
-                DrawAddModeSceneFrameWithLabel(sceneView, UIConstants.ADD_MODE_LABEL_UV);
+                DrawAddModeSceneFrameWithLabel(sceneView, UILabels.ADD_MODE_LABEL_UV);
             }
 
             // スフィア追加モードのホバー更新と仮スフィア描画
@@ -152,7 +152,7 @@ namespace Mask.Generator
                 Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                 if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
                 {
-                    uvAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, UIConstants.POSITION_PRECISION);
+                    uvAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
                     hasUVAddHover = true;
                 }
                 else
@@ -171,9 +171,9 @@ namespace Mask.Generator
         private void DrawUVAddHoverPreview()
         {
             if (!hasUVAddHover) return;
-            Color baseColor = UIConstants.ADD_MODE_FRAME_COLOR;
+            Color baseColor = AppSettings.ADD_MODE_FRAME_COLOR;
             Color cross = new Color(baseColor.r, baseColor.g, baseColor.b, 0.95f);
-            EditorUIUtils.DrawCross(uvAddHoverPosition, 0.006f, cross);
+            UIDrawingUtils.DrawCross(uvAddHoverPosition, 0.006f, cross);
         }
 
         // スフィア追加モード: マウスホバー位置の更新（レイキャスト）
@@ -212,7 +212,7 @@ namespace Mask.Generator
                 Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
                 if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
                 {
-                    sphereAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, UIConstants.POSITION_PRECISION);
+                    sphereAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
                     hasSphereAddHover = true;
                 }
                 else
@@ -232,17 +232,17 @@ namespace Mask.Generator
         private void DrawSphereAddHoverPreview()
         {
             if (!hasSphereAddHover) return;
-            Color baseColor = UIConstants.ADD_MODE_FRAME_COLOR;
+            Color baseColor = AppSettings.ADD_MODE_FRAME_COLOR;
             Color wire = new Color(baseColor.r, baseColor.g, baseColor.b, 0.9f);
             Color inner = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
             Color grad = new Color(baseColor.r, baseColor.g, baseColor.b, 0.35f);
 
             EditorGizmoUtils.SetDepthTest(true, () =>
             {
-                EditorUIUtils.DrawGradientSpheres(
+                UIDrawingUtils.DrawGradientSpheres(
                     sphereAddHoverPosition,
-                    UIConstants.DEFAULT_RADIUS,
-                    UIConstants.GRADIENT_DEFAULT,
+                    AppSettings.DEFAULT_RADIUS,
+                    AppSettings.GRADIENT_DEFAULT,
                     wire,
                     inner,
                     grad,
@@ -263,13 +263,13 @@ namespace Mask.Generator
 
                 var baseColor = (sphere.markerColor.a > 0f) ? sphere.markerColor : Color.cyan;
                 // 濃さに応じてアルファを調整（視覚的な強度の目安）
-                float intensity = Mathf.Clamp(sphere.intensity, UIConstants.SPHERE_INTENSITY_MIN, UIConstants.SPHERE_INTENSITY_MAX);
+                float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
                 var wireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.5f, 0.95f, intensity));
                 var innerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.3f, 0.7f, intensity));
                 var gradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, 0.4f, intensity));
 
                 // オリジナルスフィアの描画
-                EditorUIUtils.DrawGradientSpheres(
+                UIDrawingUtils.DrawGradientSpheres(
                     sphere.position,
                     sphere.radius,
                     sphere.gradient,
@@ -288,7 +288,7 @@ namespace Mask.Generator
                     var mirrorInnerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.25f, 0.5f, intensity));
                     var mirrorGradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, 0.3f, intensity));
 
-                    EditorUIUtils.DrawGradientSpheres(
+                    UIDrawingUtils.DrawGradientSpheres(
                         mirroredPosition,
                         sphere.radius,
                         sphere.gradient,
@@ -300,7 +300,7 @@ namespace Mask.Generator
 
                 if (i == selectedSphereIndex)
                 {
-                    EditorUIUtils.DrawSelectedSphereHighlight(sphere.position, sphere.radius, baseColor);
+                    UIDrawingUtils.DrawSelectedSphereHighlight(sphere.position, sphere.radius, baseColor);
                 }
             }
         }
@@ -320,8 +320,8 @@ namespace Mask.Generator
                 if (newPos != sphere.position)
                 {
                     // ドラッグ中は保存を行わず、Undo + Dirty のみにする
-                    EditorUIUtils.RecordUndoAndSetDirty(settings, UIConstants.UNDO_MOVE_SPHERE_MASK);
-                    sphere.position = EditorMeshUtils.RoundToPrecision(newPos, UIConstants.POSITION_PRECISION);
+                    UndoRedoUtils.RecordUndoAndSetDirty(settings, UndoMessages.MOVE_SPHERE_MASK);
+                    sphere.position = EditorMeshUtils.RoundToPrecision(newPos, AppSettings.POSITION_PRECISION);
                     Repaint();
                 }
             }
@@ -345,7 +345,7 @@ namespace Mask.Generator
                 var s = settings.sphereMasks[i];
                 if (s == null) continue;
                 Vector3 oc = ray.origin - s.position;
-                float r = Mathf.Min(s.radius, UIConstants.SHOW_MAX_RADIUS);
+                float r = Mathf.Min(s.radius, AppSettings.SHOW_MAX_RADIUS);
                 float b = Vector3.Dot(ray.direction, oc);
                 float c = Vector3.Dot(oc, oc) - r * r;
                 float disc = b * b - c;
@@ -422,9 +422,9 @@ namespace Mask.Generator
                     {
                         c = Color.white;
                         size *= 1.6f;
-                        EditorUIUtils.DrawCross(worldPos, size * 1.25f, new Color(baseColor.r, baseColor.g, baseColor.b, 0.8f));
+                        UIDrawingUtils.DrawCross(worldPos, size * 1.25f, new Color(baseColor.r, baseColor.g, baseColor.b, 0.8f));
                     }
-                    EditorUIUtils.DrawCross(worldPos, size, c);
+                    UIDrawingUtils.DrawCross(worldPos, size, c);
                 }
             }
         }
@@ -435,35 +435,35 @@ namespace Mask.Generator
             try
             {
                 var viewRect = new Rect(0f, 0f, sceneView.position.width, sceneView.position.height);
-                float t = UIConstants.ADD_MODE_FRAME_THICKNESS;
-                Color c = UIConstants.ADD_MODE_FRAME_COLOR;
+                float t = AppSettings.ADD_MODE_FRAME_THICKNESS;
+                Color c = AppSettings.ADD_MODE_FRAME_COLOR;
 
                 EditorGUI.DrawRect(new Rect(viewRect.x, viewRect.y, viewRect.width, t), c);
-                EditorGUI.DrawRect(new Rect(viewRect.x, viewRect.yMax - t - UIConstants.ADD_MODE_BOTTOM_UI_OFFSET, viewRect.width, t), c);
+                EditorGUI.DrawRect(new Rect(viewRect.x, viewRect.yMax - t - AppSettings.ADD_MODE_BOTTOM_UI_OFFSET, viewRect.width, t), c);
                 EditorGUI.DrawRect(new Rect(viewRect.x, viewRect.y, t, viewRect.height), c);
                 EditorGUI.DrawRect(new Rect(viewRect.xMax - t, viewRect.y, t, viewRect.height), c);
                 var style = new GUIStyle(EditorStyles.boldLabel)
                 {
-                    normal = { textColor = UIConstants.ADD_MODE_LABEL_TEXT_COLOR },
+                    normal = { textColor = AppSettings.ADD_MODE_LABEL_TEXT_COLOR },
                     alignment = TextAnchor.MiddleCenter
                 };
 
                 Vector2 size = style.CalcSize(new GUIContent(label));
-                float padding = UIConstants.ADD_MODE_LABEL_PADDING;
-                float margin = UIConstants.ADD_MODE_LABEL_MARGIN;
+                float padding = AppSettings.ADD_MODE_LABEL_PADDING;
+                float margin = AppSettings.ADD_MODE_LABEL_MARGIN;
                 Rect bgRect = new Rect(
                     viewRect.xMax - size.x - padding * 2f - margin,
-                    viewRect.yMax - size.y - padding * 2f - UIConstants.ADD_MODE_BOTTOM_UI_OFFSET - margin,
+                    viewRect.yMax - size.y - padding * 2f - AppSettings.ADD_MODE_BOTTOM_UI_OFFSET - margin,
                     size.x + padding * 2f,
                     size.y + padding * 2f
                 );
-                EditorGUI.DrawRect(bgRect, UIConstants.ADD_MODE_LABEL_BG);
+                EditorGUI.DrawRect(bgRect, AppSettings.ADD_MODE_LABEL_BG);
 
                 if (GUI.Button(bgRect, GUIContent.none, GUIStyle.none))
                 {
                     addSphereOnClick = false;
                     addUVIslandOnClick = false;
-                    EditorUIUtils.RefreshUI();
+                    UIDrawingUtils.RefreshUI();
                     Event.current.Use();
                 }
 
@@ -502,29 +502,29 @@ namespace Mask.Generator
 
             if (!avatarRenderers.Contains(renderer) && !clothRenderers.Contains(renderer))
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RENDERER_NOT_IN_LIST, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERER_NOT_IN_LIST, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
             if (!SetupRaycastMesh(renderer))
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_MESH_NOT_FOUND + " " + renderer.name, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_MESH_NOT_FOUND + " " + renderer.name, UILabels.ERROR_DIALOG_OK);
                 return;
             }
             Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
             if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
             {
-                Vector3 spherePos = EditorMeshUtils.RoundToPrecision(hit.point, UIConstants.POSITION_PRECISION);
+                Vector3 spherePos = EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
                 // クリック確定時のみ保存をスケジュール
-                EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_SPHERE_MASK);
-                TryAddSphere(UIConstants.SPHERE_NAME_PREFIX + (settings.sphereMasks.Count + 1), spherePos, UIConstants.DEFAULT_RADIUS, UIConstants.GRADIENT_DEFAULT);
+                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_SPHERE_MASK);
+                TryAddSphere(GameObjectConstants.SPHERE_NAME_PREFIX + (settings.sphereMasks.Count + 1), spherePos, AppSettings.DEFAULT_RADIUS, AppSettings.GRADIENT_DEFAULT);
                 // 保存はヘルパがスケジュール済み
                 Repaint();
                 e.Use();
             }
             else
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RAYCAST_HIT_NOT_FOUND, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RAYCAST_HIT_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
             }
         }
 
@@ -538,13 +538,13 @@ namespace Mask.Generator
 
             if (!avatarRenderers.Contains(renderer) && !clothRenderers.Contains(renderer))
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RENDERER_NOT_IN_LIST, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERER_NOT_IN_LIST, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
             if (!SetupRaycastMesh(renderer))
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_MESH_NOT_FOUND + " " + renderer.name, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_MESH_NOT_FOUND + " " + renderer.name, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
@@ -560,7 +560,7 @@ namespace Mask.Generator
                     if (existingIndex >= 0)
                     {
                         // クリック確定時のみ保存をスケジュール
-                        EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_UV_ISLAND_MASK);
+                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
                         settings.uvIslandMasks.RemoveAt(existingIndex);
                         if (selectedUVIslandIndex > existingIndex) { selectedUVIslandIndex--; }
                         else if (selectedUVIslandIndex == existingIndex) { selectedUVIslandIndex = 0; }
@@ -573,7 +573,7 @@ namespace Mask.Generator
                     else
                     {
                         // クリック確定時のみ保存をスケジュール
-                        EditorUIUtils.RecordUndoSetDirtyAndScheduleSave(settings, UIConstants.UNDO_ADD_UV_ISLAND_MASK);
+                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
                     }
 
                     var data = new UVIslandMaskData
@@ -585,19 +585,19 @@ namespace Mask.Generator
                         targetMatName = TryGetMaterialName(renderer, subIdx),
                         seedWorldPos = hit2.point,
                         displayName = renderer.name,
-                        markerColor = EditorUIUtils.GenerateMarkerColor(),
+                        markerColor = ColorGenerator.GenerateMarkerColor(),
                         uvThreshold = 0.1f
                     };
                     settings.uvIslandMasks.Add(data);
                     selectedUVIslandIndex = Mathf.Max(0, settings.uvIslandMasks.Count - 1);
-                    EditorUIUtils.SetDirtyAndScheduleSaveOnly(settings);
+                    UndoRedoUtils.SetDirtyAndScheduleSaveOnly(settings);
                     Repaint();
                     Mask.Generator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
                     e.Use();
             }
             else
             {
-                EditorUtility.DisplayDialog(UIConstants.ERROR_DIALOG_TITLE, UIConstants.ERROR_RAYCAST_HIT_NOT_FOUND, UIConstants.ERROR_DIALOG_OK);
+                EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RAYCAST_HIT_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
             }
         }
     }

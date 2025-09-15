@@ -198,10 +198,10 @@ namespace Mask.Generator
             }
             else
             {
-                originalValid = EditorTextureUtils.BuildValidMaskFromPixels(sourcePixels, UIConstants.VALID_PIXEL_THRESHOLD);
+                originalValid = EditorTextureUtils.BuildValidMaskFromPixels(sourcePixels, AppSettings.VALID_PIXEL_THRESHOLD);
             }
 
-            var padded = EditorTextureUtils.ApplyEdgePadding(sourcePixels, width, height, paddingSize, originalValid, UIConstants.VALID_PIXEL_THRESHOLD);
+            var padded = EditorTextureUtils.ApplyEdgePadding(sourcePixels, width, height, paddingSize, originalValid, AppSettings.VALID_PIXEL_THRESHOLD);
             source.SetPixels(padded);
             source.Apply(false);
             return source;
