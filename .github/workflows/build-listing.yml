@@ -36,10 +36,48 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
             
+      - name: Get package info
+        id: package
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          NAME=$(jq -r '.name' package.json)
+          DISPLAY_NAME=$(jq -r '.displayName' package.json)
+          DESCRIPTION=$(jq -r '.description' package.json)
+          UNITY=$(jq -r '.unity' package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "displayName=$DISPLAY_NAME" >> $GITHUB_OUTPUT
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "unity=$UNITY" >> $GITHUB_OUTPUT
+          
       - name: Build Package Version Listing
-        uses: vrchat-community/package-list-action@v1.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p Website
+          cat > Website/index.json << EOF
+          {
+            "name": "NolaTools VPM Repository",
+            "id": "com.nolatools.packages", 
+            "url": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.json",
+            "packages": {
+              "${{ steps.package.outputs.name }}": {
+                "versions": {
+                  "${{ steps.package.outputs.version }}": {
+                    "name": "${{ steps.package.outputs.name }}",
+                    "displayName": "${{ steps.package.outputs.displayName }}",
+                    "version": "${{ steps.package.outputs.version }}",
+                    "description": "${{ steps.package.outputs.description }}",
+                    "unity": "${{ steps.package.outputs.unity }}",
+                    "author": {
+                      "name": "NolaTools",
+                      "url": "https://github.com/NolaTools"
+                    },
+                    "url": "https://github.com/${{ github.repository }}/releases/download/${{ steps.package.outputs.version }}/${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}.zip"
+                  }
+                }
+              }
+            }
+          }
+          EOF
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
