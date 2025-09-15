@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 namespace Mask.Generator.Constants
 {
     /// <summary>
@@ -12,3 +13,4 @@ namespace Mask.Generator.Constants
         public const string AUTO_DETECT_TEXTURE_SIZE = "Auto-detect texture size";
     }
 }
+#endif

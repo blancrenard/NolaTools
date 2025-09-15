@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 
 namespace Mask.Generator.Constants
@@ -103,3 +104,4 @@ namespace Mask.Generator.Constants
         #endregion
     }
 }
+#endif
