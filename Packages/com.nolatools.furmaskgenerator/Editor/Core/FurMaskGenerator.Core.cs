@@ -124,13 +124,7 @@ namespace NolaTools.FurMaskGenerator
             }
         }
 
-        private void OnDirectionSphereSelected()
-        {
-            if (isShuttingDown) { return; }
-            // 方向スフィアが選択されたら、こちらスフィア選択を解除
-            selectedSphereIndex = -1;
-            Repaint();
-        }
+
 
         private void LoadOrCreateSettings()
         {
@@ -208,9 +202,6 @@ namespace NolaTools.FurMaskGenerator
 
             Selection.selectionChanged -= OnEditorSelectionChanged;
             Selection.selectionChanged += OnEditorSelectionChanged;
-
-            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
-            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected += OnDirectionSphereSelected;
         }
 
         private void UnregisterEvents()
@@ -219,7 +210,6 @@ namespace NolaTools.FurMaskGenerator
             EditorApplication.update -= OnEditorUpdate;
             EditorApplication.hierarchyChanged -= OnHierarchyChange;
             Selection.selectionChanged -= OnEditorSelectionChanged;
-            NolaTools.FurMaskGenerator.Utils.EditorMeshUtils.DirectionSphereSelected -= OnDirectionSphereSelected;
         }
 
         // Persistence methods

@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class FileDialogUtils
     {
-        #region File Save Operations
+        #region ファイル保存操作
 
         /// <summary>
         /// SaveFilePanel を表示してテクスチャをPNG で保存する。
@@ -51,7 +51,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Private Helper Methods
+        #region プライベートヘルパーメソッド
 
         private static string EnsureSuffixWithoutExtension(string name, string suffix)
         {

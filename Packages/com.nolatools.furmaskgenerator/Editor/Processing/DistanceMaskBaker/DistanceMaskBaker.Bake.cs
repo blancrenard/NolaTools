@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Distance Calculation
+        #region 距離計算
 
         private void BakeStep()
         {

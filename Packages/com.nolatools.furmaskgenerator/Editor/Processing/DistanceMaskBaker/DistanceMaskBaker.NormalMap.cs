@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Normal Map Utilities
+        #region ノーマルマップユーティリティ
 
         private Vector3 SampleNormalMap(string materialName, Vector2 uv, Vector3 originalNormal, int vertexIndex)
         {

@@ -13,7 +13,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
-        #region Texture Utilities
+        #region テクスチャユーティリティ
 
         private void MergeTextures(Texture2D baseTex, Texture2D overlayTex)
         {

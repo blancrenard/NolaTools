@@ -12,7 +12,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class UIDrawingUtils
     {
-        #region UI Box Drawing
+        #region UIボックス描画
 
         /// <summary>
         /// UI用のボックス描画を開始する（共通の背景色設定）
@@ -50,7 +50,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region List Drawing
+        #region リスト描画
 
         /// <summary>
         /// Renderer の一覧をIMGUIで描画（独自の簡易リオーダー付き）
@@ -128,7 +128,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Section Drawing
+        #region セクション描画
 
         /// <summary>
         /// セクション用の標準Foldoutヘッダを描画し、新しい展開状態を返す
@@ -141,7 +141,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Foldout Utilities
+        #region フォールドアウトユーティリティ
 
         /// <summary>
         /// フォールドアウト状態のサイズを対象件数に同期させる
@@ -155,7 +155,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region UI Refresh
+        #region UI更新
 
         /// <summary>
         /// UIを更新します
@@ -171,7 +171,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region 3D Drawing Helpers
+        #region 3D描画ヘルパー
 
         /// <summary>
         /// 選択中のスフィア外周をハイライトして描画します
@@ -224,7 +224,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Calculation Helpers
+        #region 計算ヘルパー
 
         /// <summary>
         /// アバターレンダラーのリストから中心点を計算します

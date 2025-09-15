@@ -10,7 +10,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class UndoRedoUtils
     {
-        #region Enhanced Undo/SetDirty Utilities
+        #region 拡張Undo/SetDirtyユーティリティ
 
         /// <summary>
         /// Undo.RecordObject と SetDirty と遅延保存をまとめて行うヘルパ

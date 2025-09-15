@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Performance Optimization
+        #region パフォーマンス最適化
 
         private int CalculateOptimalBatchSize()
         {

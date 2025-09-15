@@ -15,7 +15,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class EditorCoreUtils
     {
-        #region Validation Methods
+        #region 検証メソッド
 
         /// <summary>
         /// 汎用的な検証メソッド（条件チェック + エラーダイアログ表示）
@@ -105,7 +105,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Safe Execution Methods
+        #region 安全実行メソッド
 
         /// <summary>
         /// 安全な実行メソッド（例外処理付き）
@@ -130,7 +130,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Progress Methods
+        #region プログレスメソッド
 
         private static double _lastUpdateTime;
         private const double DefaultMinIntervalSeconds = 0.05; // 20fps
@@ -230,7 +230,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region General Utility Methods
+        #region 汎用ユーティリティメソッド
 
         // General utility methods moved from EditorUtils for backwards compatibility
         // These methods delegate to the appropriate specialized classes

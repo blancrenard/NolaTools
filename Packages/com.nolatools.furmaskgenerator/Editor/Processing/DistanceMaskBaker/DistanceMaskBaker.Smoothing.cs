@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Smoothing
+        #region スムージング
 
         private float[] SmoothDist(float[] src, int it)
         {

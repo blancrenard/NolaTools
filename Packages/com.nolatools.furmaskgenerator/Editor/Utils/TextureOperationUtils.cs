@@ -12,7 +12,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class TextureOperationUtils
     {
-        #region Texture Preview Drawing
+        #region テクスチャプレビュー描画
 
         /// <summary>
         /// サムネイル付きのテクスチャプレビューと保存ボタンを描画する
@@ -77,7 +77,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Texture Creation and Manipulation
+        #region テクスチャ作成と操作
 
         /// <summary>
         /// 指定サイズのテクスチャを作成し、ピクセルデータを設定してApplyする

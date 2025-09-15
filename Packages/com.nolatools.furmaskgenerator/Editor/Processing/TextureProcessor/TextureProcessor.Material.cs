@@ -13,7 +13,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
-        #region Material Texture Creation
+        #region マテリアルテクスチャ作成
 
         private Dictionary<String, List<Texture2D>> CreateMaterialTextures()
         {

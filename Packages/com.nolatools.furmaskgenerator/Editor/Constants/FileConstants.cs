@@ -14,11 +14,10 @@ namespace NolaTools.FurMaskGenerator.Constants
         #region パス関連
         public const string PATH_SEPARATOR = "/";
         public const char PATH_SEPARATOR_CHAR = '/';
-        public const string SETTINGS_ASSET_FOLDER = "Assets/NolaTools/FurMaskGenerator";
+        public const string SETTINGS_ASSET_FOLDER = "Assets/FurMaskGenerator";
         public const string SETTINGS_ASSET_FILE = "FurMaskSettings";
         public const string SETTINGS_ASSET_PATH = SETTINGS_ASSET_FOLDER + PATH_SEPARATOR + SETTINGS_ASSET_FILE + FILE_EXTENSION_ASSET;
-        public const string AVATAR_SETTINGS_ROOT = "Assets/NolaTools/FurMaskGenerator/AvatarSettings";
-        public const string FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT = "Assets/NolaTools/FurDirectionGenerator/AvatarSettings";
+        public const string AVATAR_SETTINGS_ROOT = "Assets/FurMaskGenerator/AvatarSettings";
         #endregion
 
         #region メニューとウィンドウ

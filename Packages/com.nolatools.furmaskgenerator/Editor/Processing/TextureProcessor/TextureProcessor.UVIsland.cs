@@ -10,7 +10,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
-        #region UV Island Processing
+        #region UVアイランド処理
 
         private void ApplyUVIslandMasks(Dictionary<string, List<Texture2D>> matTex)
         {

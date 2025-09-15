@@ -12,7 +12,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Mesh Processing
+        #region メッシュ処理
 
         private void AddUVIslandTrianglesAsCloth(ref System.Collections.Generic.List<CombineInstance> combine)
         {

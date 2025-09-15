@@ -17,7 +17,7 @@ namespace NolaTools.FurMaskGenerator
     /// </summary>
     public partial class TextureProcessor
     {
-        #region Core Fields
+        #region コアフィールド
 
         private readonly List<Vector3> verts;
         private readonly List<Vector2> uvs;
@@ -44,7 +44,7 @@ namespace NolaTools.FurMaskGenerator
 
         #endregion
 
-        #region Constructor
+        #region コンストラクタ
 
         public TextureProcessor(List<Vector3> verts, List<Vector2> uvs, List<(int[] tri, string mat)> subDatas, float[] vDist, int texSize, float gamma, List<UVIslandMaskData> uvIslandMasks = null, List<string> subRendererPaths = null, List<int> subMeshIndices = null, int vertexSmoothIterations = 1, bool useTransparentMode = false)
         {
@@ -65,7 +65,7 @@ namespace NolaTools.FurMaskGenerator
 
         #endregion
 
-        #region Public Interface
+        #region パブリックインターフェース
 
         public Dictionary<string, Texture2D> CreateFinalTextures()
         {

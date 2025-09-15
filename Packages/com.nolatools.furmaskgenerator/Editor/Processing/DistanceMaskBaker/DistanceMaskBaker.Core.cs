@@ -15,7 +15,7 @@ namespace NolaTools.FurMaskGenerator
     /// </summary>
     public partial class DistanceMaskBaker
     {
-        #region Core Fields
+        #region コアフィールド
 
         // Input settings
         private readonly DistanceBakerSettings settings;
@@ -61,7 +61,7 @@ namespace NolaTools.FurMaskGenerator
 
         #endregion
 
-        #region Constructor and Lifecycle
+        #region コンストラクタとライフサイクル
 
         public DistanceMaskBaker(DistanceBakerSettings settings)
         {

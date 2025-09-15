@@ -12,7 +12,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region Preparation
+        #region 準備
 
         private void Prepare()
         {

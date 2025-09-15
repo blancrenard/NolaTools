@@ -20,7 +20,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         private const double SAVE_DEBOUNCE_SECONDS = 0.25;
         private static double _lastSaveTime;
 
-        #region Asset Management Methods
+        #region アセット管理メソッド
 
         /// <summary>
         /// 指定パスにある ScriptableObject アセットを読み込み、存在しなければ作成して返す
@@ -134,7 +134,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Path Operations Methods
+        #region パス操作メソッド
 
         /// <summary>
         /// パスリストからコンポーネントリストを復元します
@@ -167,7 +167,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region File Operations Methods
+        #region ファイル操作メソッド
 
         /// <summary>
         /// ファイル名に使用できない文字をアンダースコアに置換して安全なファイル名を返します
@@ -188,7 +188,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         #endregion
     }
 
-    #region Asset Path Constants
+    #region アセットパス定数
 
     /// <summary>
     /// アセットパス関連の定数
@@ -198,11 +198,6 @@ namespace NolaTools.FurMaskGenerator.Utils
         public static class FurMaskGenerator
         {
             public const string AvatarSettingsRoot = FileConstants.AVATAR_SETTINGS_ROOT;
-        }
-
-        public static class FurDirectionGenerator
-        {
-            public const string AvatarSettingsRoot = FileConstants.FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT;
         }
     }
 

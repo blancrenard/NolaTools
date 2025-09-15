@@ -8,7 +8,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
-        #region Rasterization
+        #region ラスタライゼーション
 
         private void FillTriIntoBuffer(Color[] colors, int width, int height, Vector2 uv0, Vector2 uv1, Vector2 uv2, float val0, float val1, float val2, HashSet<int> rasterizedPixels = null)
         {

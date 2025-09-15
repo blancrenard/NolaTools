@@ -15,7 +15,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class EditorMeshUtils
     {
-        #region Mesh Operations Methods
+        #region メッシュ操作メソッド
 
         /// <summary>
         /// 指定の Renderer からメッシュを取得する。SkinnedMeshRenderer の場合は一時メッシュに Bake して返す
@@ -96,7 +96,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Mathematical Calculations Methods
+        #region 数学計算メソッド
 
         public const float BARYCENTRIC_DENOM_THRESHOLD = AppSettings.VALID_PIXEL_THRESHOLD;
 
@@ -185,7 +185,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Avatar Utilities Methods
+        #region アバターユーティリティメソッド
 
         /// <summary>
         /// アバター切替後の共通準備（プレビュー破棄→自動検出→リスト再構築）
@@ -237,7 +237,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         #endregion
 
 
-        #region Raycast Settings Constants
+        #region レイキャスト設定定数
 
         /// <summary>
         /// レイキャストの最大距離
@@ -246,25 +246,12 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Selection Bridge Events
-
-        /// <summary>
-        /// 方向スフィアが選択されたときのイベント
-        /// </summary>
-        public static event Action DirectionSphereSelected;
+        #region 選択ブリッジイベント
 
         /// <summary>
         /// マスクスフィアが選択されたときのイベント
         /// </summary>
         public static event Action MaskSphereSelected;
-
-        /// <summary>
-        /// 方向スフィア選択を通知します
-        /// </summary>
-        public static void NotifyDirectionSphereSelected()
-        {
-            DirectionSphereSelected?.Invoke();
-        }
 
         /// <summary>
         /// マスクスフィア選択を通知します

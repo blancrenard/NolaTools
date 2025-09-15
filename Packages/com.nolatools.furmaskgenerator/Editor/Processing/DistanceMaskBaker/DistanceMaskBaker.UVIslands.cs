@@ -11,7 +11,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class DistanceMaskBaker
     {
-        #region UV Islands
+        #region UVアイランド
 
         private void ApplyUVIslandsToVertexDistances()
         {

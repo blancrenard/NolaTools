@@ -10,7 +10,7 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class ColorGenerator
     {
-        #region Color Generation Settings
+        #region 色生成設定
 
         public enum MarkerColorVariant
         {
@@ -41,7 +41,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Color Generation Methods
+        #region 色生成メソッド
 
         /// <summary>
         /// ゴールデンアングル高彩度マーカー色を生成
@@ -55,7 +55,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
 
-        #region Private Helper Methods
+        #region プライベートヘルパーメソッド
 
         private static void EnsureHueState()
         {

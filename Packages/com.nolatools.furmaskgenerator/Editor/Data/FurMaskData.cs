@@ -7,7 +7,7 @@ using NolaTools.FurMaskGenerator.Utils;
 
 namespace NolaTools.FurMaskGenerator.Data
 {
-    #region Main Settings
+    #region メイン設定
 
     /// <summary>
     /// Fur Mask Generatorのメイン設定
@@ -74,7 +74,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region Sphere Data
+    #region スフィアデータ
 
     /// <summary>
     /// 毛生成で使用するスフィアマスクのデータクラス
@@ -176,7 +176,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region UV Island Mask Data
+    #region UVアイランドマスクデータ
 
     /// <summary>
     /// シーン上クリックで追加されるUVアイランドマスクの情報
@@ -199,7 +199,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region Bone Mask Data
+    #region ボーンマスクデータ
 
     /// <summary>
     /// ボーン単位のマスク設定（0=無効 / 1=黒で強くマスク）
@@ -214,7 +214,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region Normal Map Data
+    #region ノーマルマップデータ
 
     /// <summary>
     /// マテリアルごとのノーマルマップ設定
@@ -238,7 +238,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region Distance Baker Settings
+    #region 距離ベイカー設定
 
     /// <summary>
     /// Settings for distance mask baking process

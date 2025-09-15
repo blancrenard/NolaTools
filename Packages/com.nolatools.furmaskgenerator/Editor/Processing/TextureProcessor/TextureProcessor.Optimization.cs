@@ -9,7 +9,7 @@ namespace NolaTools.FurMaskGenerator
 {
     public partial class TextureProcessor
     {
-        #region Optimization Helper Methods
+        #region 最適化ヘルパーメソッド
 
         private void CalculateAdaptiveProgressInterval()
         {
