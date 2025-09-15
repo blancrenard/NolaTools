@@ -161,7 +161,7 @@ namespace Mask.Generator.Constants
         public const string LAST_SAVE_DIRECTORY_KEY = "Mask.Generator.LastSaveDirectory";
         public const string LAST_AVATAR_PATH_KEY = "Mask.Generator.LastAvatarPath";
         public const string FUR_LENGTH_MASK_SUFFIX = "_FurLenMask";
-        public const string SETTINGS_ASSET_FOLDER = "Assets/Editor/NolaTools/FurMaskGenerator";
+        public const string SETTINGS_ASSET_FOLDER = "Assets/NolaTools/FurMaskGenerator";
         public const string SETTINGS_ASSET_FILE = "FurMaskSettings";
         public const string SETTINGS_ASSET_PATH = SETTINGS_ASSET_FOLDER + PATH_SEPARATOR + SETTINGS_ASSET_FILE + FILE_EXTENSION_ASSET;
         public const string MENU_ITEM_PATH = "Tools/NolaTools/FurMaskGenerator";
@@ -203,8 +203,8 @@ namespace Mask.Generator.Constants
         public const string PATH_SEPARATOR = "/";
         public const char PATH_SEPARATOR_CHAR = '/';
         public const string HEX_FORMAT_UPPER = "X2";
-        public const string AVATAR_SETTINGS_ROOT = "Assets/Editor/NolaTools/FurMaskGenerator/AvatarSettings";
-        public const string FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT = "Assets/Editor/NolaTools/FurDirectionGenerator/AvatarSettings";
+        public const string AVATAR_SETTINGS_ROOT = "Assets/NolaTools/FurMaskGenerator/AvatarSettings";
+        public const string FUR_DIRECTION_GENERATOR_AVATAR_SETTINGS_ROOT = "Assets/NolaTools/FurDirectionGenerator/AvatarSettings";
         #endregion
 
         #region フィルター関連
