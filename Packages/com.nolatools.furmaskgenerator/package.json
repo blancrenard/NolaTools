@@ -1,0 +1,8 @@
+{
+    "name": "com.nolatools.furmaskgenerator",
+    "displayName": "FurMaskGenerator",
+    "version": "1.0.0",
+    "unity": "2022.3",
+    "description": "VRChatアバター用のファーマスク生成ツール",
+    "license": "MIT"
+}

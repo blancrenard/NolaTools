@@ -1,0 +1,48 @@
+name: Build Release
+
+on: 
+  workflow_dispatch:
+
+env:
+  packageName: "com.nolatools.furmaskgenerator"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+    
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        with: 
+            path: "Packages/${{env.packageName}}/package.json"
+            prop_path: "version"
+    
+      - name: Set Environment Variables
+        run: |
+          echo "zipFile=${{ env.packageName }}-${{ steps.version.outputs.prop }}" >> $GITHUB_ENV
+          echo "unityPackage=${{ env.packageName }}-${{ steps.version.outputs.prop }}.unitypackage" >> $GITHUB_ENV
+          echo "zipPath=${{ env.packageName }}-${{ steps.version.outputs.prop }}.zip" >> $GITHUB_ENV
+          echo "version=${{ steps.version.outputs.prop }}" >> $GITHUB_ENV
+          
+      - name: Create Zip
+        uses: thedoctor0/zip-action@09336613be18a8735518948b1bc00feaf98c31f9
+        with:
+          type: 'zip'
+          filename: "${{env.zipPath}}"
+          directory: "Packages/${{env.packageName}}/"
+          path: "."
+        
+      - name: Make Release
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5
+        with:
+          tag_name: "${{ env.version }}"
+          files: |
+            ${{ env.zipPath }}
+            Packages/${{ env.packageName }}/package.json

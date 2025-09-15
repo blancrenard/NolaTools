@@ -27,3 +27,4 @@ Thumbs.db
 
 # 特定の設定ファイルフォルダを除外
 AvatarSettings/
+template-package-main/
