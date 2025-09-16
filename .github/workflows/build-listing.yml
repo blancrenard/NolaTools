@@ -56,14 +56,6 @@ jobs:
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       
-      # Ensure expected Package Manifest path exists by copying root package.json
-      - name: Prepare Package Manifest for Listing
-        run: |
-          mkdir -p "$GITHUB_WORKSPACE/Packages/com.blancrenard.nolatools"
-          if [ -f "$GITHUB_WORKSPACE/package.json" ]; then
-            cp "$GITHUB_WORKSPACE/package.json" "$GITHUB_WORKSPACE/Packages/com.blancrenard.nolatools/package.json"
-          fi
-      
       # Build Package Version Listing with Nuke
       - name: Build Package Version Listing
         run: ${{ env.pathToCi }}/build.cmd BuildRepoListing --root ${{ env.pathToCi }} --list-publish-directory $GITHUB_WORKSPACE/${{ env.listPublishDirectory }} --current-package-name ${{ vars.PACKAGE_NAME }}
