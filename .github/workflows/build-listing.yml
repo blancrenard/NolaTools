@@ -79,28 +79,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Clean up index.json - Remove " Listing" from name and ".listing" from id
-      - name: Clean up index.json
-        run: |
-          # Install jq if not available
-          sudo apt-get update && sudo apt-get install -y jq
-          
-          # Create a temporary file for processing
-          cp ${{ env.listPublishDirectory }}/index.json temp_index.json
-          
-          # Remove " Listing" from name and ".listing" from id for each package
-          jq '.packages = (.packages | map(
-            if .name then .name = (.name | sub(" Listing$"; "")) else . end |
-            if .id then .id = (.id | sub("\\.listing$"; "")) else . end
-          ))' temp_index.json > ${{ env.listPublishDirectory }}/index.json
-          
-          # Clean up temporary file
-          rm temp_index.json
-          
-          # Display the cleaned up content for verification
-          echo "Cleaned up index.json content:"
-          cat ${{ env.listPublishDirectory }}/index.json
-
       # Prepare for GitHub Pages deployment
       - name: Setup Pages
         uses: actions/configure-pages@v5
