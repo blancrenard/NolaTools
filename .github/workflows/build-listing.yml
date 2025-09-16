@@ -56,6 +56,15 @@ jobs:
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       
+      # Create Symbolic Links for Package Structure
+      - name: Create Symbolic Links
+        run: |
+          mkdir -p Packages/${{ vars.PACKAGE_NAME }}
+          ln -s ../../package.json Packages/${{ vars.PACKAGE_NAME }}/package.json
+          ln -s ../../Editor Packages/${{ vars.PACKAGE_NAME }}/Editor
+          ln -s ../../README.md Packages/${{ vars.PACKAGE_NAME }}/README.md
+          ln -s ../../LICENSE Packages/${{ vars.PACKAGE_NAME }}/LICENSE
+
       # Build Package Version Listing with Nuke
       - name: Build Package Version Listing
         run: ${{ env.pathToCi }}/build.cmd BuildRepoListing --root ${{ env.pathToCi }} --list-publish-directory $GITHUB_WORKSPACE/${{ env.listPublishDirectory }} --current-package-name ${{ vars.PACKAGE_NAME }}
