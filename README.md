@@ -1,22 +1,5 @@
 # FurMaskGenerator
 
-Unity Editor拡張ツール - VRChatアバター用のファーマスク生成ツール
+VRChatのアバター用のファーマスク生成ツールです。
 
-## VCCでのインストール方法
-
-1. VRChat Creator Companionを開く
-2. 「Settings」→「Packages」→「Add Repository」
-3. 以下のURLを入力: `https://blancrenard.github.io/NolaTools/index.json`
-4. プロジェクトでFurMaskGeneratorパッケージを追加
-
-## 使用方法
-
-1. `Tools/NolaTools/FurMaskGenerator` からウィンドウを開く
-2. アバターオブジェクトを選択
-3. 自動設定ボタンでレンダラーを設定
-4. マスクを配置・設定
-5. 「マスクを生成」ボタンでテクスチャを生成
-
-## システム要件
-
-- Unity 2022.3 LTS 以降
+ツールの詳細は[ドキュメント](https://blancrenard.github.io/NolaTools/)をご覧ください。
