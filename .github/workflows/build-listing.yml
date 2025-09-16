@@ -65,6 +65,14 @@ jobs:
           ln -s ../../README.md Packages/${{ vars.PACKAGE_NAME }}/README.md
           ln -s ../../LICENSE Packages/${{ vars.PACKAGE_NAME }}/LICENSE
 
+      # Create Initial Manifest for First Run
+      - name: Create Initial Manifest
+        run: |
+          mkdir -p ${{ env.listPublishDirectory }}
+          if [ ! -f "${{ env.listPublishDirectory }}/index.json" ]; then
+            echo '{"packages":[]}' > ${{ env.listPublishDirectory }}/index.json
+          fi
+
       # Build Package Version Listing with Nuke
       - name: Build Package Version Listing
         run: ${{ env.pathToCi }}/build.cmd BuildRepoListing --root ${{ env.pathToCi }} --list-publish-directory $GITHUB_WORKSPACE/${{ env.listPublishDirectory }} --current-package-name ${{ vars.PACKAGE_NAME }}
