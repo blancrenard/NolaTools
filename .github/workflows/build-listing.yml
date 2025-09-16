@@ -1,100 +1,78 @@
 name: Build Repo Listing
 
 env:
-  listPublicDirectory: Website
-
-on:
-  release:
-    types: [published, created, edited, unpublished, deleted, released]
+  listPublishDirectory: Website
+  pathToCi: ci
+  
+on: 
   workflow_dispatch:
+  workflow_run:
+    workflows: [Build Release]
+    types:
+      - completed
+  release:
+     types: [published, created, edited, unpublished, deleted, released]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
-
+  
+# Allow one concurrent deployment
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   
+  # Build the VPM Listing Website and deploy to GitHub Pages
   build-listing:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Restore Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.nuget/packages
-            !~/.nuget/packages/unwanted
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-            
-      - name: Get package info
-        id: package
-        run: |
-          VERSION=$(jq -r '.version' package.json)
-          NAME=$(jq -r '.name' package.json)
-          DISPLAY_NAME=$(jq -r '.displayName' package.json)
-          DESCRIPTION=$(jq -r '.description' package.json)
-          UNITY=$(jq -r '.unity' package.json)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "name=$NAME" >> $GITHUB_OUTPUT
-          echo "displayName=$DISPLAY_NAME" >> $GITHUB_OUTPUT
-          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
-          echo "unity=$UNITY" >> $GITHUB_OUTPUT
-          
-      - name: Build Package Version Listing
-        run: |
-          mkdir -p Website
-          cat > Website/index.json << EOF
-          {
-            "name": "NolaTools VPM Repository",
-            "id": "com.nolatools.packages", 
-            "url": "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/index.json",
-            "packages": {
-              "${{ steps.package.outputs.name }}": {
-                "versions": {
-                  "${{ steps.package.outputs.version }}": {
-                    "name": "${{ steps.package.outputs.name }}",
-                    "displayName": "${{ steps.package.outputs.displayName }}",
-                    "version": "${{ steps.package.outputs.version }}",
-                    "description": "${{ steps.package.outputs.description }}",
-                    "unity": "${{ steps.package.outputs.unity }}",
-                    "author": {
-                      "name": "NolaTools",
-                      "url": "https://github.com/NolaTools"
-                    },
-                    "url": "https://github.com/${{ github.repository }}/releases/download/${{ steps.package.outputs.version }}/${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}.zip"
-                  }
-                }
-              }
-            }
-          }
-          EOF
-          
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-        
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ env.listPublicDirectory }}
-          
-  deploy:
+    name: build-listing
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build-listing
     steps:
-    
+      
+      # Checkout Local Repository
+      - name: Checkout Local Repository
+        uses: actions/checkout@v4
+
+      # Checkout Automation Repository without removing prior checkouts
+      - name: Checkout Automation Repository
+        uses: actions/checkout@v4
+        with:
+          repository: vrchat-community/package-list-action
+          path: ${{ env.pathToCi }}
+          clean: false
+
+      # Load cached data from previous runs
+      - name: Restore Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.pathToCi }}/.nuke/temp
+            ~/.nuget/packages
+          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
+      
+      # Build Package Version Listing with Nuke
+      - name: Build Package Version Listing
+        run: ${{ env.pathToCi }}/build.cmd BuildRepoListing --root ${{ env.pathToCi }} --list-publish-directory $GITHUB_WORKSPACE/${{ env.listPublishDirectory }} --current-package-name ${{ vars.PACKAGE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Prepare for GitHub Pages deployment
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      
+      # Upload the VPM Listing Website to GitHub Pages artifacts
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.listPublishDirectory }}
+      
+      # Deploy the uploaded VPM Listing Website to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
