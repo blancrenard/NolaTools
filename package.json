@@ -1,8 +1,12 @@
 {
-    "name": "com.nolatools.furmaskgenerator",
+    "name": "com.blancrenard.nolatools",
     "displayName": "FurMaskGenerator",
     "version": "1.0.0",
     "unity": "2022.3",
     "description": "VRChatアバター用のファーマスク生成ツール",
-    "license": "MIT"
+    "license": "MIT",
+    "author": {
+        "name": "blancrenard",
+        "url": "https://github.com/blancrenard"
+    }
 }
