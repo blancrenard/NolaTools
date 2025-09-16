@@ -3,7 +3,7 @@
     "displayName": "FurMaskGenerator",
     "version": "1.0.0",
     "unity": "2022.3",
-    "description": "VRChatアバター用のファーマスク生成ツール",
+    "description": "VRChatのアバター用ファーマスク生成ツール",
     "license": "MIT",
     "author": {
         "name": "blancrenard",
