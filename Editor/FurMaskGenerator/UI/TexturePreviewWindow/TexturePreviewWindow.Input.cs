@@ -178,17 +178,32 @@ namespace NolaTools.FurMaskGenerator.UI
                 }
             }
 
+            Renderer resolvedRenderer = chosen != null ? chosen.Renderer : targetRenderer;
+            int resolvedSubmesh = chosen != null ? chosen.SubmeshIndex : submeshIndex;
+
+            if (resolvedRenderer == null)
+            {
+                e.Use();
+                return;
+            }
+
+            string resolvedRendererPath = EditorPathUtils.GetGameObjectPath(resolvedRenderer);
+            string targetMaterialName = null;
+            var sharedMaterials = resolvedRenderer.sharedMaterials;
+            if (sharedMaterials != null && resolvedSubmesh >= 0 && resolvedSubmesh < sharedMaterials.Length && sharedMaterials[resolvedSubmesh] != null)
+            {
+                targetMaterialName = sharedMaterials[resolvedSubmesh].name;
+            }
+
             var data = new UVIslandMaskData
             {
-                rendererPath = EditorPathUtils.GetGameObjectPath(chosen != null ? chosen.Renderer : targetRenderer),
-                submeshIndex = chosen != null ? chosen.SubmeshIndex : submeshIndex,
+                rendererPath = resolvedRendererPath,
+                submeshIndex = resolvedSubmesh,
                 seedUV = uv,
                 uvPosition = uv,
-                targetMatName = (chosen != null ? chosen.Renderer : targetRenderer).sharedMaterials != null && (chosen != null ? chosen.Renderer : targetRenderer).sharedMaterials.Length > 0 && (chosen != null ? chosen.SubmeshIndex : submeshIndex) < (chosen != null ? chosen.Renderer : targetRenderer).sharedMaterials.Length && (chosen != null ? chosen.Renderer : targetRenderer).sharedMaterials[(chosen != null ? chosen.SubmeshIndex : submeshIndex)] != null
-                    ? (chosen != null ? chosen.Renderer : targetRenderer).sharedMaterials[(chosen != null ? chosen.SubmeshIndex : submeshIndex)].name
-                    : null,
+                targetMatName = targetMaterialName,
                 seedWorldPos = chosenWorld,
-                displayName = (chosen != null ? chosen.Renderer : targetRenderer) != null ? (chosen != null ? chosen.Renderer : targetRenderer).name : null,
+                displayName = resolvedRenderer.name,
                 markerColor = ColorGenerator.GenerateMarkerColor(),
                 uvThreshold = 0.1f
             };
