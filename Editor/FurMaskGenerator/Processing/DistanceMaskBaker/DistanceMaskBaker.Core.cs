@@ -122,6 +122,12 @@ namespace NolaTools.FurMaskGenerator
                     settings.UseTransparentMode
                 );
                 preview = textureProcessor.CreateFinalTextures();
+                if (preview == null)
+                {
+                    PerformCommonCleanup();
+                    settings.OnCancelled?.Invoke();
+                    return;
+                }
 
                 PerformCommonCleanup();
                 settings.OnCompleted?.Invoke(preview);
