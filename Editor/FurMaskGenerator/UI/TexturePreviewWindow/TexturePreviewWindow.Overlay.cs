@@ -12,8 +12,15 @@ namespace NolaTools.FurMaskGenerator.UI
     {
         private void GenerateOverlayTexture()
         {
-            if (texture == null || uvMasks == null || uvMasks.Count == 0)
+            if (texture == null)
             {
+                ClearOverlayTexture();
+                return;
+            }
+
+            if (uvMasks == null || uvMasks.Count == 0)
+            {
+                ClearOverlayTexture();
                 return;
             }
 
