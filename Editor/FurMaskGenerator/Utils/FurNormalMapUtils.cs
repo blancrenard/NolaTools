@@ -115,6 +115,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         
         /// <summary>
         /// 指定されたレンダラーリストから最適なファーの長さを取得
+        /// ノーマルマップの有無は問わず、_FurVectorプロパティがあるマテリアルから長さを取得
         /// </summary>
         /// <param name="renderers">対象レンダラーリスト</param>
         /// <returns>最も多く使用されているファーの長さ値（デフォルト0.04）</returns>
@@ -133,12 +134,7 @@ namespace NolaTools.FurMaskGenerator.Utils
                 {
                     if (material == null || !IsSupportedShader(material)) continue;
                     
-                    // ファーノーマルマップが設定されているマテリアルのみを対象とする
-                    if (!material.HasProperty(FUR_VECTOR_TEX_PROPERTY)) continue;
-                    var furNormalMap = material.GetTexture(FUR_VECTOR_TEX_PROPERTY) as Texture2D;
-                    if (furNormalMap == null) continue;
-                    
-                    // _FurVectorプロパティが存在することも確認
+                    // _FurVectorプロパティが存在することを確認（ノーマルマップの有無は問わない）
                     if (!material.HasProperty(FUR_VECTOR_PROPERTY)) continue;
                     
                     var furLength = GetFurLength(material);

@@ -67,8 +67,8 @@ namespace NolaTools.FurMaskGenerator
                 ignoreHierarchyChangeDuringBake = false;
                 return;
             }
-            // UIの値に0.005を加算して内部計算に使用
-            float internalMaxDistance = settings.maxDistance + 0.005f;
+            // UIの値に0.001を加算して内部計算に使用
+            float internalMaxDistance = settings.maxDistance + 0.001f;
             // ベイク時のみ固定値を適用（恒久設定は変更しない）
             const int tempSubdivisionIterations = 1;
             
@@ -158,33 +158,48 @@ namespace NolaTools.FurMaskGenerator
             // ファーノーマルマップを取得
             var furNormalMaps = FurNormalMapUtils.GetFurNormalMapsFromRenderers(targetRenderers);
             
-            if (furNormalMaps.Count == 0)
-            {
-                EditorUtility.DisplayDialog(
-                    UILabels.INFO_DIALOG_TITLE, 
-                    "対応シェーダーでファーノーマルマップが設定されたマテリアルが見つかりませんでした。", 
-                    UILabels.ERROR_DIALOG_OK);
-                return;
-            }
-
-            // 既存の設定をクリア（オプション：既存設定を保持したい場合はコメントアウト）
-            settings.materialNormalMaps.Clear();
-
-            // ファーノーマルマップをMaterialNormalMapDataに変換
-            var newNormalMapData = FurNormalMapUtils.ConvertToMaterialNormalMapData(furNormalMaps, targetRenderers);
+            bool hasNormalMaps = furNormalMaps.Count > 0;
             
-            // 設定に追加
-            foreach (var normalMapData in newNormalMapData)
+            if (hasNormalMaps)
             {
-                settings.materialNormalMaps.Add(normalMapData);
+                // 既存の設定をクリア（オプション：既存設定を保持したい場合はコメントアウト）
+                settings.materialNormalMaps.Clear();
+
+                // ファーノーマルマップをMaterialNormalMapDataに変換
+                var newNormalMapData = FurNormalMapUtils.ConvertToMaterialNormalMapData(furNormalMaps, targetRenderers);
+                
+                // 設定に追加
+                foreach (var normalMapData in newNormalMapData)
+                {
+                    settings.materialNormalMaps.Add(normalMapData);
+                }
             }
 
-            // ファーの長さを自動設定
+            // ファーの長さを自動設定（ノーマルマップが無くても実行）
             float optimalFurLength = FurNormalMapUtils.GetOptimalFurLength(targetRenderers);
             
-            // Undo対応でファーの長さを設定
-            UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの傾きと長さの自動設定");
-            settings.maxDistance = optimalFurLength;
+            // 結果に応じたメッセージ表示
+            if (hasNormalMaps)
+            {
+                // Undo対応でファーの傾きと長さを設定
+                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの傾きと長さの自動設定");
+                settings.maxDistance = optimalFurLength;
+            }
+            else
+            {
+                // 長さのみ設定の場合
+                UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの長さの自動設定");
+                settings.maxDistance = optimalFurLength;
+                
+                string message = optimalFurLength != 0.04f 
+                    ? $"ノーマルマップは見つかりませんでしたが、長さを自動設定しました。"
+                    : "ノーマルマップと長さの設定が見つかりませんでした。";
+                
+                EditorUtility.DisplayDialog(
+                    UILabels.INFO_DIALOG_TITLE, 
+                    message, 
+                    UILabels.ERROR_DIALOG_OK);
+            }
 
             // 変更は遅延一括保存に任せる（二重保存を避ける）
 
