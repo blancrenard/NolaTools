@@ -10,5 +10,13 @@
     "githubRepos":[
         "blancrenard/NolaTools"
     ],
-    "packages":{}
+    "packages":[
+        {
+            "name": "com.blancrenard.nolatools",
+            "displayName": "NolaTools",
+            "description": "VRChatのアバター用ファーマスク生成ツール",
+            "gitUrl": "https://github.com/blancrenard/NolaTools.git",
+            "unity": "2022.3"
+        }
+    ]
 }
