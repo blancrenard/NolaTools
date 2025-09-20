@@ -1,0 +1,14 @@
+{
+    "name":"NolaTools",
+    "id":"com.blancrenard.nolatools",
+    "url":"https://blancrenard.github.io/nolatools/index.json",
+    "author":{
+        "name":"blancrenard",
+        "url": "https://github.com/blancrenard"
+    },
+    "description":"VRChatのアバター用ファーマスク生成ツール",
+    "githubRepos":[
+        "blancrenard/NolaTools"
+    ],
+    "packages":[]
+}
