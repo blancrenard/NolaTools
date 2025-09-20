@@ -20,7 +20,7 @@ jobs:
         id: packager
         uses: "docker://ghcr.io/rerigferl/vpm-packager:latest"
         with:
-          args: "-z -u --exclude Website/"
+          args: "-z -u"
           
       - name: Make Release
         if: ${{ steps.packager.outputs.package-version != '0.0.0' }}
