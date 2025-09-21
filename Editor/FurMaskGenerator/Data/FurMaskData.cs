@@ -16,11 +16,6 @@ namespace NolaTools.FurMaskGenerator.Data
     [CreateAssetMenu(fileName = "FurMaskSettings", menuName = FileConstants.ASSET_MENU_NAME)]
     public class FurMaskSettings : ScriptableObject
     {
-        // Default value constants
-        public const float DEFAULT_MAX_DISTANCE = AppSettings.DEFAULT_MAX_DISTANCE;
-        public const float DEFAULT_GAMMA = AppSettings.DEFAULT_GAMMA;
-        public const int DEFAULT_TEXTURE_SIZE_INDEX = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
-
         // Avatar path (for persistence)
         public string avatarObjectPath;
 
@@ -32,9 +27,9 @@ namespace NolaTools.FurMaskGenerator.Data
         public List<SphereData> sphereMasks = new List<SphereData>();
 
         // Basic settings (These remain as is)
-        public int textureSizeIndex = DEFAULT_TEXTURE_SIZE_INDEX;
-        public float maxDistance = DEFAULT_MAX_DISTANCE;
-        public float gamma = DEFAULT_GAMMA;
+        public int textureSizeIndex = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
+        public float maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
+        public float gamma = AppSettings.DEFAULT_GAMMA;
 
         // 透過モード設定
         public bool useTransparentMode = false; // デフォルトは白背景モード
@@ -62,9 +57,9 @@ namespace NolaTools.FurMaskGenerator.Data
         /// </summary>
         public void ResetToDefaults()
         {
-            textureSizeIndex = DEFAULT_TEXTURE_SIZE_INDEX;
-            maxDistance = DEFAULT_MAX_DISTANCE;
-            gamma = DEFAULT_GAMMA;
+            textureSizeIndex = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
+            maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
+            gamma = AppSettings.DEFAULT_GAMMA;
             useTransparentMode = false; // デフォルトは白背景モード
             uvIslandNeighborRadius = 0.015f;
             uvIslandVertexSmoothIterations = 2;
