@@ -53,7 +53,6 @@ namespace NolaTools.FurMaskGenerator
         {
             isShuttingDown = false;
             LoadOrCreateSettings();
-            InitializeUIComponents();
             RestoreAvatarAndRendererReferences();
             RegisterEvents();
         }
@@ -179,11 +178,6 @@ namespace NolaTools.FurMaskGenerator
         {
             // 生成済みプレビューの破棄クリア
             EditorObjectUtils.DestroyAndClearDictionaryValues(preview);
-        }
-
-        private void InitializeUIComponents()
-        {
-            // ReorderableList 生成は廃止。IMGUIの独自リスト描画を利用
         }
 
         private void RegisterEvents()
