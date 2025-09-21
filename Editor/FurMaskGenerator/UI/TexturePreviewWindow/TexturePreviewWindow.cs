@@ -55,6 +55,21 @@ namespace NolaTools.FurMaskGenerator.UI
         {
             TexturePreviewWindow window = GetWindow<TexturePreviewWindow>(string.Format(UILabels.TEXTURE_PREVIEW_TITLE_FORMAT, texture.name));
             window.texture = texture;
+
+            // UVマスク・ワイヤーフレーム表示フラグを初期化（通常プレビュー用）
+            window.showUVMasks = false;
+            window.showUVWireframe = false;
+            window.overlayTexture = null;
+            window.wireframeTexture = null;
+
+            // UVマスク編集用フィールドをクリア
+            window.targets = null;
+            window.uvMasks = null;
+            window.targetRenderer = null;
+            window.submeshIndex = 0;
+            window.onAddMaskCallback = null;
+            window.onRemoveMaskCallback = null;
+
             window.minSize = new Vector2(AppSettings.MIN_WINDOW_WIDTH, AppSettings.MIN_WINDOW_HEIGHT);
             window.showMouseCrosshair = false;
             window.initializedToFit = false;
@@ -66,6 +81,16 @@ namespace NolaTools.FurMaskGenerator.UI
         {
             wantsMouseMove = true;
             if (!_openWindows.Contains(this)) _openWindows.Add(this);
+
+            // ウィンドウが再利用された場合の初期化（念のため）
+            if (texture != null && targets == null && uvMasks == null)
+            {
+                // 通常プレビュー用にUVマスク・ワイヤーフレーム表示フラグを初期化
+                showUVMasks = false;
+                showUVWireframe = false;
+                overlayTexture = null;
+                wireframeTexture = null;
+            }
         }
 
         private void OnDisable()
@@ -124,6 +149,11 @@ namespace NolaTools.FurMaskGenerator.UI
             window.submeshIndex = t.submesh;
             window.onAddMaskCallback = onAddMask;
             window.onRemoveMaskCallback = onRemoveMask;
+
+            // UVマスク編集モードではデフォルトで表示ON
+            window.showUVMasks = true;
+            window.showUVWireframe = true;
+
             window.showMouseCrosshair = true;
             window.minSize = new Vector2(AppSettings.MIN_WINDOW_WIDTH, AppSettings.MIN_WINDOW_HEIGHT);
             window.GenerateOverlayTexture();
