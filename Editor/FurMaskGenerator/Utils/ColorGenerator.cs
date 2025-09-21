@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.Utils
 {
@@ -35,9 +36,9 @@ namespace NolaTools.FurMaskGenerator.Utils
         private static float _hueOffset = -1f;
 
         // 高彩度色生成用の定数
-        private const float HIGH_SATURATION = 1.0f;
-        private const float HIGH_VALUE_MIN = 0.7f;
-        private const float HIGH_VALUE_MAX = 1.0f;
+        private const float HIGH_SATURATION = AppSettings.DEFAULT_SCALE;
+        private const float HIGH_VALUE_MIN = AppSettings.HIGH_VALUE_MIN;
+        private const float HIGH_VALUE_MAX = AppSettings.DEFAULT_SCALE;
 
         #endregion
 

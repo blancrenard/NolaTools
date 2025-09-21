@@ -196,7 +196,7 @@ namespace NolaTools.FurMaskGenerator
         private float CalculateSphereMaskValue(float distance, float radius, SphereData sphere)
         {
             float innerRadius = radius * (1f - sphere.gradientWidth);
-            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(1e-6f, radius - innerRadius));
+            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, radius - innerRadius));
             float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
             return Mathf.Lerp(1f, v, intensity);
         }
@@ -207,7 +207,7 @@ namespace NolaTools.FurMaskGenerator
         private float CalculateSphereMaskValueOptimized(float distance, float radius, SphereData sphere)
         {
             float innerRadius = radius * (1f - sphere.gradientWidth);
-            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(1e-6f, radius - innerRadius));
+            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, radius - innerRadius));
             float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
             return Mathf.Lerp(1f, v, intensity);
         }

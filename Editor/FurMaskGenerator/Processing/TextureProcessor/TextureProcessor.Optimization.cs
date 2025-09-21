@@ -22,7 +22,7 @@ namespace NolaTools.FurMaskGenerator
             int baseInterval = AppSettings.PROGRESS_UPDATE_INTERVAL;
             float complexityFactor = (float)totalTriangles / (texSize * texSize);
 
-            if (complexityFactor > 0.1f)
+            if (complexityFactor > AppSettings.UV_THRESHOLD_DEFAULT)
             {
                 adaptiveProgressInterval = baseInterval * 6;
             }
@@ -52,8 +52,8 @@ namespace NolaTools.FurMaskGenerator
                 return true;
             }
 
-            float area = 0.5f * Mathf.Abs((p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y));
-            if (area < 0.5f)
+            float area = AppSettings.HALF_VALUE * Mathf.Abs((p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y));
+            if (area < AppSettings.HALF_VALUE)
             {
                 return true;
             }

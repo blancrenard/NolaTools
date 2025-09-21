@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.UI
 {
@@ -110,7 +111,7 @@ namespace NolaTools.FurMaskGenerator.UI
         private bool IsPointInTriangle(int px, int py, int x0, int y0, int x1, int y1, int x2, int y2)
         {
             float denom = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
-            if (Mathf.Abs(denom) < 1e-6f) return false;
+            if (Mathf.Abs(denom) < AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION) return false;
 
             float a = ((y1 - y2) * (px - x2) + (x2 - x1) * (py - y2)) / denom;
             float b = ((y2 - y0) * (px - x2) + (x0 - x2) * (py - y2)) / denom;

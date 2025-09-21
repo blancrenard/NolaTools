@@ -172,8 +172,8 @@ namespace NolaTools.FurMaskGenerator
         {
             if (!hasUVAddHover) return;
             Color baseColor = AppSettings.ADD_MODE_FRAME_COLOR;
-            Color cross = new Color(baseColor.r, baseColor.g, baseColor.b, 0.95f);
-            UIDrawingUtils.DrawCross(uvAddHoverPosition, 0.006f, cross);
+            Color cross = new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.NINETY_FIVE_PERCENT);
+            UIDrawingUtils.DrawCross(uvAddHoverPosition, AppSettings.CROSS_DRAW_SIZE, cross);
         }
 
         // スフィア追加モード: マウスホバー位置の更新（レイキャスト）
@@ -234,7 +234,7 @@ namespace NolaTools.FurMaskGenerator
             if (!hasSphereAddHover) return;
             Color baseColor = AppSettings.ADD_MODE_FRAME_COLOR;
             Color wire = new Color(baseColor.r, baseColor.g, baseColor.b, 0.9f);
-            Color inner = new Color(baseColor.r, baseColor.g, baseColor.b, 0.5f);
+            Color inner = new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.HALF_VALUE);
             Color grad = new Color(baseColor.r, baseColor.g, baseColor.b, 0.35f);
 
             EditorGizmoUtils.SetDepthTest(true, () =>
@@ -246,7 +246,7 @@ namespace NolaTools.FurMaskGenerator
                     wire,
                     inner,
                     grad,
-                    0.6f
+                    AppSettings.SIXTY_PERCENT
                 );
             });
 
@@ -264,9 +264,9 @@ namespace NolaTools.FurMaskGenerator
                 var baseColor = (sphere.markerColor.a > 0f) ? sphere.markerColor : Color.cyan;
                 // 濃さに応じてアルファを調整（視覚的な強度の目安）
                 float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
-                var wireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.5f, 0.95f, intensity));
-                var innerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.3f, 0.7f, intensity));
-                var gradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, 0.4f, intensity));
+                var wireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.HALF_VALUE, AppSettings.NINETY_FIVE_PERCENT, intensity));
+                var innerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT, AppSettings.HIGH_VALUE_MIN, intensity));
+                var gradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, AppSettings.TWENTY_PERCENT * 2, intensity));
 
                 // オリジナルスフィアの描画
                 UIDrawingUtils.DrawGradientSpheres(
@@ -276,7 +276,7 @@ namespace NolaTools.FurMaskGenerator
                     wireColor,
                     innerColor,
                     gradColor,
-                    0.6f);
+                    AppSettings.SIXTY_PERCENT);
 
                 // ミラー機能が有効な場合、ミラー位置にも薄い色でスフィアを表示
                 if (sphere.useMirror)
@@ -284,9 +284,9 @@ namespace NolaTools.FurMaskGenerator
                     Vector3 mirroredPosition = new Vector3(-sphere.position.x, sphere.position.y, sphere.position.z);
                     
                     // ミラー用の色（薄くする）
-                    var mirrorWireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.4f, 0.7f, intensity));
-                    var mirrorInnerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.25f, 0.5f, intensity));
-                    var mirrorGradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, 0.3f, intensity));
+                    var mirrorWireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.TWENTY_PERCENT * 2, AppSettings.HIGH_VALUE_MIN, intensity));
+                    var mirrorInnerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.25f, AppSettings.HALF_VALUE, intensity));
+                    var mirrorGradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT, intensity));
 
                     UIDrawingUtils.DrawGradientSpheres(
                         mirroredPosition,
@@ -295,7 +295,7 @@ namespace NolaTools.FurMaskGenerator
                         mirrorWireColor,
                         mirrorInnerColor,
                         mirrorGradColor,
-                        0.3f);
+                        AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT);
                 }
 
                 if (i == selectedSphereIndex)
@@ -377,7 +377,7 @@ namespace NolaTools.FurMaskGenerator
                 if (!go.TryGetComponent<Renderer>(out var renderer)) continue;
 
                 Vector3 worldPos = mask.seedWorldPos;
-                if (worldPos.sqrMagnitude < 1e-10f)
+                if (worldPos.sqrMagnitude < AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION * 10)
                 {
                     Mesh mesh = EditorMeshUtils.GetMeshForRenderer(renderer, out bool baked);
                     if (mesh != null)
@@ -412,17 +412,17 @@ namespace NolaTools.FurMaskGenerator
                     }
                 }
 
-                if (worldPos.sqrMagnitude >= 1e-10f)
+                if (worldPos.sqrMagnitude >= AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION * 10)
                 {
                     var baseColor = (mask.markerColor.a > 0f) ? mask.markerColor : Color.cyan;
                     Color c = baseColor;
-                    float size = 0.005f;
+                    float size = AppSettings.CROSS_DRAW_SIZE;
                     int idx = settings.uvIslandMasks.IndexOf(mask);
                     if (idx == selectedUVIslandIndex)
                     {
                         c = Color.white;
-                        size *= 1.6f;
-                        UIDrawingUtils.DrawCross(worldPos, size * 1.25f, new Color(baseColor.r, baseColor.g, baseColor.b, 0.8f));
+                        size *= AppSettings.MARKER_SIZE_MULTIPLIER_LARGE;
+                        UIDrawingUtils.DrawCross(worldPos, size * AppSettings.MARKER_SIZE_MULTIPLIER, new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.EIGHTY_PERCENT));
                     }
                     UIDrawingUtils.DrawCross(worldPos, size, c);
                 }

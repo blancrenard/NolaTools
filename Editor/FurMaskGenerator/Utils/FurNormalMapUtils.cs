@@ -90,9 +90,9 @@ namespace NolaTools.FurMaskGenerator.Utils
         /// <returns>ファーノーマルマップのスケール値（デフォルト1.0）</returns>
         public static float GetFurNormalMapScale(Material material)
         {
-            if (material == null) return 1.0f;
+            if (material == null) return AppSettings.DEFAULT_SCALE;
             
-            if (!material.HasProperty(FUR_VECTOR_SCALE_PROPERTY)) return 1.0f;
+            if (!material.HasProperty(FUR_VECTOR_SCALE_PROPERTY)) return AppSettings.DEFAULT_SCALE;
             
             return material.GetFloat(FUR_VECTOR_SCALE_PROPERTY);
         }
@@ -104,9 +104,9 @@ namespace NolaTools.FurMaskGenerator.Utils
         /// <returns>ファーの長さ値（デフォルト0.04）</returns>
         public static float GetFurLength(Material material)
         {
-            if (material == null) return 0.04f; // FurMaskSettingsのDEFAULT_MAX_DISTANCE
+            if (material == null) return AppSettings.DEFAULT_MAX_DISTANCE; // FurMaskSettingsのDEFAULT_MAX_DISTANCE
             
-            if (!material.HasProperty(FUR_VECTOR_PROPERTY)) return 0.04f;
+            if (!material.HasProperty(FUR_VECTOR_PROPERTY)) return AppSettings.DEFAULT_MAX_DISTANCE;
             
             // _FurVectorのw成分（4番目の値）がファーの長さ
             Vector4 furVector = material.GetVector(FUR_VECTOR_PROPERTY);
@@ -124,7 +124,7 @@ namespace NolaTools.FurMaskGenerator.Utils
             var lengthCounts = new Dictionary<float, int>();
             int totalCount = 0;
             
-            if (renderers == null) return 0.04f;
+            if (renderers == null) return AppSettings.DEFAULT_MAX_DISTANCE;
             
             foreach (var renderer in renderers)
             {
@@ -151,10 +151,10 @@ namespace NolaTools.FurMaskGenerator.Utils
                 }
             }
             
-            if (lengthCounts.Count == 0) return 0.04f;
+            if (lengthCounts.Count == 0) return AppSettings.DEFAULT_MAX_DISTANCE;
             
             // 最も多く使用されている長さを返す
-            float mostCommonLength = 0.04f;
+            float mostCommonLength = AppSettings.DEFAULT_MAX_DISTANCE;
             int maxCount = 0;
             
             foreach (var kvp in lengthCounts)

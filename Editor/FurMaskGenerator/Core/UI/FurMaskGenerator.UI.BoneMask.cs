@@ -47,7 +47,7 @@ namespace NolaTools.FurMaskGenerator
 					// 代表値（最初の要素）
 					float cur = settings.boneMasks[idxs[0]].value;
 					float nv = EditorGUILayout.Slider(grp, cur, 0f, 1f);
-					if (Mathf.Abs(nv - cur) > 1e-6f)
+					if (Mathf.Abs(nv - cur) > AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION)
 					{
 						foreach (int k in idxs) settings.boneMasks[k].value = nv;
 						UndoRedoUtils.SetDirtyOnly(settings);

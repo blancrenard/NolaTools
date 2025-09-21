@@ -46,7 +46,7 @@ namespace NolaTools.FurMaskGenerator.UI
                         foreach (int neighborTriangle in adjacency[currentTriangle])
                         {
                             if (!visited[neighborTriangle] &&
-                                AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, 0.1f))
+                                AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, AppSettings.UV_THRESHOLD_DEFAULT))
                             {
                                 visited[neighborTriangle] = true;
                                 stack.Push(neighborTriangle);

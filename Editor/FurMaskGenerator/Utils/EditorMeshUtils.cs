@@ -117,7 +117,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         /// <summary>
         /// 指定された精度で値を丸めます
         /// </summary>
-        public static float RoundToPrecision(float value, float precision = 0.001f)
+        public static float RoundToPrecision(float value, float precision = AppSettings.POSITION_PRECISION)
         {
             if (precision <= 0f) return value;
             return Mathf.Round(value / precision) * precision;
@@ -126,7 +126,7 @@ namespace NolaTools.FurMaskGenerator.Utils
         /// <summary>
         /// 指定された精度でベクトルを丸めます
         /// </summary>
-        public static Vector3 RoundToPrecision(Vector3 vector, float precision = 0.001f)
+        public static Vector3 RoundToPrecision(Vector3 vector, float precision = AppSettings.POSITION_PRECISION)
         {
             if (precision <= 0f) return vector;
             return new Vector3(

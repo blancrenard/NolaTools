@@ -68,7 +68,7 @@ namespace NolaTools.FurMaskGenerator
                 return;
             }
             // UIの値に0.001を加算して内部計算に使用
-            float internalMaxDistance = settings.maxDistance + 0.001f;
+            float internalMaxDistance = settings.maxDistance + AppSettings.POSITION_PRECISION;
             // ベイク時のみ固定値を適用（恒久設定は変更しない）
             const int tempSubdivisionIterations = 1;
             

@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.Utils
 {
@@ -45,7 +46,7 @@ namespace NolaTools.FurMaskGenerator.Utils
                     int t = stack.Pop(); island.Add(t);
                     foreach (int nb in adjacency[t])
                     {
-                        if (!processed[nb] && AreUVTrianglesConnected(triangles, uvs, t, nb, 0.1f))
+                        if (!processed[nb] && AreUVTrianglesConnected(triangles, uvs, t, nb, AppSettings.UV_THRESHOLD_DEFAULT))
                         { processed[nb] = true; stack.Push(nb); }
                     }
                 }

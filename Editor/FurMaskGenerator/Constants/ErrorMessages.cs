@@ -54,25 +54,6 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const string ERROR_BAKE_EXCEPTION = "ベイク処理中にエラーが発生しました: {0}";
         public const string WARNING_NORMAL_MAP_NOT_READABLE = "ノーマルマップ '{0}' が読み取り可能になっていません。Texture Import Settings で 'Read/Write Enabled' を有効にしてください。";
         #endregion
-
-        #region 情報メッセージ
-        public const string INFO_MOUTH_BLEND_NOT_FOUND = "口系ブレンドシェイプが検出できなかったため、口元スフィアの自動追加をスキップしました。";
-        #endregion
-
-        #region デバッグログ
-        public const string LOG_HIERARCHY_CHANGE_IGNORED = "[FurMaskGenerator] OnHierarchyChange ignored during bake (ClothCollider creation)";
-        public const string LOG_HIERARCHY_CHANGE_CALLED = "[FurMaskGenerator] OnHierarchyChange called - AvatarRenderers before: {0}, ClothRenderers before: {1}";
-        public const string LOG_HIERARCHY_CHANGE_COMPLETED = "[FurMaskGenerator] OnHierarchyChange completed - AvatarRenderers after: {0}, ClothRenderers after: {1}";
-        public const string LOG_AUTO_DETECT_CALLED = "[FurMaskGenerator] AutoDetectRenderers called - AvatarRenderers before: {0}, ClothRenderers before: {1}";
-        public const string LOG_AUTO_DETECT_COMPLETED = "[FurMaskGenerator] AutoDetectRenderers completed - AvatarRenderers after: {0}, ClothRenderers after: {1}";
-        public const string LOG_START_BAKE = "[FurMaskGenerator] StartBake - AvatarRenderers: {0}, ClothRenderers: {1}";
-        public const string LOG_START_BAKE_IGNORE_SET = "[FurMaskGenerator] StartBake - ignoreHierarchyChangeDuringBake set to true";
-        public const string LOG_START_BAKE_VALIDATION_FAILED = "[FurMaskGenerator] StartBake validation failed - ignoreHierarchyChangeDuringBake set to false";
-        public const string LOG_BAKE_COMPLETED_IGNORE_RESET = "[FurMaskGenerator] OnBakeCompleted - ignoreHierarchyChangeDuringBake set to false";
-        public const string LOG_BAKE_COMPLETED = "[FurMaskGenerator] OnBakeCompleted - AvatarRenderers: {0}, ClothRenderers: {1}";
-        public const string LOG_BAKE_CANCELLED_IGNORE_RESET = "[FurMaskGenerator] OnBakeCancelled - ignoreHierarchyChangeDuringBake set to false";
-        public const string LOG_BAKE_CANCELLED = "[FurMaskGenerator] OnBakeCancelled - AvatarRenderers: {0}, ClothRenderers: {1}";
-        #endregion
     }
 }
 #endif

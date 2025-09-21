@@ -20,7 +20,7 @@ namespace NolaTools.FurMaskGenerator
             Array.Copy(src, smoothBuffer1, src.Length);
             float[] cur = smoothBuffer1, tmp = smoothBuffer2;
 
-            const float convergenceThreshold = 0.0001f;
+            const float convergenceThreshold = AppSettings.CONVERGENCE_THRESHOLD;
             
             for (int k = 0; k < it; k++)
             {
@@ -72,7 +72,7 @@ namespace NolaTools.FurMaskGenerator
             Array.Copy(src, smoothBuffer1, src.Length);
             float[] cur = smoothBuffer1, tmp = smoothBuffer2;
 
-            const float convergenceThreshold = 0.0001f;
+            const float convergenceThreshold = AppSettings.CONVERGENCE_THRESHOLD;
 
             for (int k = 0; k < it; k++)
             {

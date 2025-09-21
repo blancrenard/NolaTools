@@ -22,12 +22,7 @@ namespace NolaTools.FurMaskGenerator.UI
 
         private Texture2D texture;
         private Vector2 scrollPosition;
-        private float zoom = 1.0f;
-        private const float MIN_ZOOM = 0.1f;
-        private const float MAX_ZOOM = 5.0f;
-        private const float FIT_EPSILON = 1e-3f;
-        private const float MIN_WINDOW_WIDTH = 400f;
-        private const float MIN_WINDOW_HEIGHT = 300f;
+        private float zoom = AppSettings.DEFAULT_SCALE;
         
         // UVマスク可視化用フィールド
         private List<UVIslandMaskData> uvMasks;
@@ -44,7 +39,7 @@ namespace NolaTools.FurMaskGenerator.UI
         private Rect lastTextureRect;
         // 初回のみウィンドウにフィットさせ、その後は絶対倍率で運用
         private bool initializedToFit = false;
-        private float initialFitZoom = 1.0f;
+        private float initialFitZoom = AppSettings.DEFAULT_SCALE;
         // マウス追従十字の表示切替（UV編集モードのみ有効）
         private bool showMouseCrosshair;
         
@@ -60,10 +55,10 @@ namespace NolaTools.FurMaskGenerator.UI
         {
             TexturePreviewWindow window = GetWindow<TexturePreviewWindow>(string.Format(UILabels.TEXTURE_PREVIEW_TITLE_FORMAT, texture.name));
             window.texture = texture;
-            window.minSize = new Vector2(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+            window.minSize = new Vector2(AppSettings.MIN_WINDOW_WIDTH, AppSettings.MIN_WINDOW_HEIGHT);
             window.showMouseCrosshair = false;
             window.initializedToFit = false;
-            window.initialFitZoom = 1.0f;
+            window.initialFitZoom = AppSettings.DEFAULT_SCALE;
             window.Show();
         }
 
@@ -130,7 +125,7 @@ namespace NolaTools.FurMaskGenerator.UI
             window.onAddMaskCallback = onAddMask;
             window.onRemoveMaskCallback = onRemoveMask;
             window.showMouseCrosshair = true;
-            window.minSize = new Vector2(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
+            window.minSize = new Vector2(AppSettings.MIN_WINDOW_WIDTH, AppSettings.MIN_WINDOW_HEIGHT);
             window.GenerateOverlayTexture();
             window.GenerateWireframeTexture();
             window.Show();
@@ -171,9 +166,9 @@ namespace NolaTools.FurMaskGenerator.UI
             }
 
             // 有効な倍率の場合のみ返す
-            if (fitZoom > FIT_EPSILON && !float.IsNaN(fitZoom) && !float.IsInfinity(fitZoom))
+            if (fitZoom > AppSettings.FIT_EPSILON && !float.IsNaN(fitZoom) && !float.IsInfinity(fitZoom))
             {
-                return Mathf.Clamp(fitZoom, MIN_ZOOM, MAX_ZOOM);
+                return Mathf.Clamp(fitZoom, AppSettings.MIN_ZOOM, AppSettings.MAX_ZOOM);
             }
 
             return -1f;
@@ -318,7 +313,7 @@ namespace NolaTools.FurMaskGenerator.UI
             GUILayout.Label(UILabels.ZOOM_LABEL, EditorStyles.toolbarButton);
             bool __deferredSliderChanged = false; float __deferredSliderValue = zoom;
             EditorGUI.BeginChangeCheck();
-            float newSliderZoom = GUILayout.HorizontalSlider(zoom, MIN_ZOOM, MAX_ZOOM, GUILayout.Width(100));
+            float newSliderZoom = GUILayout.HorizontalSlider(zoom, AppSettings.MIN_ZOOM, AppSettings.MAX_ZOOM, GUILayout.Width(100));
             if (EditorGUI.EndChangeCheck())
             {
                 __deferredSliderChanged = true;
@@ -388,8 +383,8 @@ namespace NolaTools.FurMaskGenerator.UI
 
                 // テクスチャを現在の領域内で中央配置
                 Rect textureRect = new Rect(
-                    currentRect.x + (currentRect.width - scaledWidth) * 0.5f,
-                    currentRect.y + (currentRect.height - scaledHeight) * 0.5f,
+                    currentRect.x + (currentRect.width - scaledWidth) * AppSettings.HALF_VALUE,
+                    currentRect.y + (currentRect.height - scaledHeight) * AppSettings.HALF_VALUE,
                     scaledWidth,
                     scaledHeight
                 );
@@ -422,16 +417,16 @@ namespace NolaTools.FurMaskGenerator.UI
             if (__deferredScrollZoom && texture != null)
             {
                 float effectiveOldZoom = zoom;
-                if (Mathf.Approximately(zoom, 1.0f) && lastTextureRect.width > 1f && texture.width > 0)
+                if (Mathf.Approximately(zoom, AppSettings.DEFAULT_SCALE) && lastTextureRect.width > 1f && texture.width > 0)
                 {
                     effectiveOldZoom = lastTextureRect.width / texture.width;
                 }
 
-                const float zoomFactorPerNotch = 1.1f;
+                const float zoomFactorPerNotch = AppSettings.ZOOM_FACTOR_PER_NOTCH;
                 float targetZoom = effectiveOldZoom;
                 if (__deferredScrollDelta > 0f) targetZoom /= zoomFactorPerNotch;
                 else if (__deferredScrollDelta < 0f) targetZoom *= zoomFactorPerNotch;
-                targetZoom = Mathf.Clamp(targetZoom, MIN_ZOOM, MAX_ZOOM);
+                targetZoom = Mathf.Clamp(targetZoom, AppSettings.MIN_ZOOM, AppSettings.MAX_ZOOM);
 
                 if (!Mathf.Approximately(effectiveOldZoom, targetZoom))
                 {
@@ -469,13 +464,13 @@ namespace NolaTools.FurMaskGenerator.UI
             if (__deferredSliderChanged && texture != null)
             {
                 float effectiveOldZoom = zoom;
-                if (Mathf.Approximately(zoom, 1.0f) && lastTextureRect.width > 1f && texture.width > 0)
+                if (Mathf.Approximately(zoom, AppSettings.DEFAULT_SCALE) && lastTextureRect.width > 1f && texture.width > 0)
                 {
                     effectiveOldZoom = lastTextureRect.width / texture.width;
                 }
                 float targetZoom = Mathf.Clamp(
-                    (Mathf.Approximately(zoom, 1.0f) ? __deferredSliderValue * effectiveOldZoom : __deferredSliderValue),
-                    MIN_ZOOM, MAX_ZOOM);
+                    (Mathf.Approximately(zoom, AppSettings.DEFAULT_SCALE) ? __deferredSliderValue * effectiveOldZoom : __deferredSliderValue),
+                    AppSettings.MIN_ZOOM, AppSettings.MAX_ZOOM);
 
                 if (!Mathf.Approximately(effectiveOldZoom, targetZoom))
                 {
@@ -485,7 +480,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     float newH = texture.height * targetZoom;
 
                     // ウィンドウの中心を基準にズーム調整
-                    Vector2 windowCenter = new Vector2(position.width * 0.5f, position.height * 0.5f);
+                    Vector2 windowCenter = new Vector2(position.width * AppSettings.HALF_VALUE, position.height * AppSettings.HALF_VALUE);
                     Vector2 centerInTexture = Vector2.zero;
 
                     if (lastTextureRect.width > 0 && lastTextureRect.height > 0)

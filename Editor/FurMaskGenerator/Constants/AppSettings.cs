@@ -56,6 +56,52 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const float DEFAULT_GAMMA = 2f;
         public const int DEFAULT_TEXTURE_SIZE_INDEX = 1;
         #endregion
+
+        #region 計算・処理定数
+        public const float DEFAULT_INTENSITY = 1.0f;
+        public const float DEFAULT_SCALE = 1.0f;
+        public const float HALF_VALUE = 0.5f;
+        public const float TWENTY_PERCENT = 0.2f;
+        public const float SIXTY_PERCENT = 0.6f;
+        public const float EIGHTY_PERCENT = 0.8f;
+        public const float NINETY_FIVE_PERCENT = 0.95f;
+        public const float MEMORY_PRESSURE_THRESHOLD = 4.0f;
+        public const float COMPLEXITY_HIGH_THRESHOLD = 1.8f;
+        public const float COMPLEXITY_MEDIUM_THRESHOLD = 0.8f;
+        public const float UV_THRESHOLD_DEFAULT = 0.1f;
+        public const float ZOOM_FACTOR_PER_NOTCH = 1.1f;
+        public const float CROSS_SIZE_MULTIPLIER = 0.02f;
+        public const float SPHERE_GLOW_MULTIPLIER = 1.02f;
+        public const float SPHERE_DIM_MULTIPLIER = 0.98f;
+        public const float MARKER_SIZE_MULTIPLIER = 1.25f;
+        public const float MARKER_SIZE_MULTIPLIER_LARGE = 1.6f;
+        public const float CONVERGENCE_THRESHOLD = 0.0001f;
+        public const float RAY_OFFSET_MULTIPLIER = 1.0f;
+        public const float MAX_MEMORY_PRESSURE = 0.8f;
+        public const float LERP_FACTOR = 0.1f;
+        #endregion
+
+        #region 色生成定数
+        public const float HIGH_VALUE_MIN = 0.7f;
+        #endregion
+
+        #region UIプレビュー定数
+        public const float MIN_ZOOM = 0.1f;
+        public const float MAX_ZOOM = 5.0f;
+        public const float FIT_EPSILON = 1e-3f;
+        public const float MIN_WINDOW_WIDTH = 400f;
+        public const float MIN_WINDOW_HEIGHT = 300f;
+        public const float WINDOW_CENTER_OFFSET_X = 0.5f;
+        public const float WINDOW_CENTER_OFFSET_Y = 0.5f;
+        public const float SCROLLBAR_WIDTH = 20f;
+        public const float TOOLBAR_HEIGHT = 22f;
+        public const float INFO_HEIGHT = 18f;
+        public const float TOTAL_UI_OFFSET = 80f;
+        public const float MARKER_SIZE_MIN = 5f;
+        public const float MARKER_SIZE_MAX = 12f;
+        public const float MARKER_SIZE_MULTIPLIER_MIN = 0.012f;
+        public const float CROSS_DRAW_SIZE = 0.006f;
+        #endregion
     }
 }
 #endif

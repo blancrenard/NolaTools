@@ -215,42 +215,11 @@ namespace NolaTools.FurMaskGenerator.Utils
             EditorGizmoUtils.SetDepthTest(true, () =>
             {
                 Handles.color = color;
-                float dynamicSize = Mathf.Max(baseSize, HandleUtility.GetHandleSize(position) * 0.02f);
+                float dynamicSize = Mathf.Max(baseSize, HandleUtility.GetHandleSize(position) * AppSettings.CROSS_SIZE_MULTIPLIER);
                 Handles.DrawLine(position + Vector3.right * dynamicSize, position - Vector3.right * dynamicSize);
                 Handles.DrawLine(position + Vector3.up * dynamicSize, position - Vector3.up * dynamicSize);
                 Handles.DrawLine(position + Vector3.forward * dynamicSize, position - Vector3.forward * dynamicSize);
             });
-        }
-
-        #endregion
-
-        #region 計算ヘルパー
-
-        /// <summary>
-        /// アバターレンダラーのリストから中心点を計算します
-        /// </summary>
-        public static Vector3 CalculateAvatarCenter(List<Renderer> avatarRenderers)
-        {
-            if (avatarRenderers.Count == 0) return Vector3.zero;
-
-            Vector3 center = Vector3.zero;
-            int validCount = 0;
-
-            foreach (var renderer in avatarRenderers)
-            {
-                if (renderer != null)
-                {
-                    center += renderer.bounds.center;
-                    validCount++;
-                }
-            }
-
-            if (validCount > 0)
-            {
-                center /= validCount;
-            }
-
-            return center;
         }
 
         #endregion

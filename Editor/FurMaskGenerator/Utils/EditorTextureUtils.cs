@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.Utils
 {
@@ -11,7 +12,7 @@ namespace NolaTools.FurMaskGenerator.Utils
 		/// <summary>
 		/// エッジパディングを適用する。originalValidMask が指定されない場合は sourcePixels から推定する。
 		/// </summary>
-		public static Color[] ApplyEdgePadding(Color[] sourcePixels, int width, int height, int paddingSize, bool[] originalValidMask = null, float validPixelThreshold = 1e-5f)
+		public static Color[] ApplyEdgePadding(Color[] sourcePixels, int width, int height, int paddingSize, bool[] originalValidMask = null, float validPixelThreshold = AppSettings.VALID_PIXEL_THRESHOLD)
 		{
 			if (sourcePixels == null || sourcePixels.Length != width * height || width <= 0 || height <= 0)
 			{

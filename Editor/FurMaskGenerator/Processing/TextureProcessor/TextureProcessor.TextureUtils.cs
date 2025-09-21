@@ -104,12 +104,12 @@ namespace NolaTools.FurMaskGenerator
                 bool shouldReplace = false;
 
                 // 黒い部分（r=0, alpha=1）を最も優先
-                if (overlayR < 0.001f && overlayA > 0.99f)
+                if (overlayR < AppSettings.POSITION_PRECISION && overlayA > 0.99f)
                 {
                     shouldReplace = true;
                 }
                 // 同じ優先度の場合、黒の半透明（r=0, alpha<1）を優先
-                else if (overlayR < 0.001f && baseR < 0.001f)
+                else if (overlayR < AppSettings.POSITION_PRECISION && baseR < AppSettings.POSITION_PRECISION)
                 {
                     if (overlayA > baseA)
                     {
@@ -122,7 +122,7 @@ namespace NolaTools.FurMaskGenerator
                     shouldReplace = true;
                 }
                 // 同じr値の場合は、より透明なものを優先
-                else if (Mathf.Abs(overlayR - baseR) < 0.001f && overlayA < baseA)
+                else if (Mathf.Abs(overlayR - baseR) < AppSettings.POSITION_PRECISION && overlayA < baseA)
                 {
                     shouldReplace = true;
                 }
@@ -137,7 +137,7 @@ namespace NolaTools.FurMaskGenerator
         private void ApplyGammaCorrection(Texture2D texture, float gamma)
         {
             // ガンマ値が1.0の場合は処理をスキップ
-            if (Mathf.Approximately(gamma, 1.0f))
+            if (Mathf.Approximately(gamma, AppSettings.DEFAULT_SCALE))
                 return;
 
             int width = texture.width;

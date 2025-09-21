@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.UI
 {
@@ -22,7 +23,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     Vector2 uv = (uvMask.uvPosition.sqrMagnitude > 0f) ? uvMask.uvPosition : uvMask.seedUV;
                     float x = textureRect.x + uv.x * Mathf.Max(1f, textureRect.width);
                     float y = textureRect.y + (1f - uv.y) * Mathf.Max(1f, textureRect.height);
-                    float size = Mathf.Clamp(Mathf.Min(textureRect.width, textureRect.height) * 0.012f, 5f, 12f);
+                    float size = Mathf.Clamp(Mathf.Min(textureRect.width, textureRect.height) * AppSettings.MARKER_SIZE_MULTIPLIER_MIN, 5f, 12f);
                     Color c = (uvMask.markerColor.a > 0f) ? uvMask.markerColor : Color.cyan;
                     c.a = 0.95f;
                     Handles.color = c;
@@ -52,7 +53,7 @@ namespace NolaTools.FurMaskGenerator.UI
             Handles.BeginGUI();
             try
             {
-                float size = Mathf.Clamp(Mathf.Min(textureRect.width, textureRect.height) * 0.012f, 5f, 12f);
+                float size = Mathf.Clamp(Mathf.Min(textureRect.width, textureRect.height) * AppSettings.MARKER_SIZE_MULTIPLIER_MIN, 5f, 12f);
                 Color prev = Handles.color;
                 Handles.color = Color.yellow;
                 Vector3 h0 = new Vector3(e.mousePosition.x - size, e.mousePosition.y, 0f);

@@ -31,7 +31,7 @@ namespace NolaTools.FurMaskGenerator
             }
             else if (complexityRatio > 1.8f)
             {
-                baseBatchSize = Mathf.RoundToInt(baseBatchSize * 0.8f);
+                baseBatchSize = Mathf.RoundToInt(baseBatchSize * AppSettings.COMPLEXITY_MEDIUM_THRESHOLD);
             }
 
             if (HasComplexCollision())
@@ -108,7 +108,7 @@ namespace NolaTools.FurMaskGenerator
             float memoryFactor = 1.0f;
             if (memoryPressure > 4.0f) // 4GB以上使用中
             {
-                memoryFactor = 0.8f; // 控えめに予約
+                memoryFactor = AppSettings.COMPLEXITY_MEDIUM_THRESHOLD; // 控えめに予約
             }
             else if (memoryPressure < 2.0f) // 2GB未満
             {
@@ -122,7 +122,7 @@ namespace NolaTools.FurMaskGenerator
             int finalCapacity = Mathf.RoundToInt(baseCapacity * historicalFactor * memoryFactor * complexityFactor);
             
             // 実行履歴を更新（次回の参考用）
-            EditorPrefs.SetFloat(historyKey, Mathf.Lerp(historicalFactor, 1.0f, 0.1f));
+            EditorPrefs.SetFloat(historyKey, Mathf.Lerp(historicalFactor, 1.0f, AppSettings.UV_THRESHOLD_DEFAULT));
             
             return Mathf.Max(finalCapacity, 1000); // 最小容量保証
         }
@@ -136,7 +136,7 @@ namespace NolaTools.FurMaskGenerator
             
             float density = (float)vertexCount / triangleCount;
             
-            if (density > 0.8f) // 高密度メッシュ
+            if (density > AppSettings.COMPLEXITY_MEDIUM_THRESHOLD) // 高密度メッシュ
             {
                 return 1.1f;
             }
@@ -184,7 +184,7 @@ namespace NolaTools.FurMaskGenerator
             
             float adjustmentFactor = 1.0f;
             
-            if (complexityRatio > 0.8f) // 高密度メッシュ
+            if (complexityRatio > AppSettings.COMPLEXITY_MEDIUM_THRESHOLD) // 高密度メッシュ
             {
                 adjustmentFactor = 1.1f; // 少し多めに予約
             }
@@ -240,7 +240,7 @@ namespace NolaTools.FurMaskGenerator
         {
             float currentTime = (float)EditorApplication.timeSinceStartup;
 
-            if (currentTime - lastProgressBarUpdate < 0.1f && progress < 0.99f)
+            if (currentTime - lastProgressBarUpdate < AppSettings.UV_THRESHOLD_DEFAULT && progress < 0.99f)
             {
                 return false;
             }
@@ -305,7 +305,7 @@ namespace NolaTools.FurMaskGenerator
             float hitDistance = maxM;
             Vector3 n = rayDirections[vertexIndex];
 
-            const float rayOffset = AppSettings.POSITION_PRECISION;
+            const float rayOffset = AppSettings.POSITION_PRECISION * AppSettings.RAY_OFFSET_MULTIPLIER;
             var ray = new Ray(v - n * rayOffset, n);
 
             if (clothCollider.Raycast(ray, out RaycastHit hitInfo, maxM + rayOffset))

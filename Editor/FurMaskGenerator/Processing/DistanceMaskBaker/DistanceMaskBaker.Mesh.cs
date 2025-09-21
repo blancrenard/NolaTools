@@ -151,13 +151,13 @@ namespace NolaTools.FurMaskGenerator
                 if (midCache.TryGetValue((x, y), out int idx)) return idx;
 
                 int newIdx = verts.Count;
-                verts.Add((verts[a] + verts[b]) * 0.5f);
+                verts.Add((verts[a] + verts[b]) * AppSettings.HALF_VALUE);
                 norms.Add((norms[a] + norms[b]).normalized);
-                uvs.Add((uvs[a] + uvs[b]) * 0.5f);
+                uvs.Add((uvs[a] + uvs[b]) * AppSettings.HALF_VALUE);
 
                 Vector4 tangentA = (a < tangents.Count) ? tangents[a] : new Vector4(1, 0, 0, 1);
                 Vector4 tangentB = (b < tangents.Count) ? tangents[b] : new Vector4(1, 0, 0, 1);
-                Vector4 interpolatedTangent = (tangentA + tangentB) * 0.5f;
+                Vector4 interpolatedTangent = (tangentA + tangentB) * AppSettings.HALF_VALUE;
                 tangents.Add(interpolatedTangent);
 
                 if (vertexToMaterialName.TryGetValue(a, out string materialName))
@@ -172,7 +172,7 @@ namespace NolaTools.FurMaskGenerator
                 float bm = 0f;
                 if (a < boneMaskValues.Count && b < boneMaskValues.Count)
                 {
-                    bm = 0.5f * (boneMaskValues[a] + boneMaskValues[b]);
+                    bm = AppSettings.HALF_VALUE * (boneMaskValues[a] + boneMaskValues[b]);
                 }
                 boneMaskValues.Add(bm);
 
@@ -276,13 +276,13 @@ namespace NolaTools.FurMaskGenerator
                     int bGlobal = baseOffset + bLocal;
 
                     int newIdx = verts.Count;
-                    verts.Add((verts[aGlobal] + verts[bGlobal]) * 0.5f);
+                    verts.Add((verts[aGlobal] + verts[bGlobal]) * AppSettings.HALF_VALUE);
                     norms.Add((norms[aGlobal] + norms[bGlobal]).normalized);
-                    uvs.Add((uvs[aGlobal] + uvs[bGlobal]) * 0.5f);
+                    uvs.Add((uvs[aGlobal] + uvs[bGlobal]) * AppSettings.HALF_VALUE);
 
                     Vector4 tangentAGlobal = (aGlobal < tangents.Count) ? tangents[aGlobal] : new Vector4(1, 0, 0, 1);
                     Vector4 tangentBGlobal = (bGlobal < tangents.Count) ? tangents[bGlobal] : new Vector4(1, 0, 0, 1);
-                    Vector4 interpolatedTangent = (tangentAGlobal + tangentBGlobal) * 0.5f;
+                    Vector4 interpolatedTangent = (tangentAGlobal + tangentBGlobal) * AppSettings.HALF_VALUE;
                     tangents.Add(interpolatedTangent);
 
                     if (vertexToMaterialName.TryGetValue(aGlobal, out string materialName))
@@ -297,7 +297,7 @@ namespace NolaTools.FurMaskGenerator
                     float bm = 0f;
                     if (aGlobal < boneMaskValues.Count && bGlobal < boneMaskValues.Count)
                     {
-                        bm = 0.5f * (boneMaskValues[aGlobal] + boneMaskValues[bGlobal]);
+                        bm = AppSettings.HALF_VALUE * (boneMaskValues[aGlobal] + boneMaskValues[bGlobal]);
                     }
                     boneMaskValues.Add(bm);
 

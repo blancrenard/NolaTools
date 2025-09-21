@@ -16,10 +16,6 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const string LENGTH_MASK_PREFIX = "LengthMask_";
         #endregion
 
-        #region 情報メッセージ
-        public const string INFO_MOUTH_BLEND_NOT_FOUND = "口系ブレンドシェイプが検出できなかったため、口元スフィアの自動追加をスキップしました。";
-        #endregion
-
         #region フィルター関連
         public const string FILTER_WEAR = "wear";
         public const string FILTER_EARRING = "earring";

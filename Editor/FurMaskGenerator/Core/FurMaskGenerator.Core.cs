@@ -35,8 +35,6 @@ namespace NolaTools.FurMaskGenerator
         [SerializeField] private bool foldoutNormalMapSection = false;
         private Vector2 boneMaskScroll;
         private List<bool> sphereFoldoutStates = new List<bool>();
-        private readonly Dictionary<int, List<int>[]> uvAdjacencyCache = new();
-        private readonly Dictionary<string, List<int[]>> uvIslandTriCache = new();
         private bool addSphereOnClick = false;
         private int selectedSphereIndex = -1;
         private bool ignoreHierarchyChangeDuringBake = false;

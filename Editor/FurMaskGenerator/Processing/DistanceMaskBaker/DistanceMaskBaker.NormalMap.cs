@@ -26,7 +26,7 @@ namespace NolaTools.FurMaskGenerator
             }
 
             // normalStrengthが0の場合は元の法線を返す
-            if (Mathf.Abs(normalMapData.normalStrength) < 0.001f)
+            if (Mathf.Abs(normalMapData.normalStrength) < AppSettings.POSITION_PRECISION)
             {
                 return originalNormal;
             }
@@ -91,7 +91,7 @@ namespace NolaTools.FurMaskGenerator
                     new Vector4(0, 0, 0, 1)
                 );
                 Vector3 world = tbnMatrix.MultiplyVector(tangentSpaceNormal).normalized;
-                if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z) || world.sqrMagnitude < 0.1f)
+                if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z) || world.sqrMagnitude < AppSettings.UV_THRESHOLD_DEFAULT)
                 {
                     return originalNormal;
                 }

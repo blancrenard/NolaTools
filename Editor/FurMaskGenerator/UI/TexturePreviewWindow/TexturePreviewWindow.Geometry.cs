@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.UI
 {
@@ -149,7 +150,7 @@ namespace NolaTools.FurMaskGenerator.UI
 
         private bool IsPointInTriangleUV(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
         {
-            const float epsilon = 1e-5f; // 境界付近を内側として扱う許容誤差
+            const float epsilon = AppSettings.VALID_PIXEL_THRESHOLD; // 境界付近を内側として扱う許容誤差
             float s = a.y * c.x - a.x * c.y + (c.y - a.y) * p.x + (a.x - c.x) * p.y;
             float t = a.x * b.y - a.y * b.x + (a.y - b.y) * p.x + (b.x - a.x) * p.y;
             if ((s < -epsilon) != (t < -epsilon)) return false;

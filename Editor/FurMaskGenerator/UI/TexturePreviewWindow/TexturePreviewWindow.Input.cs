@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Data;
 using NolaTools.FurMaskGenerator.Utils;
+using NolaTools.FurMaskGenerator.Constants;
 
 namespace NolaTools.FurMaskGenerator.UI
 {
@@ -205,7 +206,7 @@ namespace NolaTools.FurMaskGenerator.UI
                 seedWorldPos = chosenWorld,
                 displayName = resolvedRenderer.name,
                 markerColor = ColorGenerator.GenerateMarkerColor(),
-                uvThreshold = 0.1f
+                uvThreshold = AppSettings.UV_THRESHOLD_DEFAULT
             };
 
             if (onAddMaskCallback != null)
