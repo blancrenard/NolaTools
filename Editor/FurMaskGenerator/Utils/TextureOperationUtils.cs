@@ -100,36 +100,6 @@ namespace NolaTools.FurMaskGenerator.Utils
             texture.Apply(false);
         }
 
-        /// <summary>
-        /// テクスチャにエッジパディングを適用する
-        /// </summary>
-        public static Texture2D ApplyEdgePadding(Texture2D sourceTexture, int padding)
-        {
-            if (sourceTexture == null) return null;
-            int width = sourceTexture.width;
-            int height = sourceTexture.height;
-            Color[] sourcePixels = sourceTexture.GetPixels();
-            var padded = EditorTextureUtils.ApplyEdgePadding(sourcePixels, width, height, padding, null, AppSettings.VALID_PIXEL_THRESHOLD);
-            var result = new Texture2D(width, height, TextureFormat.RGBA32, false, false);
-            result.SetPixels(padded);
-            result.Apply(false);
-            return result;
-        }
-
-        /// <summary>
-        /// エッジパディングを元テクスチャに直接適用（有効画素マスク対応）
-        /// </summary>
-        public static void ApplyEdgePaddingInPlace(Texture2D sourceTexture, int padding, bool[] originalValidMask = null, float validPixelThreshold = AppSettings.VALID_PIXEL_THRESHOLD)
-        {
-            if (sourceTexture == null) return;
-            int width = sourceTexture.width;
-            int height = sourceTexture.height;
-            Color[] sourcePixels = sourceTexture.GetPixels();
-            var padded = EditorTextureUtils.ApplyEdgePadding(sourcePixels, width, height, padding, originalValidMask, validPixelThreshold);
-            sourceTexture.SetPixels(padded);
-            sourceTexture.Apply(false);
-        }
-
         #endregion
     }
 }
