@@ -87,11 +87,33 @@ namespace NolaTools.FurMaskGenerator
                     ApplyGammaCorrection(baseTex, gamma);
                 }
 
-                baseTex = ApplyEdgePadding(baseTex, 4, kv.Key);
+                // テクスチャサイズに応じてパディングサイズを動的に計算
+                int textureSize = baseTex.width;
+                int paddingSize = CalculatePaddingSize(textureSize);
+                baseTex = ApplyEdgePadding(baseTex, paddingSize, kv.Key);
 
                 finalPreview[kv.Key] = baseTex;
             }
             return finalPreview;
+        }
+
+        /// <summary>
+        /// テクスチャサイズに応じてパディングサイズを計算する
+        /// 基準: 1024x1024 → 4ピクセル
+        /// サイズが2倍になるごとにパディングサイズも2倍になる
+        /// </summary>
+        private int CalculatePaddingSize(int textureSize)
+        {
+            const int baseTextureSize = 1024;
+            const int basePaddingSize = 4;
+
+            // テクスチャサイズの比率を計算
+            float sizeRatio = (float)textureSize / baseTextureSize;
+
+            // パディングサイズを計算（最小値は1）
+            int paddingSize = Mathf.Max(1, Mathf.RoundToInt(basePaddingSize * sizeRatio));
+
+            return paddingSize;
         }
 
         #endregion
