@@ -36,11 +36,6 @@ namespace NolaTools.FurMaskGenerator
             }
         }
 
-        private bool ShouldSkipTriangle(Vector2 uv0, Vector2 uv1, Vector2 uv2, int width, int height)
-        {
-            return false;
-        }
-
         #endregion
     }
 }
