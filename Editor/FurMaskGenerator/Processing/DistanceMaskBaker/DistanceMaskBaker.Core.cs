@@ -119,7 +119,8 @@ namespace NolaTools.FurMaskGenerator
                     subRendererPaths,
                     subMeshIndices,
                     settings.UvIslandVertexSmoothIterations,
-                    settings.UseTransparentMode
+                    settings.UseTransparentMode,
+                    settings.EdgePaddingSize
                 );
                 preview = textureProcessor.CreateFinalTextures();
                 if (preview == null)

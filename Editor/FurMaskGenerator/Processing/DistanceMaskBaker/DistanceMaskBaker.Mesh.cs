@@ -14,6 +14,32 @@ namespace NolaTools.FurMaskGenerator
     {
         #region メッシュ処理
 
+        /// <summary>
+        /// 指定されたポリゴン数から最大細分化回数を計算
+        /// 100万ポリゴンを超えない範囲で最大の細分化回数を返す
+        /// </summary>
+        /// <param name="baseTriangleCount">細分化前の三角形数</param>
+        /// <param name="requestedIterations">要求された細分化回数</param>
+        /// <returns>制限内での最大細分化回数</returns>
+        private int CalculateMaxSubdivisionIterations(int baseTriangleCount, int requestedIterations)
+        {
+            if (baseTriangleCount <= 0) return 0;
+            
+            // 細分化による倍率: 1回で4倍、2回で16倍、3回で64倍
+            for (int iterations = requestedIterations; iterations >= 0; iterations--)
+            {
+                int subdivisionMultiplier = (int)Mathf.Pow(4, iterations);
+                int estimatedTriangleCount = baseTriangleCount * subdivisionMultiplier;
+                
+                if (estimatedTriangleCount <= AppSettings.MAX_POLYGON_COUNT)
+                {
+                    return iterations;
+                }
+            }
+            
+            return 0; // 細分化なしでも制限を超える場合は0を返す
+        }
+
         private void AddUVIslandTrianglesAsCloth(ref System.Collections.Generic.List<CombineInstance> combine)
         {
             if (settings.UVIslandMasks == null || settings.UVIslandMasks.Count == 0) return;
@@ -104,10 +130,28 @@ namespace NolaTools.FurMaskGenerator
         {
             AddMeshData(r, baseM);
 
-            int it = Mathf.Clamp(settings.TempSubdivisionIterations, 0, 3);
+            int requestedIterations = Mathf.Clamp(settings.TempSubdivisionIterations, 0, 3);
             int subMeshCount = baseM.subMeshCount;
             string rendererPath = EditorPathUtils.GetGameObjectPath(r);
             int baseOffset = verts.Count - baseM.vertexCount;
+
+            // 細分化前のポリゴン数を計算
+            int totalTrianglesBefore = 0;
+            for (int smi = 0; smi < subMeshCount; smi++)
+            {
+                int[] triLocal = baseM.GetTriangles(smi);
+                if (triLocal != null && triLocal.Length > 0)
+                {
+                    totalTrianglesBefore += triLocal.Length / 3;
+                }
+            }
+
+            // ポリゴン数制限を考慮した実際の細分化回数を計算
+            int actualIterations = CalculateMaxSubdivisionIterations(totalTrianglesBefore, requestedIterations);
+            bool wasLimited = actualIterations < requestedIterations;
+
+            // このレンダラー用の細分化後のポリゴン数を追跡
+            int totalTrianglesAfter = 0;
 
             for (int smi = 0; smi < subMeshCount; smi++)
             {
@@ -116,10 +160,13 @@ namespace NolaTools.FurMaskGenerator
 
                 var triGlobal = BuildGlobalTrianglesFromLocal(triLocal, baseOffset);
 
-                for (int k = 0; k < it; k++)
+                for (int k = 0; k < actualIterations; k++)
                 {
                     triGlobal = SubdivideOnceGlobal(triGlobal, rendererPath);
                 }
+
+                // このサブメッシュの細分化後のポリゴン数を追加
+                totalTrianglesAfter += triGlobal.Count / 3;
 
                 string matName = (r.sharedMaterials != null && smi < r.sharedMaterials.Length && r.sharedMaterials[smi] != null)
                     ? r.sharedMaterials[smi].name
@@ -128,6 +175,13 @@ namespace NolaTools.FurMaskGenerator
                 subDatas.Add((triGlobal.ToArray(), matName));
                 subRendererPaths.Add(rendererPath);
                 subMeshIndices.Add(smi);
+            }
+
+            // 制限が適用された場合のみデバッグ表示
+            if (wasLimited)
+            {
+                float subdivisionRatio = totalTrianglesBefore > 0 ? (float)totalTrianglesAfter / totalTrianglesBefore : 1.0f;
+                Debug.Log($"[FurMaskGenerator] 指定された回数で細分化を行うと100万ポリゴンを超えるため、指定回数より少ない回数で実行します");
             }
         }
 

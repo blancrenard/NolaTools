@@ -53,6 +53,10 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const string TEXTURE_SIZE_LABEL = "テクスチャサイズ";
         public const string DISTANCE_LABEL = "長さ";
         public const string MASK_INTENSITY_LABEL = "マスクの濃さ";
+        public const string SUBDIVISION_ITERATIONS_LABEL = "細分化回数";
+        public const string SUBDIVISION_ITERATIONS_TOOLTIP = "メッシュの細分化回数（0=細分化なし、1=4倍、2=16倍、3=64倍）";
+        public const string EDGE_PADDING_LABEL = "エッジパディング";
+        public const string EDGE_PADDING_TOOLTIP = "テクスチャのエッジ部分にパディングを適用します（ピクセル単位）";
         public const string TRANSPARENT_MODE_LABEL = "透過モード";
         public const string TRANSPARENT_MODE_TOOLTIP = "有効にすると、白い部分を透明に、グレーを黒の半透明で出力します";
         public const string GENERATE_MASK_BUTTON = "マスクを生成";
@@ -101,6 +105,12 @@ namespace NolaTools.FurMaskGenerator.Constants
         #region 追加モード表示
         public const string ADD_MODE_LABEL_SPHERE = "スフィア追加モード";
         public const string ADD_MODE_LABEL_UV = "UVマスク追加モード";
+        #endregion
+
+        #region デバッグ表示
+        public const string DEBUG_POLYGON_COUNT_BEFORE = "細分化前ポリゴン数:";
+        public const string DEBUG_POLYGON_COUNT_AFTER = "細分化後ポリゴン数:";
+        public const string DEBUG_POLYGON_COUNT_RATIO = "細分化倍率:";
         #endregion
     }
 }

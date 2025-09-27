@@ -31,6 +31,7 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const float MIN_DISTANCE = 0f;
         public const float MAX_DISTANCE = 0.1f;
         public const int PROGRESS_UPDATE_INTERVAL = 50;
+        public const int MAX_POLYGON_COUNT = 1000000; // 最大ポリゴン数制限（100万）
         #endregion
 
         #region スフィア設定

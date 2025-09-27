@@ -31,12 +31,6 @@ namespace NolaTools.FurMaskGenerator
                 {
                     int a = tri[i], b = tri[i + 1], c = tri[i + 2];
 
-                    if (ShouldSkipTriangle(uvs[a], uvs[b], uvs[c], texSize, texSize))
-                    {
-                        skippedTriangles++;
-                        continue;
-                    }
-
                     FillTriIntoBuffer(buffer, texSize, texSize, uvs[a], uvs[b], uvs[c], vDist[a], vDist[b], vDist[c], rasterizedPixels);
 
                     if ((i % (adaptiveProgressInterval * 3)) == 0)
@@ -87,9 +81,8 @@ namespace NolaTools.FurMaskGenerator
                     ApplyGammaCorrection(baseTex, gamma);
                 }
 
-                // テクスチャサイズに応じてパディングサイズを動的に計算
-                int textureSize = baseTex.width;
-                int paddingSize = CalculatePaddingSize(textureSize);
+                // UI設定のエッジパディングサイズを使用
+                int paddingSize = edgePaddingSize;
                 baseTex = ApplyEdgePadding(baseTex, paddingSize, kv.Key);
 
                 finalPreview[kv.Key] = baseTex;
@@ -97,24 +90,6 @@ namespace NolaTools.FurMaskGenerator
             return finalPreview;
         }
 
-        /// <summary>
-        /// テクスチャサイズに応じてパディングサイズを計算する
-        /// 基準: 1024x1024 → 4ピクセル
-        /// サイズが2倍になるごとにパディングサイズも2倍になる
-        /// </summary>
-        private int CalculatePaddingSize(int textureSize)
-        {
-            const int baseTextureSize = 1024;
-            const int basePaddingSize = 4;
-
-            // テクスチャサイズの比率を計算
-            float sizeRatio = (float)textureSize / baseTextureSize;
-
-            // パディングサイズを計算（最小値は1）
-            int paddingSize = Mathf.Max(1, Mathf.RoundToInt(basePaddingSize * sizeRatio));
-
-            return paddingSize;
-        }
 
         #endregion
     }

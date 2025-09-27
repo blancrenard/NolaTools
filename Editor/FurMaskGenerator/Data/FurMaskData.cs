@@ -46,6 +46,9 @@ namespace NolaTools.FurMaskGenerator.Data
         // UV島詳細パラメータ
         [Range(0, 8)] public int uvIslandVertexSmoothIterations = 1; // 頂点ラプラシアン平滑回数 固定: 1
 
+        // エッジパディング設定
+        [Range(0, 32)] public int edgePaddingSize = 4; // エッジパディングサイズ（ピクセル）
+
         // ボーンマスク (Transformパスで指定、0=黒く強くマスク、1=影響なし)
         public System.Collections.Generic.List<BoneMaskData> boneMasks = new System.Collections.Generic.List<BoneMaskData>();
 
@@ -64,6 +67,7 @@ namespace NolaTools.FurMaskGenerator.Data
             uvIslandNeighborRadius = 0.015f;
             uvIslandVertexSmoothIterations = 2;
             tempSubdivisionIterations = 1;
+            edgePaddingSize = 4; // デフォルトエッジパディングサイズ
         }
     }
 
@@ -254,6 +258,7 @@ namespace NolaTools.FurMaskGenerator.Data
         public readonly float UvIslandNeighborRadius;
         public readonly int UvIslandVertexSmoothIterations;
         public readonly bool UseTransparentMode;
+        public readonly int EdgePaddingSize;
         public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
         public readonly Action OnCancelled;
 
@@ -271,6 +276,7 @@ namespace NolaTools.FurMaskGenerator.Data
             float uvIslandNeighborRadius,
             int uvIslandVertexSmoothIterations,
             bool useTransparentMode,
+            int edgePaddingSize,
             Action<Dictionary<string, Texture2D>> onCompleted,
             Action onCancelled)
         {
@@ -287,6 +293,7 @@ namespace NolaTools.FurMaskGenerator.Data
             UvIslandNeighborRadius = uvIslandNeighborRadius;
             UvIslandVertexSmoothIterations = Mathf.Clamp(uvIslandVertexSmoothIterations, 0, 8);
             UseTransparentMode = useTransparentMode;
+            EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
             OnCompleted = onCompleted;
             OnCancelled = onCancelled;
         }

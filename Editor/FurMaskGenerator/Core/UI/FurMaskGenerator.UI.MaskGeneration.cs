@@ -35,12 +35,26 @@ namespace NolaTools.FurMaskGenerator
                     0.1f,
                     5.0f);
 
+                // 細分化回数設定
+                settings.tempSubdivisionIterations = EditorGUILayout.IntSlider(
+                    new GUIContent(UILabels.SUBDIVISION_ITERATIONS_LABEL, UILabels.SUBDIVISION_ITERATIONS_TOOLTIP),
+                    settings.tempSubdivisionIterations,
+                    0,
+                    3);
+
                 // スムージング回数設定
                 settings.uvIslandVertexSmoothIterations = EditorGUILayout.IntSlider(
                     "スムージング回数",
                     settings.uvIslandVertexSmoothIterations,
                     0,
                     8);
+
+                // エッジパディング設定
+                settings.edgePaddingSize = EditorGUILayout.IntSlider(
+                    new GUIContent(UILabels.EDGE_PADDING_LABEL, UILabels.EDGE_PADDING_TOOLTIP),
+                    settings.edgePaddingSize,
+                    0,
+                    32);
 
                 // 透過モード設定
                 settings.useTransparentMode = EditorGUILayout.Toggle(

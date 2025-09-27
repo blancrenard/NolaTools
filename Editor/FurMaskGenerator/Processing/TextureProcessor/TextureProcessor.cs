@@ -30,6 +30,7 @@ namespace NolaTools.FurMaskGenerator
         private readonly List<string> subRendererPaths;
         private readonly List<int> subMeshIndices;
         private readonly bool useTransparentMode; // 透過モード設定
+        private readonly int edgePaddingSize; // エッジパディングサイズ
 
         // subIndex -> (matKey, textureListIndex) の対応マップ
         private readonly Dictionary<int, (string mat, int texIdx)> subIndexToTexLocator = new();
@@ -46,7 +47,7 @@ namespace NolaTools.FurMaskGenerator
 
         #region コンストラクタ
 
-        public TextureProcessor(List<Vector3> verts, List<Vector2> uvs, List<(int[] tri, string mat)> subDatas, float[] vDist, int texSize, float gamma, List<UVIslandMaskData> uvIslandMasks = null, List<string> subRendererPaths = null, List<int> subMeshIndices = null, int vertexSmoothIterations = 1, bool useTransparentMode = false)
+        public TextureProcessor(List<Vector3> verts, List<Vector2> uvs, List<(int[] tri, string mat)> subDatas, float[] vDist, int texSize, float gamma, List<UVIslandMaskData> uvIslandMasks = null, List<string> subRendererPaths = null, List<int> subMeshIndices = null, int vertexSmoothIterations = 1, bool useTransparentMode = false, int edgePaddingSize = 4)
         {
             this.verts = verts;
             this.uvs = uvs;
@@ -58,6 +59,7 @@ namespace NolaTools.FurMaskGenerator
             this.subRendererPaths = subRendererPaths ?? new List<string>();
             this.subMeshIndices = subMeshIndices ?? new List<int>();
             this.useTransparentMode = useTransparentMode;
+            this.edgePaddingSize = edgePaddingSize;
             
             // ラスタライズ最適化の初期化
             CalculateAdaptiveProgressInterval();
