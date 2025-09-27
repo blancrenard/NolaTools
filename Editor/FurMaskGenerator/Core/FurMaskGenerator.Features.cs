@@ -69,8 +69,6 @@ namespace NolaTools.FurMaskGenerator
             }
             // UIの値に0.001を加算して内部計算に使用
             float internalMaxDistance = settings.maxDistance + AppSettings.POSITION_PRECISION;
-            // ベイク時のみ固定値を適用（恒久設定は変更しない）
-            const int tempSubdivisionIterations = 1;
             
             var bakerSettings = new DistanceBakerSettings(
                 avatarRenderers,
@@ -82,10 +80,11 @@ namespace NolaTools.FurMaskGenerator
                 settings.textureSizeIndex,
                 internalMaxDistance,
                 settings.gamma,
-                tempSubdivisionIterations,
+                settings.tempSubdivisionIterations,
                 settings.uvIslandNeighborRadius,
                 settings.uvIslandVertexSmoothIterations,
                 settings.useTransparentMode,
+                settings.edgePaddingSize,
                 OnBakeCompleted,
                 OnBakeCancelled
             );
@@ -195,10 +194,7 @@ namespace NolaTools.FurMaskGenerator
                     ? $"ノーマルマップは見つかりませんでしたが、長さを自動設定しました。"
                     : "ノーマルマップと長さの設定が見つかりませんでした。";
                 
-                EditorUtility.DisplayDialog(
-                    UILabels.INFO_DIALOG_TITLE, 
-                    message, 
-                    UILabels.ERROR_DIALOG_OK);
+                Debug.Log($"[FurMaskGenerator] {message}");
             }
 
             // 変更は遅延一括保存に任せる（二重保存を避ける）
