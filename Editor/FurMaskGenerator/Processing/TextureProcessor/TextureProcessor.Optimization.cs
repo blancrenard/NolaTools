@@ -38,26 +38,6 @@ namespace NolaTools.FurMaskGenerator
 
         private bool ShouldSkipTriangle(Vector2 uv0, Vector2 uv1, Vector2 uv2, int width, int height)
         {
-            Vector2 p0 = new Vector2(uv0.x * width, uv0.y * height);
-            Vector2 p1 = new Vector2(uv1.x * width, uv1.y * height);
-            Vector2 p2 = new Vector2(uv2.x * width, uv2.y * height);
-
-            float minX = Mathf.Min(p0.x, p1.x, p2.x);
-            float maxX = Mathf.Max(p0.x, p1.x, p2.x);
-            float minY = Mathf.Min(p0.y, p1.y, p2.y);
-            float maxY = Mathf.Max(p0.y, p1.y, p2.y);
-
-            if (maxX < 0 || minX >= width || maxY < 0 || minY >= height)
-            {
-                return true;
-            }
-
-            float area = AppSettings.HALF_VALUE * Mathf.Abs((p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y));
-            if (area < AppSettings.HALF_VALUE)
-            {
-                return true;
-            }
-
             return false;
         }
 
