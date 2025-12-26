@@ -1,9 +1,9 @@
 {
     "name": "com.blancrenard.nolatools",
-    "displayName": "NolaTools",
-    "version": "1.0.2",
+    "displayName": "FurTools",
+    "version": "1.0.3",
     "unity": "2022.3",
-    "description": "VRChatのアバター用ファーマスク生成ツール",
+    "description": "VRChatのアバター用ファー関連ツール集",
     "license": "MIT",
     "author": {
         "name": "blancrenard",

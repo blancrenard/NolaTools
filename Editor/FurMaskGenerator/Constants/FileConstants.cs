@@ -21,7 +21,7 @@ namespace NolaTools.FurMaskGenerator.Constants
         #endregion
 
         #region メニューとウィンドウ
-        public const string MENU_ITEM_PATH = "Tools/NolaTools/FurMaskGenerator";
+        public const string MENU_ITEM_PATH = "Tools/FurTools/FurMaskGenerator";
         public const string WINDOW_TITLE = "FurMaskGenerator";
         #endregion
 

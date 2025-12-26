@@ -1,7 +1,11 @@
 {
     "name": "NolaTools.Editor",
     "rootNamespace": "NolaTools",
-    "references": [],
+    "references": [
+        "Unity.Mathematics",
+        "Unity.Burst",
+        "Unity.Collections"
+    ],
     "includePlatforms": [
         "Editor"
     ],
