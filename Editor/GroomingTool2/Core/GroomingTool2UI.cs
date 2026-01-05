@@ -497,7 +497,12 @@ namespace GroomingTool2.Core
                 }
             });
             
-            menu.AddSeparator("");
+
+            // UV内のみ編集する
+            menu.AddItem(new GUIContent("UV内のみ編集する"), state.RestrictEditToUvRegion, () =>
+            {
+                state.RestrictEditToUvRegion = !state.RestrictEditToUvRegion;
+            });
 
             // UVパディングサブメニュー
             int[] paddingValues = { 0, 2, 4, 8, 16, 32 };

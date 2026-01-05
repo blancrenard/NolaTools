@@ -668,7 +668,11 @@ namespace GroomingTool2.Scene
 
             try
             {
-                strokeSpecificMask = BuildStrokeMask(maxRange, out strokeMaskBounds);
+                // UV内のみ編集する設定がオンの場合のみマスクを構築
+                if (state.RestrictEditToUvRegion)
+                {
+                    strokeSpecificMask = BuildStrokeMask(maxRange, out strokeMaskBounds);
+                }
 
                 // 元のストロークを処理（ミラーは手動で処理するため無効）
                 strokeExecutor.ExecuteStrokeWithDirectionAndUvMask(
@@ -744,13 +748,16 @@ namespace GroomingTool2.Scene
                 mirrorPoints.Add(new Vector2(coord.x, coord.y));
             }
 
-            // ミラー座標用のマスクを生成
+            // ミラー座標用のマスクを生成（UV内のみ編集する設定がオンの場合のみ）
             var mirrorCoordsSet = new HashSet<Vector2Int>(mirrorCoordsList);
             bool[,] mirrorMask = null;
             RectInt mirrorMaskBounds = new RectInt(0, 0, 0, 0);
             try
             {
-                mirrorMask = BuildStrokeMaskForPoints(mirrorCoordsSet, maxRange, out mirrorMaskBounds);
+                if (state.RestrictEditToUvRegion)
+                {
+                    mirrorMask = BuildStrokeMaskForPoints(mirrorCoordsSet, maxRange, out mirrorMaskBounds);
+                }
 
                 // ミラー側のストローク方向を計算（3D空間ベース）
                 float mirrorRadians = 0f;
@@ -1130,8 +1137,11 @@ namespace GroomingTool2.Scene
 
                     System.Array.Clear(combinedMaskBuffer, 0, combinedMaskBuffer.Length);
 
+                    // UV内のみ編集する設定がオフの場合はUV領域マスクを無効化
+                    var effectiveUvRegionMask = state.RestrictEditToUvRegion ? furRenderer.UvRegionMask : null;
+
                     UvRegionMaskUtils.CombineMasks(
-                        furRenderer.UvRegionMask,
+                        effectiveUvRegionMask,
                         clusterMaskBuffer,
                         clusterBounds,
                         combinedMaskBuffer);

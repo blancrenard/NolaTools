@@ -87,7 +87,8 @@ namespace GroomingTool2.Core
             bool inclinedOnly,
             bool dirOnly,
             bool pinchInverted,
-            NativeArray<byte> mask)
+            NativeArray<byte> mask,
+            bool hasMask)
         {
             if (points == null || points.Count < 2)
                 return;
@@ -104,7 +105,6 @@ namespace GroomingTool2.Core
             }
 
             var pointsSlice = pooledPoints.GetSubArray(0, points.Count);
-            bool hasMask = mask.IsCreated && mask.Length > 0;
 
             // Job を実行（furData を直接操作）
             var job = new ApplyBrushStrokeJob
@@ -113,7 +113,8 @@ namespace GroomingTool2.Core
                 FurData = furData,
                 Points = pointsSlice,
                 BrushSamples = pooledBrushSamples,
-                Mask = hasMask ? mask : default,
+                Mask = mask,
+                HasMask = (byte)(hasMask ? 1 : 0),
 
                 Cos1 = parameters.cos1,
                 Sin1 = parameters.sin1,

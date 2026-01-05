@@ -101,6 +101,19 @@ namespace GroomingTool2.Managers
             maskActive = false;
         }
 
+        /// <summary>
+        /// マスクバッファが作成されていることを保証する（Jobに渡すため）
+        /// </summary>
+        private void EnsureMaskBufferCreated()
+        {
+            if (!pooledMaskBuffer.IsCreated || pooledMaskBuffer.Length != Common.TexSizeSquared)
+            {
+                if (pooledMaskBuffer.IsCreated)
+                    pooledMaskBuffer.Dispose();
+                pooledMaskBuffer = new NativeArray<byte>(Common.TexSizeSquared, Allocator.Persistent);
+            }
+        }
+
         public void Dispose()
         {
             maskActive = false;
@@ -120,9 +133,12 @@ namespace GroomingTool2.Managers
 
         private void UpdateFurDataJobs(List<Vector2Int> points, float radian, bool eraserMode, bool blurMode, bool pinchMode, bool inclinedOnly, bool dirOnly, bool pinchInverted)
         {
+            // マスクがない場合でも、空のバッファを確保しておく（Jobに渡すため）
+            EnsureMaskBufferCreated();
+            
             // プールされたマスクバッファを使用（アロケーションなし）
-            NativeArray<byte> mask = HasMask ? pooledMaskBuffer : default;
-            brushProcessor.ProcessBrushJobs(furData, points, radian, eraserMode, blurMode, pinchMode, inclinedOnly, dirOnly, pinchInverted, mask);
+            // HasMaskフラグでマスクの有効性を判断するため、常にバッファを渡す
+            brushProcessor.ProcessBrushJobs(furData, points, radian, eraserMode, blurMode, pinchMode, inclinedOnly, dirOnly, pinchInverted, pooledMaskBuffer, HasMask);
         }
 
         public void UpdateWithMirror(List<Vector2Int> points, float radian, bool enableMirror, bool eraserMode, bool blurMode, bool pinchMode, bool inclinedOnly, bool dirOnly, bool pinchInverted)

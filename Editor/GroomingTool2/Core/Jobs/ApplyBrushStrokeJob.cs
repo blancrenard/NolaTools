@@ -20,7 +20,10 @@ namespace GroomingTool2.Core.Jobs
         public NativeArray<FurData> FurData; // Size: TexSize * TexSize
         [ReadOnly] public NativeArray<int2> Points;
         [ReadOnly] public NativeArray<MyBrushData> BrushSamples;
-        [ReadOnly] public NativeArray<byte> Mask; // Size: TexSize * TexSize (optional)
+        [ReadOnly] public NativeArray<byte> Mask; // Size: TexSize * TexSize (optional, only used if HasMask is 1)
+        
+        // マスク有効フラグ（0: マスクなし、1: マスクあり）
+        public byte HasMask;
 
         // Stroke parameters
         public float Cos1;
@@ -60,8 +63,8 @@ namespace GroomingTool2.Core.Jobs
                     // 全体配列への直接インデックス
                     int index = gy * TexSize + gx;
 
-                    // Mask check
-                    if (Mask.IsCreated && Mask.Length > 0)
+                    // Mask check (HasMaskフラグを使用して、未初期化のMaskへのアクセスを回避)
+                    if (HasMask == 1)
                     {
                         if (Mask[index] == 0) continue;
                     }

@@ -21,6 +21,7 @@ namespace GroomingTool2.State
         [SerializeField] private float autoSetupRandomness = 0f;
         [SerializeField] private bool sceneEditingEnabled = false;
         [SerializeField] private bool useGpuRendering = true;
+        [SerializeField] private bool restrictEditToUvRegion = true;
         [NonSerialized] private GameObject avatar;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -179,6 +180,17 @@ namespace GroomingTool2.State
                 if (useGpuRendering == value) return;
                 useGpuRendering = value;
                 OnPropertyChanged(nameof(UseGpuRendering));
+            }
+        }
+
+        public bool RestrictEditToUvRegion
+        {
+            get => restrictEditToUvRegion;
+            set
+            {
+                if (restrictEditToUvRegion == value) return;
+                restrictEditToUvRegion = value;
+                OnPropertyChanged(nameof(RestrictEditToUvRegion));
             }
         }
     }

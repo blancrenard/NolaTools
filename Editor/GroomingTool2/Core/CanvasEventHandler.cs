@@ -420,6 +420,9 @@ namespace GroomingTool2.Core
             // UV領域マスクを更新（必要に応じて再構築）
             RebuildUvRegionMaskIfNeeded();
 
+            // UV内のみ編集する設定がオフの場合はマスクを無効化
+            var effectiveUvMask = state.RestrictEditToUvRegion ? uvRegionMask : null;
+
             strokeExecutor.ExecuteStrokeWithDirectionAndUvMask(
                 points,
                 maskState,
@@ -431,7 +434,7 @@ namespace GroomingTool2.Core
                 ui.DirOnly,
                 ui.PinchInverted,
                 null, // overrideRadians
-                uvRegionMask);
+                effectiveUvMask);
 
             // Scene編集が有効な場合、Sceneビューの毛の線もリアルタイムで更新
             if (state.SceneEditingEnabled)
