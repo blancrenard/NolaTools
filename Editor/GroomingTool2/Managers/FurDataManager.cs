@@ -164,9 +164,15 @@ namespace GroomingTool2.Managers
             var mirrorBuffer = symmetryService.GetMirrorPoints(points, out bool allMirrored);
             debugMirrorPoints.AddRange(mirrorBuffer);
 
-            // ミラー側が塗れない場合は元のストロークもスキップ
+            // ミラー側が塗れない場合の処理
             if (!allMirrored)
             {
+                // UV内のみ編集する設定がオフの場合は、ブラシ側だけ処理してミラーはスキップ
+                if (!state.RestrictEditToUvRegion)
+                {
+                    UpdateFurDataJobs(points, radian, eraserMode, blurMode, pinchMode, inclinedOnly, dirOnly, pinchInverted);
+                }
+                // UV内のみ編集する設定がオンの場合は、両方スキップ（元の動作）
                 return;
             }
 
