@@ -101,9 +101,6 @@ namespace GroomingTool2.Rendering
         {
             preferGpuRendering = useGpu;
             UpdateRenderingMode();
-            
-            string mode = useGpuRendering ? "GPU" : "CPU";
-            Debug.Log($"GroomingTool2: Rendering mode changed to {mode}.");
         }
         
         /// <summary>
