@@ -26,7 +26,6 @@ namespace NolaTools.FurMaskGenerator
                 for (int i = 0; i < buffer.Length; i++) buffer[i] = initialColor;
                 var rasterizedPixels = new HashSet<int>();
 
-                int skippedTriangles = 0;
                 for (int i = 0; i < tri.Length; i += 3)
                 {
                     int a = tri[i], b = tri[i + 1], c = tri[i + 2];
