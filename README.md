@@ -10,5 +10,7 @@ VRChatのアバター用ファー関連ツール集です。
 ### GroomingTool2
 毛の流れを設定してノーマルマップを生成するツールです。
 
+### MaterialConverter
+lilToonのマテリアルをファー用マテリアルに変換するツールです。
 
 詳細は[マニュアル](https://blancrenard.github.io/vpm-NolaTools/)をご覧ください。
