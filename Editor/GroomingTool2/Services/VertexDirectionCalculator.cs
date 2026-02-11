@@ -11,6 +11,13 @@ namespace GroomingTool2.Services
     internal sealed class VertexDirectionCalculator
     {
         /// <summary>
+        /// 目ボーンによる前方向の判定に必要な最低限の内積値。
+        /// 目の方向がheadForwardとほぼ直交している場合（目が頭のほぼ真上にある場合）、
+        /// 目ボーンによる補正は信頼できないため、アバターroot前方向にフォールバックする。
+        /// </summary>
+        private const float kEyeDotReliabilityThreshold = 0.1f;
+
+        /// <summary>
         /// 頂点ごとの毛方向を計算
         /// </summary>
         /// <param name="skinnedMeshRenderers">対象のSkinnedMeshRenderer一覧</param>
@@ -37,11 +44,11 @@ namespace GroomingTool2.Services
             var directions = new Vector3[totalVertexCount];
             Transform headBone = animator.GetBoneTransform(HumanBodyBones.Head);
 
-            // 鼻位置を検出
-            Vector3? nosePosition = FindNosePosition(skinnedMeshRenderers, headBone, animator);
-
-            // 頭の前方向を計算（目の位置で補正）
+            // 頭の前方向を計算（目の位置またはアバターroot方向で補正）
             Vector3 headForward = CalculateHeadForward(headBone, animator);
+
+            // 鼻位置を検出（補正済みheadForwardを使用）
+            Vector3? nosePosition = FindNosePosition(skinnedMeshRenderers, headBone, headForward);
 
             int vertexOffset = 0;
             foreach (var renderer in skinnedMeshRenderers)
@@ -83,23 +90,43 @@ namespace GroomingTool2.Services
         }
 
         /// <summary>
-        /// 頭の前方向を計算
+        /// 頭の前方向を計算する。
+        /// 目ボーンの位置で補正し、信頼性が低い場合はアバターroot前方向にフォールバックする。
         /// </summary>
         private static Vector3 CalculateHeadForward(Transform headBone, Animator animator)
         {
-            Vector3 headForward = headBone != null ? headBone.forward : Vector3.forward;
+            if (headBone == null) return Vector3.forward;
+            return CorrectHeadForward(headBone.forward, headBone, animator);
+        }
+
+        /// <summary>
+        /// headForwardを目ボーンまたはアバターroot前方向で補正する。
+        /// 目ボーンの方向がheadForwardとほぼ直交している場合（目が頭のほぼ真上にある場合）、
+        /// 目ボーンによる補正は信頼できないため、アバターroot前方向にフォールバックする。
+        /// </summary>
+        private static Vector3 CorrectHeadForward(Vector3 headForward, Transform headBone, Animator animator)
+        {
             Transform leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
             Transform rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
-            if (leftEye != null && rightEye != null && headBone != null)
+
+            if (leftEye != null && rightEye != null)
             {
                 Vector3 eyeCenter = (leftEye.position + rightEye.position) * 0.5f;
                 Vector3 eyeDir = (eyeCenter - headBone.position).normalized;
-                if (Vector3.Dot(headForward, eyeDir) < 0f)
+                float dot = Vector3.Dot(headForward, eyeDir);
+
+                if (Mathf.Abs(dot) >= kEyeDotReliabilityThreshold)
                 {
-                    headForward = -headForward;
+                    // 目の方向にheadForward成分が十分にある → 目ボーンで補正
+                    return dot < 0f ? -headForward : headForward;
                 }
+                // |dot| が閾値未満: 目ボーンの方向がheadForwardとほぼ直交しており信頼できない
+                // → アバターroot前方向にフォールバック
             }
-            return headForward;
+
+            // 目ボーンが無い、または目ボーン補正が信頼できない場合
+            Vector3 avatarForward = animator.transform.forward;
+            return Vector3.Dot(headForward, avatarForward) < 0f ? -headForward : headForward;
         }
 
         /// <summary>
@@ -122,19 +149,7 @@ namespace GroomingTool2.Services
             var boneWeights = mesh.boneWeights;
 
             // 頭ボーン配下かどうかのフラグを事前計算
-            bool[] isHeadFamilyBone = new bool[bones.Length];
-            for (int bi = 0; bi < bones.Length; bi++)
-            {
-                var b = bones[bi];
-                if (b == null || headBone == null)
-                {
-                    isHeadFamilyBone[bi] = false;
-                }
-                else
-                {
-                    isHeadFamilyBone[bi] = (b == headBone) || b.IsChildOf(headBone);
-                }
-            }
+            bool[] isHeadFamilyBone = BuildIsHeadFamilyFlags(bones, headBone);
 
             for (int i = 0; i < vertices.Length; i++)
             {
@@ -199,28 +214,16 @@ namespace GroomingTool2.Services
         }
 
         /// <summary>
-        /// 鼻の位置を自動検出する
-        /// 頭ボーンに影響を受ける頂点のうち、最も前方に突き出ている位置を鼻とする
+        /// 鼻の位置を自動検出する。
+        /// 頭ボーンに影響を受ける頂点のうち、補正済みheadForward方向に最も突き出ている位置を鼻とする。
         /// </summary>
-        private Vector3? FindNosePosition(List<SkinnedMeshRenderer> renderers, Transform headBone, Animator animator)
+        private static Vector3? FindNosePosition(List<SkinnedMeshRenderer> renderers, Transform headBone, Vector3 headForward)
         {
             if (headBone == null) return null;
 
-            // 目の位置から顔の前方向を推定
-            Transform leftEye = animator.GetBoneTransform(HumanBodyBones.LeftEye);
-            Transform rightEye = animator.GetBoneTransform(HumanBodyBones.RightEye);
-            Vector3 headForward = headBone.forward;
-
-            // 目があればその方向で補正
-            if (leftEye != null && rightEye != null)
-            {
-                Vector3 eyeCenter = (leftEye.position + rightEye.position) * 0.5f;
-                Vector3 eyeDir = (eyeCenter - headBone.position).normalized;
-                if (Vector3.Dot(headForward, eyeDir) < 0f)
-                {
-                    headForward = -headForward;
-                }
-            }
+            // headForward基準の上方向を計算（世界のupからheadForward成分を除去）
+            Vector3 headUp = (Vector3.up - Vector3.Dot(Vector3.up, headForward) * headForward).normalized;
+            if (headUp.sqrMagnitude < 0.001f) headUp = Vector3.up;
 
             Vector3 bestNosePos = headBone.position + headForward * 0.1f; // デフォルト
             float maxForwardScore = float.NegativeInfinity;
@@ -235,36 +238,23 @@ namespace GroomingTool2.Services
                 var bones = renderer.bones;
 
                 // 頭ボーン配下かどうかを確認
-                bool[] isHeadFamily = new bool[bones.Length];
-                for (int bi = 0; bi < bones.Length; bi++)
-                {
-                    var b = bones[bi];
-                    if (b != null)
-                    {
-                        isHeadFamily[bi] = (b == headBone) || b.IsChildOf(headBone);
-                    }
-                }
+                bool[] isHeadFamily = BuildIsHeadFamilyFlags(bones, headBone);
 
                 for (int i = 0; i < vertices.Length; i++)
                 {
-                    // 頭ボーンに影響を受けているか確認
-                    BoneWeight weight = boneWeights[i];
-                    float headWeight = 0f;
-                    if (weight.boneIndex0 < isHeadFamily.Length && isHeadFamily[weight.boneIndex0]) headWeight += weight.weight0;
-                    if (weight.boneIndex1 < isHeadFamily.Length && isHeadFamily[weight.boneIndex1]) headWeight += weight.weight1;
-                    if (weight.boneIndex2 < isHeadFamily.Length && isHeadFamily[weight.boneIndex2]) headWeight += weight.weight2;
-                    if (weight.boneIndex3 < isHeadFamily.Length && isHeadFamily[weight.boneIndex3]) headWeight += weight.weight3;
-
+                    float headWeight = CalculateHeadBoneWeight(boneWeights[i], isHeadFamily);
                     if (headWeight < 0.5f) continue; // 頭への影響が弱い頂点はスキップ
 
                     Vector3 worldPos = renderer.transform.TransformPoint(vertices[i]);
-                    Vector3 localToHead = headBone.InverseTransformPoint(worldPos);
+                    Vector3 fromHead = worldPos - headBone.position;
 
-                    // 頭ボーンのローカルZ方向（前方）への突出度をスコアとする
-                    // Y軸（上下）が極端に離れている頂点は除外（頭頂や顎下）
-                    if (Mathf.Abs(localToHead.y) > 0.15f) continue;
+                    // 補正済みheadForward基準で上下方向のフィルタリング
+                    // 上下が極端に離れている頂点は除外（頭頂や顎下）
+                    float verticalDist = Vector3.Dot(fromHead, headUp);
+                    if (Mathf.Abs(verticalDist) > 0.15f) continue;
 
-                    float forwardScore = localToHead.z;
+                    // 補正済みheadForward方向への突出度をスコアとする
+                    float forwardScore = Vector3.Dot(fromHead, headForward);
                     if (forwardScore > maxForwardScore)
                     {
                         maxForwardScore = forwardScore;
@@ -277,9 +267,41 @@ namespace GroomingTool2.Services
         }
 
         /// <summary>
+        /// ボーン配列から頭ボーン配下かどうかのフラグ配列を構築する
+        /// </summary>
+        private static bool[] BuildIsHeadFamilyFlags(Transform[] bones, Transform headBone)
+        {
+            var flags = new bool[bones.Length];
+            if (headBone == null) return flags;
+
+            for (int i = 0; i < bones.Length; i++)
+            {
+                var b = bones[i];
+                if (b != null)
+                {
+                    flags[i] = (b == headBone) || b.IsChildOf(headBone);
+                }
+            }
+            return flags;
+        }
+
+        /// <summary>
+        /// BoneWeightから頭ボーン配下のウェイト合計を計算する
+        /// </summary>
+        private static float CalculateHeadBoneWeight(BoneWeight weight, bool[] isHeadFamily)
+        {
+            float headWeight = 0f;
+            if (weight.boneIndex0 < isHeadFamily.Length && isHeadFamily[weight.boneIndex0]) headWeight += weight.weight0;
+            if (weight.boneIndex1 < isHeadFamily.Length && isHeadFamily[weight.boneIndex1]) headWeight += weight.weight1;
+            if (weight.boneIndex2 < isHeadFamily.Length && isHeadFamily[weight.boneIndex2]) headWeight += weight.weight2;
+            if (weight.boneIndex3 < isHeadFamily.Length && isHeadFamily[weight.boneIndex3]) headWeight += weight.weight3;
+            return headWeight;
+        }
+
+        /// <summary>
         /// 頭部頂点の毛方向を計算（鼻から放射状、後頭部は下向き）
         /// </summary>
-        private Vector3 CalculateHeadFurDirection(
+        private static Vector3 CalculateHeadFurDirection(
             Vector3 vertexWorldPos,
             Vector3 nosePos,
             Transform headBone,
