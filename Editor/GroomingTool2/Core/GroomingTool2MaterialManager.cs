@@ -49,8 +49,11 @@ namespace GroomingTool2.Core
             // 既存のリサイズ済みテクスチャを破棄
             ClearMaterialEntries();
 
-            // すべてのSkinnedMeshRendererを取得（フィルタリングなし）
-            var renderers = avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true).ToList();
+            // SkinnedMeshRendererとMeshRendererの両方からマテリアルを取得
+            // （Humanoidボーンの無いモデルや静的メッシュでも背景を選択できるようにする）
+            var skinnedRenderers = avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true).Cast<Renderer>();
+            var meshRenderers = avatar.GetComponentsInChildren<MeshRenderer>(true).Cast<Renderer>();
+            var renderers = skinnedRenderers.Concat(meshRenderers).ToList();
 
             // テクスチャ単位でグルーピング
             var textureMap = GroupMaterialsByTexture(renderers);
@@ -65,7 +68,7 @@ namespace GroomingTool2.Core
             ResizeTextures();
         }
 
-        private Dictionary<Texture2D, MaterialEntry> GroupMaterialsByTexture(List<SkinnedMeshRenderer> renderers)
+        private Dictionary<Texture2D, MaterialEntry> GroupMaterialsByTexture(List<Renderer> renderers)
         {
             var textureMap = new Dictionary<Texture2D, MaterialEntry>();
 

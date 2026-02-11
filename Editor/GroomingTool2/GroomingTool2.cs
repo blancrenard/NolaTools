@@ -469,7 +469,12 @@ namespace GroomingTool2
 
                 EditorGUILayout.Space(8);
 
-                bool canExecute = context.State.Avatar != null && context.MaterialManager?.SelectedMaterial.HasValue == true;
+                // 自動設定はHumanoidアバターでのみ実行可能
+                var animator = context.State.Avatar?.GetComponent<Animator>();
+                bool hasHumanoidAvatar = animator != null && animator.isHuman;
+                bool canExecute = context.State.Avatar != null
+                    && context.MaterialManager?.SelectedMaterial.HasValue == true
+                    && hasHumanoidAvatar;
                 using (new EditorGUI.DisabledGroupScope(!canExecute))
                 {
                     if (GUILayout.Button("自動設定"))
