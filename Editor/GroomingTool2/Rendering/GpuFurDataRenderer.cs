@@ -23,9 +23,6 @@ namespace GroomingTool2.Rendering
         private static readonly float[] CircleSin = new float[CircleSegments + 1];
         private static readonly float[] CircleCos = new float[CircleSegments + 1];
 
-        // ドットの固定サイズ（ピクセル単位）- CPU版に合わせた見た目
-        private const float FixedDotRadius = 5f;
-
         /// <summary>
         /// GPU描画が利用可能かどうか（シェーダーとマテリアルが正常に作成された場合true）
         /// </summary>
@@ -43,7 +40,6 @@ namespace GroomingTool2.Rendering
 
         static GpuFurDataRenderer()
         {
-            // sin/cosを事前計算
             for (int i = 0; i <= CircleSegments; i++)
             {
                 float angle = (float)i / CircleSegments * Mathf.PI * 2f;
@@ -72,7 +68,6 @@ namespace GroomingTool2.Rendering
         {
             IsAvailable = false;
             
-            // 頂点カラーをそのまま描画するシンプルなシェーダー
             var shader = Shader.Find("Hidden/Internal-Colored");
             if (shader == null)
             {
@@ -86,7 +81,6 @@ namespace GroomingTool2.Rendering
                 {
                     hideFlags = HideFlags.HideAndDontSave
                 };
-                // Zテストオフ、アルファブレンディング有効
                 glMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                 glMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 glMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
@@ -95,7 +89,7 @@ namespace GroomingTool2.Rendering
                 
                 IsAvailable = true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Debug.LogWarning($"GpuFurDataRenderer: Failed to create material. Falling back to CPU rendering. Error: {ex.Message}");
                 if (glMaterial != null)
@@ -106,9 +100,6 @@ namespace GroomingTool2.Rendering
             }
         }
 
-        // 暗化用の色倍率
-        private const float MaskedDarkenFactor = 0.4f;
-
         /// <summary>
         /// 毛データをGPU描画する
         /// Handles.BeginGUI() のコンテキスト内で呼び出すこと
@@ -118,58 +109,42 @@ namespace GroomingTool2.Rendering
             if (glMaterial == null || furDataManager?.Data == null)
                 return;
 
-            // 可視データ範囲を計算
-            CoordinateUtils.GetVisibleDataRange(viewRect, scale, scrollOffsetData, Common.TexSize, 1,
-                out int startX, out int endX, out int startY, out int endY);
-
-            int visibleWData = Mathf.Max(0, endX - startX);
-            int visibleHData = Mathf.Max(0, endY - startY);
-            if (visibleWData <= 0 || visibleHData <= 0)
+            if (!FurRenderParams.HasVisibleArea(viewRect, scale, scrollOffsetData))
                 return;
 
-            // ステップ計算（CPU版と同じロジック）
-            int stepData = Mathf.Max(1, Mathf.RoundToInt(interval / Mathf.Max(scale, 1e-6f)));
-            int screenPointsX = Mathf.Max(1, Mathf.CeilToInt(viewRect.width / interval));
-            int screenPointsY = Mathf.Max(1, Mathf.CeilToInt(viewRect.height / interval));
-            int approxPoints = screenPointsX * screenPointsY;
-
-            int stepMul = 1;
-            if (approxPoints > FurRenderParams.TargetMaxPoints)
-            {
-                stepMul = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt((float)approxPoints / FurRenderParams.TargetMaxPoints)));
-            }
-            int step = Mathf.Max(1, stepData * stepMul);
-
+            float screenInterval = FurRenderParams.CalculateScreenInterval(viewRect, interval);
             var furData = furDataManager.Data;
-
-            // 共通クリップ領域を作成
             var clip = ClippingUtils.ClipRect.FromCanvasRect(viewRect);
 
             // GL描画開始
             GL.PushMatrix();
             glMaterial.SetPass(0);
-
-            // GUIマトリックスを使用（Handles.BeginGUI()内なので）
             GL.LoadPixelMatrix();
 
-            // 1回のループでドットとラインの描画データを収集
-            // 最大描画数を事前計算してバッファサイズを確保
-            int maxPointsX = (endX - startX) / step + 1;
-            int maxPointsY = (endY - startY) / step + 1;
+            // データ空間のイテレーション範囲を計算
+            var grid = FurRenderParams.DotGridRange.Calculate(screenInterval, scale, scrollOffsetData, viewRect.width, viewRect.height);
+            float maxLinePx = Mathf.Max(1f, screenInterval * FurRenderParams.MaxLineLengthRatio);
+
+            // バッファサイズ確保
+            int maxPointsX = Mathf.Max(1, Mathf.CeilToInt((grid.EndX - grid.StartX) / grid.Step)) + 1;
+            int maxPointsY = Mathf.Max(1, Mathf.CeilToInt((grid.EndY - grid.StartY) / grid.Step)) + 1;
             int maxPoints = maxPointsX * maxPointsY;
-            
-            // スタック配列またはヒープ配列を使用（少量ならスタック）
-            // 描画データ構造体
+
             Span<DrawData> drawDataBuffer = maxPoints <= 1024 
                 ? stackalloc DrawData[maxPoints] 
                 : new DrawData[maxPoints];
             int drawCount = 0;
 
-            // 1回のループで全データを収集
-            for (int y = startY; y < endY; y += step)
+            // 描画データを収集（浮動小数点ステップで正確な画面間隔を保つ）
+            for (float dataY = grid.StartY; dataY < grid.EndY; dataY += grid.Step)
             {
-                for (int x = startX; x < endX; x += step)
+                for (float dataX = grid.StartX; dataX < grid.EndX; dataX += grid.Step)
                 {
+                    int x = Mathf.RoundToInt(dataX);
+                    int y = Mathf.RoundToInt(dataY);
+                    if ((uint)x >= (uint)Common.TexSize || (uint)y >= (uint)Common.TexSize)
+                        continue;
+
                     int index = Common.GetIndex(x, y);
                     var data = furData[index];
 
@@ -179,24 +154,21 @@ namespace GroomingTool2.Rendering
                     float powerDot = data.Inclined * Common.Grid;
                     float dxDot = powerDot * cos;
                     float dyDot = powerDot * sin;
-                    float dotLength = Mathf.Sqrt(dxDot * dxDot + dyDot * dyDot);
-                    if (dotLength < 0.5f)
+                    if (dxDot * dxDot + dyDot * dyDot < 0.25f) // dotLength < 0.5
                         continue;
 
-                    // 画面ローカルのピクセル座標に変換
-                    float cx = (x - scrollOffsetData.x) * scale;
-                    float cy = (y - scrollOffsetData.y) * scale;
+                    // 浮動小数点データ座標から画面ピクセル座標へ変換（正確な間隔を保つ）
+                    float cx = (dataX - scrollOffsetData.x) * scale;
+                    float cy = (dataY - scrollOffsetData.y) * scale;
 
-                    // ドット色を取得
                     Color dotColor = NormalMapColorUtils.GetNormalMapColor(data);
                     
-                    // マスク外の場合は暗くする
                     bool isMasked = hasMaskSelection && effectiveMask != null && !effectiveMask[x, y];
                     if (isMasked)
                     {
-                        dotColor.r *= MaskedDarkenFactor;
-                        dotColor.g *= MaskedDarkenFactor;
-                        dotColor.b *= MaskedDarkenFactor;
+                        dotColor.r *= FurRenderParams.MaskedDarkenFactor;
+                        dotColor.g *= FurRenderParams.MaskedDarkenFactor;
+                        dotColor.b *= FurRenderParams.MaskedDarkenFactor;
                     }
 
                     // ライン終点を計算
@@ -206,10 +178,9 @@ namespace GroomingTool2.Rendering
                     float dyLinePx = powerLinePx * sin;
                     float lenPx = Mathf.Sqrt(dxLinePx * dxLinePx + dyLinePx * dyLinePx);
                     
-                    float maxLenPx = Mathf.Max(1f, step * scale * 0.7f);
-                    if (lenPx > maxLenPx && lenPx > 0.5f)
+                    if (lenPx > maxLinePx && lenPx > 0.5f)
                     {
-                        float s = maxLenPx / lenPx;
+                        float s = maxLinePx / lenPx;
                         dxLinePx *= s;
                         dyLinePx *= s;
                     }
@@ -227,30 +198,29 @@ namespace GroomingTool2.Rendering
                 }
             }
 
-            // まずドットを描画（ラインの下に描画されるように）
+            // ドットを描画（ラインの下に描画されるように先に描画）
             GL.Begin(GL.TRIANGLES);
             for (int i = 0; i < drawCount; i++)
             {
                 ref readonly var d = ref drawDataBuffer[i];
-                // ドットの一部でもクリップ領域外に出る場合はスキップ
-                if (d.cx - FixedDotRadius < clip.MinX || d.cx + FixedDotRadius > clip.MaxX ||
-                    d.cy - FixedDotRadius < clip.MinY || d.cy + FixedDotRadius > clip.MaxY)
+                if (d.cx - FurRenderParams.GpuFixedDotRadius < clip.MinX || d.cx + FurRenderParams.GpuFixedDotRadius > clip.MaxX ||
+                    d.cy - FurRenderParams.GpuFixedDotRadius < clip.MinY || d.cy + FurRenderParams.GpuFixedDotRadius > clip.MaxY)
                     continue;
-                DrawCircleVertices(d.cx, d.cy, FixedDotRadius, d.dotColor);
+                DrawCircleVertices(d.cx, d.cy, FurRenderParams.GpuFixedDotRadius, d.dotColor);
             }
             GL.End();
 
-            // 次にラインを描画（ドットの上に描画）
+            // ラインを描画（ドットの上に描画）
             GL.Begin(GL.LINES);
             for (int i = 0; i < drawCount; i++)
             {
                 ref readonly var d = ref drawDataBuffer[i];
                 if (d.hasLine)
                 {
-                    // マスク外の場合は暗い白色、それ以外は通常の白色
-                    Color lineColor = d.isMasked ? new Color(MaskedDarkenFactor, MaskedDarkenFactor, MaskedDarkenFactor) : Color.white;
+                    Color lineColor = d.isMasked
+                        ? new Color(FurRenderParams.MaskedDarkenFactor, FurRenderParams.MaskedDarkenFactor, FurRenderParams.MaskedDarkenFactor)
+                        : Color.white;
                     GL.Color(lineColor);
-                    // ラインをクリップ
                     ClippingUtils.DrawClippedLine(d.cx, d.cy, d.lineEndX, d.lineEndY, clip);
                 }
             }
@@ -258,7 +228,6 @@ namespace GroomingTool2.Rendering
 
             GL.PopMatrix();
         }
-
 
         /// <summary>
         /// 円を三角形ファンで描画（GL.TRIANGLESモード内で呼び出す）
@@ -270,14 +239,10 @@ namespace GroomingTool2.Rendering
 
             for (int i = 0; i < CircleSegments; i++)
             {
-                // 中心
                 GL.Vertex3(cx, cy, 0);
-                // 現在の点
                 GL.Vertex3(cx + CircleCos[i] * radius, cy + CircleSin[i] * radius, 0);
-                // 次の点
                 GL.Vertex3(cx + CircleCos[i + 1] * radius, cy + CircleSin[i + 1] * radius, 0);
             }
         }
     }
 }
-
