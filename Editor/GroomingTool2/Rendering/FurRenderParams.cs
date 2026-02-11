@@ -29,7 +29,7 @@ namespace GroomingTool2.Rendering
         /// <summary>
         /// 最大ポイント数の目標値
         /// </summary>
-        private const int TargetMaxPoints = 8000;
+        public const int TargetMaxPoints = 60000;
 
         /// <summary>
         /// 描画パラメータを計算

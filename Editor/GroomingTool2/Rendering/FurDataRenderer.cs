@@ -71,12 +71,11 @@ namespace GroomingTool2.Rendering
             int screenPointsX = Mathf.Max(1, Mathf.CeilToInt(viewRect.width / interval));
             int screenPointsY = Mathf.Max(1, Mathf.CeilToInt(viewRect.height / interval));
             int approxPoints = screenPointsX * screenPointsY;
-            const int TargetMaxPoints = 8000;
 
             int stepMul = 1;
-            if (approxPoints > TargetMaxPoints)
+            if (approxPoints > FurRenderParams.TargetMaxPoints)
             {
-                stepMul = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt((float)approxPoints / TargetMaxPoints)));
+                stepMul = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt((float)approxPoints / FurRenderParams.TargetMaxPoints)));
             }
             int step = Mathf.Max(1, stepData * stepMul);
 
