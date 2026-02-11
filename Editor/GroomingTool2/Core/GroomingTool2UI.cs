@@ -284,7 +284,7 @@ namespace GroomingTool2.Core
                     
                     // スライダーで25%刻みに変更
                     EditorGUI.BeginChangeCheck();
-                    float newScale = EditorGUILayout.Slider(state.Scale, 0.25f, 4f);
+                    float newScale = EditorGUILayout.Slider(state.Scale, 0.25f, 8f);
                     if (EditorGUI.EndChangeCheck())
                     {
                         // 25%刻みにスナップ

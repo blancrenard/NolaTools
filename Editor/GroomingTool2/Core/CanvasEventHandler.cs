@@ -370,7 +370,7 @@ namespace GroomingTool2.Core
                 float scaleStep = 0.25f;
                 float newScale = zoomDelta > 0
                     ? Mathf.Max(0.25f, Mathf.Floor((oldScale - 0.01f) / scaleStep) * scaleStep)
-                    : Mathf.Min(4f, Mathf.Ceil((oldScale + 0.01f) / scaleStep) * scaleStep);
+                    : Mathf.Min(8f, Mathf.Ceil((oldScale + 0.01f) / scaleStep) * scaleStep);
                 
                 if (!Mathf.Approximately(oldScale, newScale))
                 {
