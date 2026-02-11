@@ -1,42 +1,15 @@
 using System.Collections.Generic;
 using GroomingTool2.Core;
-using GroomingTool2.Managers;
 using UnityEditor;
 using UnityEngine;
 
 namespace GroomingTool2.Rendering
 {
     /// <summary>
-    /// オーバーレイ描画（UVオーバーレイ、マスクプレビュー、ブラシカーソル）を担当するクラス
+    /// オーバーレイ描画（マスクプレビュー、ブラシカーソル）を担当するクラス
     /// </summary>
     internal static class OverlayRenderer
     {
-        /// <summary>
-        /// UVオーバーレイを描画
-        /// </summary>
-        public static void DrawUvOverlay(Vector2[] uv, int[] triangles, float scale, Vector2 scrollOffsetData, Color wireframeColor)
-        {
-            if (uv == null || triangles == null || uv.Length == 0 || triangles.Length < 3)
-                return;
-
-            Handles.color = wireframeColor;
-            
-            for (int i = 0; i < triangles.Length; i += 3)
-            {
-                int i0 = triangles[i];
-                int i1 = triangles[i + 1];
-                int i2 = triangles[i + 2];
-
-                var p0 = CoordinateUtils.UvToViewLocal(uv[i0], scale, scrollOffsetData);
-                var p1 = CoordinateUtils.UvToViewLocal(uv[i1], scale, scrollOffsetData);
-                var p2 = CoordinateUtils.UvToViewLocal(uv[i2], scale, scrollOffsetData);
-
-                Handles.DrawLine(p0, p1);
-                Handles.DrawLine(p1, p2);
-                Handles.DrawLine(p2, p0);
-            }
-        }
-
         /// <summary>
         /// マスク選択プレビューを点線で描画
         /// </summary>

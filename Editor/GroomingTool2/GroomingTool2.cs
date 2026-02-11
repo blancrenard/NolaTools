@@ -320,23 +320,15 @@ namespace GroomingTool2
                 return;
             }
             
-            var material = selectedMaterial.Value.material;
-            if (material == null)
+            var entry = selectedMaterial.Value;
+            if (entry.usages == null || entry.usages.Count == 0)
             {
-                Debug.LogWarning("[GroomingTool2] 選択されたマテリアルがnullです");
                 context.VertexSymmetryMapper.ClearCache();
                 return;
             }
             
-            var texture = material.mainTexture as Texture2D;
-            if (texture == null)
-            {
-                Debug.LogWarning($"[GroomingTool2] マテリアル {material.name} にメインテクスチャがありません");
-                context.VertexSymmetryMapper.ClearCache();
-                return;
-            }
-            
-            context.VertexSymmetryMapper.Initialize(texture, context.State.Avatar);
+            // usagesから直接初期化（テクスチャの有無に関わらず動作）
+            context.VertexSymmetryMapper.Initialize(entry.usages);
             context.FurDataManager.SetVertexSymmetryMapper(context.VertexSymmetryMapper);
         }
 
@@ -625,8 +617,6 @@ namespace GroomingTool2
                 ScrollOffsetData = scrollOffsetData,
                 MousePosContent = localMousePos,
                 DrawBrushCursor = shouldDrawBrushCursor,
-                Uv = null,
-                Triangles = null,
                 UvSets = uvSets,
                 TriangleSets = triangleSets,
                 MaskState = context.MaskState,

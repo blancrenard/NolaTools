@@ -19,9 +19,8 @@ namespace GroomingTool2.Rendering
         /// </summary>
         public bool IsAvailable { get; private set; }
 
-        public WireframeRenderer(TextureManager textureManager)
+        public WireframeRenderer()
         {
-            // TextureManagerは後方互換性のために引数として受け取るが、GPU版では使用しない
             CreateMaterial();
         }
 
@@ -81,9 +80,9 @@ namespace GroomingTool2.Rendering
             currentWireColor = color;
         }
 
-        public void Draw(Rect canvasRect, Texture2D background, List<Vector2[]> uvSets, List<int[]> triangleSets, float scale, Vector2 scrollOffsetData)
+        public void Draw(Rect canvasRect, List<Vector2[]> uvSets, List<int[]> triangleSets, float scale, Vector2 scrollOffsetData)
         {
-            if (glMaterial == null || background == null || uvSets == null || triangleSets == null || uvSets.Count == 0)
+            if (glMaterial == null || uvSets == null || triangleSets == null || uvSets.Count == 0)
                 return;
 
             // 共通クリップ領域を作成

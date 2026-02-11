@@ -58,45 +58,35 @@ namespace GroomingTool2.Managers
         #region Initialization
         
         /// <summary>
-        /// テクスチャを使用する全サブメッシュで初期化（推奨）
+        /// レンダラーとサブメッシュのリスト（usages）から初期化
         /// </summary>
-        public void Initialize(Texture2D texture, GameObject avatar)
+        public void Initialize(IReadOnlyList<(Renderer renderer, int submeshIndex)> usages)
         {
             ClearCache();
 
-            if (texture == null || avatar == null)
+            if (usages == null || usages.Count == 0)
             {
-                Debug.LogWarning("[VertexSymmetryMapper] テクスチャまたはアバターがnullです");
                 return;
             }
 
-            var renderers = avatar.GetComponentsInChildren<Renderer>(true);
             int totalSubMeshCount = 0;
 
-            foreach (var renderer in renderers)
+            foreach (var (renderer, submeshIndex) in usages)
             {
+                if (renderer == null) continue;
+
                 var mesh = EditorMeshUtils.GetMeshForRenderer(renderer, out bool isBaked);
                 if (mesh == null) continue;
 
-                var sharedMaterials = renderer.sharedMaterials;
-                for (int submeshIndex = 0; submeshIndex < sharedMaterials.Length; submeshIndex++)
+                if (dataStore.Add(renderer, mesh, submeshIndex, isBaked))
                 {
-                    var material = sharedMaterials[submeshIndex];
-                    if (material == null) continue;
-
-                    if (material.mainTexture == texture)
-                    {
-                        if (dataStore.Add(renderer, mesh, submeshIndex, isBaked))
-                        {
-                            totalSubMeshCount++;
-                        }
-                    }
+                    totalSubMeshCount++;
                 }
             }
 
             if (totalSubMeshCount == 0)
             {
-                Debug.LogWarning($"[VertexSymmetryMapper] 指定されたテクスチャ ({texture.name}) を使用するサブメッシュが見つかりませんでした");
+                Debug.LogWarning("[VertexSymmetryMapper] 対象のサブメッシュが見つかりませんでした");
                 return;
             }
 
@@ -107,37 +97,6 @@ namespace GroomingTool2.Managers
             BuildSymmetryTables();
             
             // UVアイランド対称マッピングを構築
-            BuildIslandSymmetryTables();
-        }
-
-        /// <summary>
-        /// 指定されたレンダラーとサブメッシュで初期化（後方互換性のため残す）
-        /// </summary>
-        public void Initialize(Renderer renderer, int submeshIndex)
-        {
-            ClearCache();
-
-            if (renderer == null)
-            {
-                Debug.LogWarning("[VertexSymmetryMapper] レンダラーがnullです");
-                return;
-            }
-
-            var mesh = EditorMeshUtils.GetMeshForRenderer(renderer, out bool isBaked);
-            if (mesh == null)
-            {
-                Debug.LogWarning($"[VertexSymmetryMapper] メッシュの取得に失敗: {renderer.name}");
-                return;
-            }
-
-            if (!dataStore.Add(renderer, mesh, submeshIndex, isBaked))
-            {
-                Debug.LogWarning("[VertexSymmetryMapper] サブメッシュの追加に失敗しました");
-                return;
-            }
-
-            dataStore.BuildSpatialData();
-            BuildSymmetryTables();
             BuildIslandSymmetryTables();
         }
 

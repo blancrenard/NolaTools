@@ -55,11 +55,11 @@ namespace GroomingTool2.Core
             var meshRenderers = avatar.GetComponentsInChildren<MeshRenderer>(true).Cast<Renderer>();
             var renderers = skinnedRenderers.Concat(meshRenderers).ToList();
 
-            // テクスチャ単位でグルーピング
-            var textureMap = GroupMaterialsByTexture(renderers);
+            // テクスチャ単位でグルーピング（テクスチャなしマテリアルも含む）
+            var entries = CollectMaterialEntries(renderers);
 
             // テクスチャ名順でソートしてリストに追加
-            materialEntries.AddRange(textureMap.Values.OrderBy(m => m.texture != null ? m.texture.name : m.displayName));
+            materialEntries.AddRange(entries.OrderBy(m => m.texture != null ? m.texture.name : m.displayName));
 
             if (materialEntries.Count > 0)
                 SelectedMaterialIndex = 0;
@@ -68,9 +68,10 @@ namespace GroomingTool2.Core
             ResizeTextures();
         }
 
-        private Dictionary<Texture2D, MaterialEntry> GroupMaterialsByTexture(List<Renderer> renderers)
+        private List<MaterialEntry> CollectMaterialEntries(List<Renderer> renderers)
         {
             var textureMap = new Dictionary<Texture2D, MaterialEntry>();
+            var noTextureMap = new Dictionary<Material, MaterialEntry>();
 
             foreach (var r in renderers)
             {
@@ -94,8 +95,35 @@ namespace GroomingTool2.Core
 
                     // マテリアルのメインテクスチャを基準にグルーピング
                     var tex = Utils.MaterialUtils.GetMainTextureFromMaterial(mat);
+
                     if (tex == null)
-                        continue; // 画像列挙へ変更のため、テクスチャが無いものはスキップ
+                    {
+                        // テクスチャがないマテリアルはマテリアル単位でグルーピング
+                        if (noTextureMap.TryGetValue(mat, out var matEntry))
+                        {
+                            matEntry.usages.Add((r, i));
+                            if (uv != null && subTriangles != null)
+                            {
+                                matEntry.uvSets.Add(uv);
+                                matEntry.triangleSets.Add(subTriangles);
+                            }
+                            noTextureMap[mat] = matEntry;
+                        }
+                        else
+                        {
+                            noTextureMap[mat] = new MaterialEntry
+                            {
+                                material = mat,
+                                texture = null,
+                                resizedTexture = null,
+                                displayName = mat.name,
+                                usages = new List<(Renderer renderer, int submeshIndex)> { (r, i) },
+                                uvSets = uv != null && subTriangles != null ? new List<Vector2[]> { uv } : new List<Vector2[]>(),
+                                triangleSets = uv != null && subTriangles != null ? new List<int[]> { subTriangles } : new List<int[]>()
+                            };
+                        }
+                        continue;
+                    }
 
                     if (textureMap.TryGetValue(tex, out var entry))
                     {
@@ -113,11 +141,9 @@ namespace GroomingTool2.Core
 
                         textureMap[tex] = new MaterialEntry
                         {
-                            material = mat, // 代表として最初のマテリアルを保持（現在は参照されていない）
+                            material = mat,
                             texture = tex,
                             resizedTexture = null,
-                            uv = uv,
-                            triangles = subTriangles,
                             displayName = display,
                             usages = new List<(Renderer renderer, int submeshIndex)> { (r, i) },
                             uvSets = uv != null && subTriangles != null ? new List<Vector2[]> { uv } : new List<Vector2[]>(),
@@ -132,7 +158,9 @@ namespace GroomingTool2.Core
                 }
             }
 
-            return textureMap;
+            var result = new List<MaterialEntry>(textureMap.Values);
+            result.AddRange(noTextureMap.Values);
+            return result;
         }
 
         private void ResizeTextures()
@@ -186,8 +214,6 @@ namespace GroomingTool2.Core
         public Material material;
         public Texture2D texture;
         public Texture2D resizedTexture; // リサイズ済みテクスチャ（Common.TexSize x Common.TexSize）
-        public Vector2[] uv;
-        public int[] triangles;
         public string displayName;
         public List<(Renderer renderer, int submeshIndex)> usages;
         public List<Vector2[]> uvSets;

@@ -32,8 +32,6 @@ namespace GroomingTool2.Rendering
         public Vector2 ScrollOffsetData;
         public Vector2 MousePosContent;
         public bool DrawBrushCursor;
-        public Vector2[] Uv;
-        public int[] Triangles;
         public List<Vector2[]> UvSets;
         public List<int[]> TriangleSets;
         public UvIslandMaskState MaskState;
@@ -71,7 +69,7 @@ namespace GroomingTool2.Rendering
         {
             this.brushManager = brushManager;
             textureManager = new TextureManager();
-            wireframeRenderer = new WireframeRenderer(textureManager);
+            wireframeRenderer = new WireframeRenderer();
             furDataRenderer = new FurDataRenderer(textureManager, furDataManager);
             gpuFurDataRenderer = new GpuFurDataRenderer(furDataManager);
             
@@ -155,7 +153,7 @@ namespace GroomingTool2.Rendering
 
         private void DrawWireframe(CanvasDrawParams drawParams)
         {
-            if (drawParams.Background == null || drawParams.UvSets == null || drawParams.TriangleSets == null || drawParams.UvSets.Count == 0)
+            if (drawParams.UvSets == null || drawParams.TriangleSets == null || drawParams.UvSets.Count == 0)
                 return;
             
             Handles.BeginGUI();
@@ -163,7 +161,7 @@ namespace GroomingTool2.Rendering
             if (useGpuWireframe)
             {
                 // GPU描画：GL.LINESを使用
-                wireframeRenderer.Draw(drawParams.CanvasRect, drawParams.Background, drawParams.UvSets, drawParams.TriangleSets, drawParams.Scale, drawParams.ScrollOffsetData);
+                wireframeRenderer.Draw(drawParams.CanvasRect, drawParams.UvSets, drawParams.TriangleSets, drawParams.Scale, drawParams.ScrollOffsetData);
             }
             else
             {
@@ -238,11 +236,6 @@ namespace GroomingTool2.Rendering
         {
             Handles.BeginGUI();
 
-            if (drawParams.Uv != null && drawParams.Triangles != null && drawParams.Background != null)
-            {
-                OverlayRenderer.DrawUvOverlay(drawParams.Uv, drawParams.Triangles, drawParams.Scale, drawParams.ScrollOffsetData, drawParams.WireframeColor);
-            }
-            
             // マスク選択プレビューの描画
             if (drawParams.MaskPreview.Active)
             {
