@@ -47,34 +47,6 @@ namespace NolaTools.FurMaskGenerator.UI
             return new Vector2Int(x, y);
         }
 
-        // 共通: UV直線をピクセル配列に描画（ブレゼンハム）
-        private void DrawUVLineOnPixels(Color[] pixels, Vector2 uv0, Vector2 uv1, Color color)
-        {
-            if (texture == null || pixels == null) return;
-            int x0 = Mathf.RoundToInt(uv0.x * (texture.width - 1));
-            int y0 = Mathf.RoundToInt(uv0.y * (texture.height - 1));
-            int x1 = Mathf.RoundToInt(uv1.x * (texture.width - 1));
-            int y1 = Mathf.RoundToInt(uv1.y * (texture.height - 1));
-
-            int dx = Mathf.Abs(x1 - x0), dy = Mathf.Abs(y1 - y0);
-            int sx = x0 < x1 ? 1 : -1;
-            int sy = y0 < y1 ? 1 : -1;
-            int err = dx - dy;
-
-            while (true)
-            {
-                int idx = y0 * texture.width + x0;
-                if (idx >= 0 && idx < pixels.Length)
-                {
-                    pixels[idx] = color;
-                }
-                if (x0 == x1 && y0 == y1) break;
-                int e2 = 2 * err;
-                if (e2 > -dy) { err -= dy; x0 += sx; }
-                if (e2 < dx) { err += dx; y0 += sy; }
-            }
-        }
-
         // 共通: UV三角形塗りつぶし
         private void FillTriangleOnTexture(Color[] pixels, Vector2 uv0, Vector2 uv1, Vector2 uv2, Color color)
         {

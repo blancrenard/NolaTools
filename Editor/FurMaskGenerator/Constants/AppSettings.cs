@@ -102,6 +102,10 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const float MARKER_SIZE_MAX = 12f;
         public const float MARKER_SIZE_MULTIPLIER_MIN = 0.012f;
         public const float CROSS_DRAW_SIZE = 0.006f;
+        public const float SCROLL_WHEEL_SPEED = 40f;
+        public const float CANVAS_SCROLLBAR_SIZE = 14f;
+        public const float CANVAS_SCROLLBAR_OVERLAP_TOLERANCE = 0.5f;
+        public static readonly Color WIREFRAME_COLOR = new Color(1f, 1f, 1f, 0.6f);
         #endregion
     }
 }
