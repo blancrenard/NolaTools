@@ -206,7 +206,7 @@ namespace NolaTools.FurMaskGenerator
         }
 
         // Persistence methods
-        private const string AvatarSettingsRoot = NolaTools.FurMaskGenerator.Utils.EditorAssetPaths.FurMaskGenerator.AvatarSettingsRoot;
+        private const string AvatarSettingsRoot = FileConstants.AVATAR_SETTINGS_ROOT;
 
         private void StoreAvatarAndRendererReferences()
         {

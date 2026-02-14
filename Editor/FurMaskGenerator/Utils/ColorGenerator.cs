@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Constants;
@@ -13,21 +12,6 @@ namespace NolaTools.FurMaskGenerator.Utils
     {
         #region 色生成設定
 
-        public enum MarkerColorVariant
-        {
-            Vivid,
-            HighSaturation,
-            Pastel,
-            Random
-        }
-
-        // 色生成システムの設定
-        private static List<Color> generatedColorHistory = new List<Color>();
-        private const int MAX_COLOR_HISTORY = 50;
-        private const float MIN_COLOR_DIFFERENCE = 0.4f;
-        private const float MIN_HUE_DIFFERENCE = 0.15f;
-        private const float MIN_RECENT_COLOR_DIFFERENCE = 0.6f;
-        
         // ゴールデンアングル分散システム
         private const float GOLDEN_ANGLE = 0.618033988749895f;
         private const string PREFS_HUE_INDEX_KEY = "NolaTools.FurMaskGenerator.Utils.ColorGenerator.HueIndex";

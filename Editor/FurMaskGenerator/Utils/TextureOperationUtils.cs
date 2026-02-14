@@ -48,33 +48,6 @@ namespace NolaTools.FurMaskGenerator.Utils
             GUILayout.Space(AppSettings.LARGE_SPACE);
         }
 
-        /// <summary>
-        /// テクスチャプレビューリストを描画
-        /// </summary>
-        public static void DrawTexturePreviewList(
-            IEnumerable<(Texture2D texture, string title, string fileKey)> items,
-            float maxWidth,
-            string saveButtonBaseLabel,
-            string savePanelTitle)
-        {
-            if (items == null) return;
-            foreach (var item in items)
-            {
-                if (item.texture == null) continue;
-                UIDrawingUtils.BeginUIBox();
-                DrawTexturePreviewItem(
-                    item.texture,
-                    item.title,
-                    string.IsNullOrEmpty(item.title) ? saveButtonBaseLabel : $"{saveButtonBaseLabel} {item.title}",
-                    item.fileKey,
-                    maxWidth,
-                    savePanelTitle
-                );
-                UIDrawingUtils.EndUIBox();
-                GUILayout.Space(AppSettings.LARGE_SPACE);
-            }
-        }
-
         #endregion
 
         #region テクスチャ作成と操作

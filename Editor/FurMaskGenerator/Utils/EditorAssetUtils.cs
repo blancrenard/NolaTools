@@ -151,20 +151,6 @@ namespace NolaTools.FurMaskGenerator.Utils
             }
         }
 
-        /// <summary>
-        /// コンポーネント列からGameObjectパスの一覧を得ます
-        /// </summary>
-        public static System.Collections.Generic.List<string> GetComponentPaths<T>(System.Collections.Generic.IEnumerable<T> components) where T : Component
-        {
-            var result = new System.Collections.Generic.List<string>();
-            if (components == null) return result;
-            foreach (var c in components)
-            {
-                result.Add(EditorPathUtils.GetGameObjectPath(c));
-            }
-            return result;
-        }
-
         #endregion
 
         #region ファイル操作メソッド
@@ -187,21 +173,6 @@ namespace NolaTools.FurMaskGenerator.Utils
 
         #endregion
     }
-
-    #region アセットパス定数
-
-    /// <summary>
-    /// アセットパス関連の定数
-    /// </summary>
-    public static class EditorAssetPaths
-    {
-        public static class FurMaskGenerator
-        {
-            public const string AvatarSettingsRoot = FileConstants.AVATAR_SETTINGS_ROOT;
-        }
-    }
-
-    #endregion
 }
 #endif
 

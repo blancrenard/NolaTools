@@ -78,8 +78,7 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const float MARKER_SIZE_MULTIPLIER_LARGE = 1.6f;
         public const float CONVERGENCE_THRESHOLD = 0.0001f;
         public const float RAY_OFFSET_MULTIPLIER = 1.0f;
-        public const float MAX_MEMORY_PRESSURE = 0.8f;
-        public const float LERP_FACTOR = 0.1f;
+
         #endregion
 
         #region 色生成定数

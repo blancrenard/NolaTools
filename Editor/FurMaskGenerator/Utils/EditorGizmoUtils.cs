@@ -26,38 +26,6 @@ namespace NolaTools.FurMaskGenerator.Utils
 			Handles.zTest = originalZTest;
 		}
 
-		public static void DrawGizmoArrow(Vector3 from, Vector3 to, Color color, float arrowHeadLength = 0.1f, float arrowHeadAngle = 25f)
-		{
-			Handles.color = color;
-			Handles.DrawLine(from, to);
-
-			Vector3 direction = (to - from).normalized;
-			Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + arrowHeadAngle, 0) * Vector3.forward;
-			Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - arrowHeadAngle, 0) * Vector3.forward;
-
-			Handles.DrawLine(to, to + right * arrowHeadLength);
-			Handles.DrawLine(to, to + left * arrowHeadLength);
-		}
-
-		public static void DrawGizmoArrow(Vector3 position, Vector3 direction, float length, Color color, float arrowHeadLength = 0.1f, float arrowHeadAngle = 25f)
-		{
-			Vector3 to = position + direction.normalized * length;
-			DrawGizmoArrow(position, to, color, arrowHeadLength, arrowHeadAngle);
-		}
-
-		public static void DrawLineWithArrow(Vector3 start, Vector3 end, Color color, float arrowSize = 0.1f)
-		{
-			Handles.color = color;
-			Handles.DrawLine(start, end);
-
-			Vector3 direction = (end - start).normalized;
-			Vector3 arrowPos = end - direction * arrowSize;
-			Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 + 25, 0) * Vector3.forward;
-			Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0, 180 - 25, 0) * Vector3.forward;
-
-			Handles.DrawLine(end, arrowPos + right * arrowSize);
-			Handles.DrawLine(end, arrowPos + left * arrowSize);
-		}
 	}
 }
 #endif
