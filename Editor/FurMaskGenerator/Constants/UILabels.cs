@@ -63,8 +63,16 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const string MASK_SAVE_BUTTON = "マスクを保存";
         #endregion
 
+        #region ベイクモード関連
+        public const string BAKE_MODE_LABEL = "ベイクモード";
+        public const string BAKE_MODE_VERTEX = "頂点ベース（従来方式）";
+        public const string BAKE_MODE_TEXEL = "テクセルベース（高精度）";
+        public static readonly string[] BAKE_MODE_LABELS = { BAKE_MODE_VERTEX, BAKE_MODE_TEXEL };
+        #endregion
+
         #region 処理関連
         public const string PROGRESS_BAR_TITLE = "距離マスクをベイク中";
+        public const string PROGRESS_BAR_TITLE_TEXEL = "テクセルマスクをベイク中";
         public const string RASTERIZING_LABEL = "Rasterizing...";
         public const string DILATING_LABEL = "Dilating...";
         public const string PROGRESS_RASTERIZING_START_JP = "ラスタライズ開始...";

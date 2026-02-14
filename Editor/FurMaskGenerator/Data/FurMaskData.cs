@@ -7,6 +7,21 @@ using NolaTools.FurMaskGenerator.Utils;
 
 namespace NolaTools.FurMaskGenerator.Data
 {
+    #region ベイクモード
+
+    /// <summary>
+    /// マスクのベイク方式
+    /// </summary>
+    public enum BakeMode
+    {
+        /// <summary>頂点ベース（従来方式）</summary>
+        Vertex = 0,
+        /// <summary>テクセルベース（UV空間ピクセル単位、頂点密度非依存）</summary>
+        Texel = 1
+    }
+
+    #endregion
+
     #region メイン設定
 
     /// <summary>
@@ -31,6 +46,9 @@ namespace NolaTools.FurMaskGenerator.Data
         public float maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
         public float gamma = AppSettings.DEFAULT_GAMMA;
 
+        // ベイクモード
+        public BakeMode bakeMode = BakeMode.Vertex;
+
         // 透過モード設定
         public bool useTransparentMode = false; // デフォルトは白背景モード
 
@@ -45,6 +63,9 @@ namespace NolaTools.FurMaskGenerator.Data
 
         // UV島詳細パラメータ
         [Range(0, 8)] public int uvIslandVertexSmoothIterations = 1; // 頂点ラプラシアン平滑回数 固定: 1
+
+        // テクセルモード用ぼかし半径（ピクセル）
+        [Range(0, 16)] public int texelBlurRadius = 0;
 
         // エッジパディング設定
         [Range(0, 32)] public int edgePaddingSize = 4; // エッジパディングサイズ（ピクセル）
@@ -68,6 +89,8 @@ namespace NolaTools.FurMaskGenerator.Data
             uvIslandVertexSmoothIterations = 2;
             tempSubdivisionIterations = 1;
             edgePaddingSize = 4; // デフォルトエッジパディングサイズ
+            bakeMode = BakeMode.Vertex;
+            texelBlurRadius = 0;
         }
     }
 
@@ -294,6 +317,67 @@ namespace NolaTools.FurMaskGenerator.Data
             UvIslandVertexSmoothIterations = Mathf.Clamp(uvIslandVertexSmoothIterations, 0, 8);
             UseTransparentMode = useTransparentMode;
             EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
+            OnCompleted = onCompleted;
+            OnCancelled = onCancelled;
+        }
+    }
+
+    #endregion
+
+    #region テクセルベイカー設定
+
+    /// <summary>
+    /// Settings for texel-based mask baking process
+    /// UV空間のピクセル単位で距離計算を行い、頂点密度に依存しないマスクを生成
+    /// </summary>
+    public class TexelBakerSettings
+    {
+        public readonly List<Renderer> AvatarRenderers;
+        public readonly List<Renderer> ClothRenderers;
+        public readonly List<SphereData> SphereMasks;
+        public readonly List<UVIslandMaskData> UVIslandMasks;
+        public readonly List<BoneMaskData> BoneMasks;
+        public readonly List<MaterialNormalMapData> MaterialNormalMaps;
+        public readonly int TextureSizeIndex;
+        public readonly float MaxDistance;
+        public readonly float Gamma;
+        public readonly float UvIslandNeighborRadius;
+        public readonly bool UseTransparentMode;
+        public readonly int EdgePaddingSize;
+        public readonly int BlurRadius;
+        public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
+        public readonly Action OnCancelled;
+
+        public TexelBakerSettings(
+            List<Renderer> avatarRenderers,
+            List<Renderer> clothRenderers,
+            List<SphereData> sphereMasks,
+            List<UVIslandMaskData> uvIslandMasks,
+            List<BoneMaskData> boneMasks,
+            List<MaterialNormalMapData> materialNormalMaps,
+            int textureSizeIndex,
+            float maxDistance,
+            float gamma,
+            float uvIslandNeighborRadius,
+            bool useTransparentMode,
+            int edgePaddingSize,
+            int blurRadius,
+            Action<Dictionary<string, Texture2D>> onCompleted,
+            Action onCancelled)
+        {
+            AvatarRenderers = avatarRenderers;
+            ClothRenderers = clothRenderers;
+            SphereMasks = sphereMasks;
+            UVIslandMasks = uvIslandMasks;
+            BoneMasks = boneMasks ?? new List<BoneMaskData>();
+            MaterialNormalMaps = materialNormalMaps ?? new List<MaterialNormalMapData>();
+            TextureSizeIndex = textureSizeIndex;
+            MaxDistance = maxDistance;
+            Gamma = gamma;
+            UvIslandNeighborRadius = uvIslandNeighborRadius;
+            UseTransparentMode = useTransparentMode;
+            EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
+            BlurRadius = Mathf.Clamp(blurRadius, 0, 16);
             OnCompleted = onCompleted;
             OnCancelled = onCancelled;
         }

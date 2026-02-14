@@ -69,37 +69,69 @@ namespace NolaTools.FurMaskGenerator
             }
             // UIの値に0.001を加算して内部計算に使用
             float internalMaxDistance = settings.maxDistance + AppSettings.POSITION_PRECISION;
-            
-            var bakerSettings = new DistanceBakerSettings(
-                avatarRenderers,
-                clothRenderers,
-                settings.sphereMasks.Select(s => s.Clone()).ToList(),
-                new List<UVIslandMaskData>(settings.uvIslandMasks),
-                new List<BoneMaskData>(settings.boneMasks),
-                new List<MaterialNormalMapData>(settings.materialNormalMaps),
-                settings.textureSizeIndex,
-                internalMaxDistance,
-                settings.gamma,
-                settings.tempSubdivisionIterations,
-                settings.uvIslandNeighborRadius,
-                settings.uvIslandVertexSmoothIterations,
-                settings.useTransparentMode,
-                settings.edgePaddingSize,
-                OnBakeCompleted,
-                OnBakeCancelled
-            );
-            foreach (var s in bakerSettings.SphereMasks)
+
+            if (settings.bakeMode == BakeMode.Texel)
             {
-                if (s != null) s.radius = Mathf.Min(s.radius, AppSettings.SHOW_MAX_RADIUS);
+                // テクセルベイクモード
+                var texelSettings = new TexelBakerSettings(
+                    avatarRenderers,
+                    clothRenderers,
+                    settings.sphereMasks.Select(s => s.Clone()).ToList(),
+                    new List<UVIslandMaskData>(settings.uvIslandMasks),
+                    new List<BoneMaskData>(settings.boneMasks),
+                    new List<MaterialNormalMapData>(settings.materialNormalMaps),
+                    settings.textureSizeIndex,
+                    internalMaxDistance,
+                    settings.gamma,
+                    settings.uvIslandNeighborRadius,
+                    settings.useTransparentMode,
+                    settings.edgePaddingSize,
+                    settings.texelBlurRadius,
+                    OnBakeCompleted,
+                    OnBakeCancelled
+                );
+                foreach (var s in texelSettings.SphereMasks)
+                {
+                    if (s != null) s.radius = Mathf.Min(s.radius, AppSettings.SHOW_MAX_RADIUS);
+                }
+                currentTexelBaker = new TexelMaskBaker(texelSettings);
+                currentTexelBaker.StartBake();
             }
-            currentBaker = new DistanceMaskBaker(bakerSettings);
-            currentBaker.StartBake();
+            else
+            {
+                // 頂点ベイクモード（従来方式）
+                var bakerSettings = new DistanceBakerSettings(
+                    avatarRenderers,
+                    clothRenderers,
+                    settings.sphereMasks.Select(s => s.Clone()).ToList(),
+                    new List<UVIslandMaskData>(settings.uvIslandMasks),
+                    new List<BoneMaskData>(settings.boneMasks),
+                    new List<MaterialNormalMapData>(settings.materialNormalMaps),
+                    settings.textureSizeIndex,
+                    internalMaxDistance,
+                    settings.gamma,
+                    settings.tempSubdivisionIterations,
+                    settings.uvIslandNeighborRadius,
+                    settings.uvIslandVertexSmoothIterations,
+                    settings.useTransparentMode,
+                    settings.edgePaddingSize,
+                    OnBakeCompleted,
+                    OnBakeCancelled
+                );
+                foreach (var s in bakerSettings.SphereMasks)
+                {
+                    if (s != null) s.radius = Mathf.Min(s.radius, AppSettings.SHOW_MAX_RADIUS);
+                }
+                currentBaker = new DistanceMaskBaker(bakerSettings);
+                currentBaker.StartBake();
+            }
         }
 
         private void OnBakeCompleted(Dictionary<string, Texture2D> result)
         {
             preview = result;
             currentBaker = null;
+            currentTexelBaker = null;
 
             // ベイク完了後にフラグをクリア
             ignoreHierarchyChangeDuringBake = false;
@@ -110,6 +142,7 @@ namespace NolaTools.FurMaskGenerator
         private void OnBakeCancelled()
         {
             currentBaker = null;
+            currentTexelBaker = null;
 
             // ベイクキャンセル後にフラグをクリア
             ignoreHierarchyChangeDuringBake = false;
