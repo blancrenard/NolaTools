@@ -15,20 +15,7 @@ namespace NolaTools.FurMaskGenerator
         {
             UIDrawingUtils.DrawInUIBox(() =>
             {
-                // ベイクモード選択
-                using (var check = new EditorGUI.ChangeCheckScope())
-                {
-                    int bakeModeIndex = (int)settings.bakeMode;
-                    bakeModeIndex = EditorGUILayout.Popup(
-                        UILabels.BAKE_MODE_LABEL,
-                        bakeModeIndex,
-                        UILabels.BAKE_MODE_LABELS);
-                    if (check.changed)
-                    {
-                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "Change Bake Mode");
-                        settings.bakeMode = (Data.BakeMode)bakeModeIndex;
-                    }
-                }
+
 
                 // Texture size with auto-detection
                 EditorGUILayout.BeginHorizontal();
@@ -51,31 +38,12 @@ namespace NolaTools.FurMaskGenerator
                     5.0f);
 
                 // 頂点ベースモード専用の設定
-                if (settings.bakeMode == Data.BakeMode.Vertex)
-                {
-                    // 細分化回数設定
-                    settings.tempSubdivisionIterations = EditorGUILayout.IntSlider(
-                        new GUIContent(UILabels.SUBDIVISION_ITERATIONS_LABEL, UILabels.SUBDIVISION_ITERATIONS_TOOLTIP),
-                        settings.tempSubdivisionIterations,
-                        0,
-                        3);
-
-                    // スムージング回数設定
-                    settings.uvIslandVertexSmoothIterations = EditorGUILayout.IntSlider(
-                        "スムージング回数",
-                        settings.uvIslandVertexSmoothIterations,
-                        0,
-                        8);
-                }
-                else
-                {
-                    // テクセルモード用ぼかし設定
-                    settings.texelBlurRadius = EditorGUILayout.IntSlider(
-                        new GUIContent("ぼかし半径", "マスクのぼかし半径（ピクセル単位、ガウシアンブラー）。\n毛の向きのばらつきを吸収します。"),
-                        settings.texelBlurRadius,
-                        0,
-                        16);
-                }
+                // テクセルモード用ぼかし設定
+                settings.texelBlurRadius = EditorGUILayout.IntSlider(
+                    new GUIContent("ぼかし半径", "マスクのぼかし半径（ピクセル単位、ガウシアンブラー）。\n毛の向きのばらつきを吸収します。"),
+                    settings.texelBlurRadius,
+                    0,
+                    16);
 
                 // エッジパディング設定
                 settings.edgePaddingSize = EditorGUILayout.IntSlider(

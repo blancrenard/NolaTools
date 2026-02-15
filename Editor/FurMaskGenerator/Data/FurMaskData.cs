@@ -7,20 +7,7 @@ using NolaTools.FurMaskGenerator.Utils;
 
 namespace NolaTools.FurMaskGenerator.Data
 {
-    #region ベイクモード
 
-    /// <summary>
-    /// マスクのベイク方式
-    /// </summary>
-    public enum BakeMode
-    {
-        /// <summary>頂点ベース（従来方式）</summary>
-        Vertex = 0,
-        /// <summary>テクセルベース（UV空間ピクセル単位、頂点密度非依存）</summary>
-        Texel = 1
-    }
-
-    #endregion
 
     #region メイン設定
 
@@ -46,14 +33,8 @@ namespace NolaTools.FurMaskGenerator.Data
         public float maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
         public float gamma = AppSettings.DEFAULT_GAMMA;
 
-        // ベイクモード
-        public BakeMode bakeMode = BakeMode.Vertex;
-
         // 透過モード設定
         public bool useTransparentMode = false; // デフォルトは白背景モード
-
-        // 一時メッシュ細分化回数（1固定）
-        [Range(0, 3)] public int tempSubdivisionIterations = 1;
 
         // クリックUVアイランドマスク
         public System.Collections.Generic.List<UVIslandMaskData> uvIslandMasks = new System.Collections.Generic.List<UVIslandMaskData>();
@@ -61,8 +42,7 @@ namespace NolaTools.FurMaskGenerator.Data
         // 隣接グラデーション距離（メートル）
         public float uvIslandNeighborRadius = 0.015f; // デフォルト1.5cm
 
-        // UV島詳細パラメータ
-        [Range(0, 8)] public int uvIslandVertexSmoothIterations = 1; // 頂点ラプラシアン平滑回数 固定: 1
+
 
         // テクセルモード用ぼかし半径（ピクセル）
         [Range(0, 16)] public int texelBlurRadius = 0;
@@ -86,10 +66,7 @@ namespace NolaTools.FurMaskGenerator.Data
             gamma = AppSettings.DEFAULT_GAMMA;
             useTransparentMode = false;
             uvIslandNeighborRadius = AppSettings.DEFAULT_UV_ISLAND_NEIGHBOR_RADIUS;
-            uvIslandVertexSmoothIterations = 1;
-            tempSubdivisionIterations = 1;
             edgePaddingSize = AppSettings.DEFAULT_EDGE_PADDING_SIZE;
-            bakeMode = BakeMode.Vertex;
             texelBlurRadius = 0;
         }
     }
@@ -304,45 +281,7 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region 距離ベイカー設定
 
-    /// <summary>
-    /// Settings for distance mask baking process
-    /// Contains all parameters needed for the baking operation
-    /// </summary>
-    public class DistanceBakerSettings : BaseBakerSettings
-    {
-        public readonly int TempSubdivisionIterations;
-        public readonly int UvIslandVertexSmoothIterations;
-
-        public DistanceBakerSettings(
-            List<Renderer> avatarRenderers,
-            List<Renderer> clothRenderers,
-            List<SphereData> sphereMasks,
-            List<UVIslandMaskData> uvIslandMasks,
-            List<BoneMaskData> boneMasks,
-            List<MaterialNormalMapData> materialNormalMaps,
-            int textureSizeIndex,
-            float maxDistance,
-            float gamma,
-            int tempSubdivisionIterations,
-            float uvIslandNeighborRadius,
-            int uvIslandVertexSmoothIterations,
-            bool useTransparentMode,
-            int edgePaddingSize,
-            Action<Dictionary<string, Texture2D>> onCompleted,
-            Action onCancelled)
-            : base(avatarRenderers, clothRenderers, sphereMasks, uvIslandMasks,
-                   boneMasks, materialNormalMaps, textureSizeIndex, maxDistance,
-                   gamma, uvIslandNeighborRadius, useTransparentMode, edgePaddingSize,
-                   onCompleted, onCancelled)
-        {
-            TempSubdivisionIterations = Mathf.Clamp(tempSubdivisionIterations, 0, 3);
-            UvIslandVertexSmoothIterations = Mathf.Clamp(uvIslandVertexSmoothIterations, 0, 8);
-        }
-    }
-
-    #endregion
 
     #region テクセルベイカー設定
 

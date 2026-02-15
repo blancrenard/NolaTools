@@ -15,7 +15,7 @@ namespace NolaTools.FurMaskGenerator
     {
         // Core fields
         private FurMaskSettings settings;
-        private DistanceMaskBaker currentBaker;
+
         private TexelMaskBaker currentTexelBaker;
 
         [SerializeField] private GameObject avatarObject;
@@ -23,7 +23,7 @@ namespace NolaTools.FurMaskGenerator
         private List<Renderer> clothRenderers = new();
         public List<SphereData> sphereMasks => settings?.sphereMasks;
         // Note: 内部API依存を排除。リスト描画は UIDrawingUtils.DrawRendererList に委譲
-        private bool baking => currentBaker != null || currentTexelBaker != null;
+        private bool baking => currentTexelBaker != null;
         Dictionary<string, Texture2D> preview = new();
         Vector2 scr;
         private bool addUVIslandOnClick = false;
