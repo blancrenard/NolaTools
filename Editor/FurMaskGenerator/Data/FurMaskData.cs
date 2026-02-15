@@ -84,11 +84,11 @@ namespace NolaTools.FurMaskGenerator.Data
             textureSizeIndex = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
             maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
             gamma = AppSettings.DEFAULT_GAMMA;
-            useTransparentMode = false; // デフォルトは白背景モード
-            uvIslandNeighborRadius = 0.015f;
-            uvIslandVertexSmoothIterations = 2;
+            useTransparentMode = false;
+            uvIslandNeighborRadius = AppSettings.DEFAULT_UV_ISLAND_NEIGHBOR_RADIUS;
+            uvIslandVertexSmoothIterations = 1;
             tempSubdivisionIterations = 1;
-            edgePaddingSize = 4; // デフォルトエッジパディングサイズ
+            edgePaddingSize = AppSettings.DEFAULT_EDGE_PADDING_SIZE;
             bakeMode = BakeMode.Vertex;
             texelBlurRadius = 0;
         }
@@ -106,8 +106,8 @@ namespace NolaTools.FurMaskGenerator.Data
     {
         public string name = GameObjectConstants.DEFAULT_SPHERE_NAME;
         public Vector3 position;
-        public float radius = 0.01f;
-        public float gradientWidth = 0.1f;
+        public float radius = AppSettings.DEFAULT_RADIUS;
+        public float gradientWidth = AppSettings.UV_THRESHOLD_DEFAULT;
         public float gradient
         {
             get => gradientWidth;
@@ -124,17 +124,14 @@ namespace NolaTools.FurMaskGenerator.Data
         public SphereData() { }
 
         public SphereData(Vector3 position, float radius)
+            : this(GameObjectConstants.DEFAULT_SPHERE_NAME, position, radius)
         {
-            this.position = position;
-            this.radius = radius;
             this.name = $"{GameObjectConstants.SPHERE_POSITION_PREFIX}{position.ToString()}";
         }
 
         public SphereData(string name, Vector3 position, float radius)
+            : this(name, position, radius, AppSettings.UV_THRESHOLD_DEFAULT, new Color(0, 0, 0, 0))
         {
-            this.name = name;
-            this.position = position;
-            this.radius = radius;
         }
 
         public SphereData(string name, Vector3 position, float radius, float gradientWidth, Color markerColor)
@@ -151,45 +148,35 @@ namespace NolaTools.FurMaskGenerator.Data
             return MemberwiseClone() as SphereData;
         }
 
-        public float GetMaskValue(Vector3 vertexPosition)
+        /// <summary>
+        /// 指定位置からの距離に基づくマスク値を計算する共通処理
+        /// </summary>
+        private float CalculateMaskAtPosition(Vector3 vertexPosition, Vector3 center)
         {
-            float maskValue = 1f;
-            
-            // オリジナル位置でのマスク値計算
-            float dist = Vector3.Distance(vertexPosition, position);
+            float dist = Vector3.Distance(vertexPosition, center);
             if (dist <= radius)
             {
                 float innerRadius = radius * (1f - gradientWidth);
-                if (dist <= innerRadius) 
+                if (dist <= innerRadius)
                 {
-                    maskValue = 0f;
+                    return 0f;
                 }
-                else
-                {
-                    maskValue = (dist - innerRadius) / (radius - innerRadius);
-                }
+                return (dist - innerRadius) / (radius - innerRadius);
             }
+            return 1f;
+        }
+
+        public float GetMaskValue(Vector3 vertexPosition)
+        {
+            float maskValue = CalculateMaskAtPosition(vertexPosition, position);
             
             // ミラー機能が有効な場合、X軸反転位置でも計算
             if (useMirror)
             {
                 Vector3 mirroredPosition = new Vector3(-position.x, position.y, position.z);
-                float mirroredDist = Vector3.Distance(vertexPosition, mirroredPosition);
-                if (mirroredDist <= radius)
-                {
-                    float innerRadius = radius * (1f - gradientWidth);
-                    float mirroredMaskValue;
-                    if (mirroredDist <= innerRadius)
-                    {
-                        mirroredMaskValue = 0f;
-                    }
-                    else
-                    {
-                        mirroredMaskValue = (mirroredDist - innerRadius) / (radius - innerRadius);
-                    }
-                    // オリジナルとミラーの小さい方（より強いマスク）を採用
-                    maskValue = Mathf.Min(maskValue, mirroredMaskValue);
-                }
+                float mirroredMaskValue = CalculateMaskAtPosition(vertexPosition, mirroredPosition);
+                // オリジナルとミラーの小さい方（より強いマスク）を採用
+                maskValue = Mathf.Min(maskValue, mirroredMaskValue);
             }
             
             return maskValue;
@@ -216,7 +203,7 @@ namespace NolaTools.FurMaskGenerator.Data
         public Vector3 seedWorldPos; // クリック時のワールド座標（簡易表示用）
         public string displayName;
         public Color markerColor = new Color(0, 0, 0, 0); // UI/シーン表示用カラー 未設定時は透明
-        public float uvThreshold = 0.1f; // UV閾値
+        public float uvThreshold = AppSettings.UV_THRESHOLD_DEFAULT; // UV閾値
     }
 
     #endregion
@@ -260,13 +247,12 @@ namespace NolaTools.FurMaskGenerator.Data
 
     #endregion
 
-    #region 距離ベイカー設定
+    #region ベイカー共通設定
 
     /// <summary>
-    /// Settings for distance mask baking process
-    /// Contains all parameters needed for the baking operation
+    /// Distance/Texel両方のベイカーが共有する基本設定
     /// </summary>
-    public class DistanceBakerSettings
+    public abstract class BaseBakerSettings
     {
         public readonly List<Renderer> AvatarRenderers;
         public readonly List<Renderer> ClothRenderers;
@@ -277,13 +263,57 @@ namespace NolaTools.FurMaskGenerator.Data
         public readonly int TextureSizeIndex;
         public readonly float MaxDistance;
         public readonly float Gamma;
-        public readonly int TempSubdivisionIterations;
         public readonly float UvIslandNeighborRadius;
-        public readonly int UvIslandVertexSmoothIterations;
         public readonly bool UseTransparentMode;
         public readonly int EdgePaddingSize;
         public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
         public readonly Action OnCancelled;
+
+        protected BaseBakerSettings(
+            List<Renderer> avatarRenderers,
+            List<Renderer> clothRenderers,
+            List<SphereData> sphereMasks,
+            List<UVIslandMaskData> uvIslandMasks,
+            List<BoneMaskData> boneMasks,
+            List<MaterialNormalMapData> materialNormalMaps,
+            int textureSizeIndex,
+            float maxDistance,
+            float gamma,
+            float uvIslandNeighborRadius,
+            bool useTransparentMode,
+            int edgePaddingSize,
+            Action<Dictionary<string, Texture2D>> onCompleted,
+            Action onCancelled)
+        {
+            AvatarRenderers = avatarRenderers;
+            ClothRenderers = clothRenderers;
+            SphereMasks = sphereMasks;
+            UVIslandMasks = uvIslandMasks;
+            BoneMasks = boneMasks ?? new List<BoneMaskData>();
+            MaterialNormalMaps = materialNormalMaps ?? new List<MaterialNormalMapData>();
+            TextureSizeIndex = textureSizeIndex;
+            MaxDistance = maxDistance;
+            Gamma = gamma;
+            UvIslandNeighborRadius = uvIslandNeighborRadius;
+            UseTransparentMode = useTransparentMode;
+            EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
+            OnCompleted = onCompleted;
+            OnCancelled = onCancelled;
+        }
+    }
+
+    #endregion
+
+    #region 距離ベイカー設定
+
+    /// <summary>
+    /// Settings for distance mask baking process
+    /// Contains all parameters needed for the baking operation
+    /// </summary>
+    public class DistanceBakerSettings : BaseBakerSettings
+    {
+        public readonly int TempSubdivisionIterations;
+        public readonly int UvIslandVertexSmoothIterations;
 
         public DistanceBakerSettings(
             List<Renderer> avatarRenderers,
@@ -302,23 +332,13 @@ namespace NolaTools.FurMaskGenerator.Data
             int edgePaddingSize,
             Action<Dictionary<string, Texture2D>> onCompleted,
             Action onCancelled)
+            : base(avatarRenderers, clothRenderers, sphereMasks, uvIslandMasks,
+                   boneMasks, materialNormalMaps, textureSizeIndex, maxDistance,
+                   gamma, uvIslandNeighborRadius, useTransparentMode, edgePaddingSize,
+                   onCompleted, onCancelled)
         {
-            AvatarRenderers = avatarRenderers;
-            ClothRenderers = clothRenderers;
-            SphereMasks = sphereMasks;
-            UVIslandMasks = uvIslandMasks;
-            BoneMasks = boneMasks ?? new List<BoneMaskData>();
-            MaterialNormalMaps = materialNormalMaps ?? new List<MaterialNormalMapData>();
-            TextureSizeIndex = textureSizeIndex;
-            MaxDistance = maxDistance;
-            Gamma = gamma;
             TempSubdivisionIterations = Mathf.Clamp(tempSubdivisionIterations, 0, 3);
-            UvIslandNeighborRadius = uvIslandNeighborRadius;
             UvIslandVertexSmoothIterations = Mathf.Clamp(uvIslandVertexSmoothIterations, 0, 8);
-            UseTransparentMode = useTransparentMode;
-            EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
-            OnCompleted = onCompleted;
-            OnCancelled = onCancelled;
         }
     }
 
@@ -330,23 +350,9 @@ namespace NolaTools.FurMaskGenerator.Data
     /// Settings for texel-based mask baking process
     /// UV空間のピクセル単位で距離計算を行い、頂点密度に依存しないマスクを生成
     /// </summary>
-    public class TexelBakerSettings
+    public class TexelBakerSettings : BaseBakerSettings
     {
-        public readonly List<Renderer> AvatarRenderers;
-        public readonly List<Renderer> ClothRenderers;
-        public readonly List<SphereData> SphereMasks;
-        public readonly List<UVIslandMaskData> UVIslandMasks;
-        public readonly List<BoneMaskData> BoneMasks;
-        public readonly List<MaterialNormalMapData> MaterialNormalMaps;
-        public readonly int TextureSizeIndex;
-        public readonly float MaxDistance;
-        public readonly float Gamma;
-        public readonly float UvIslandNeighborRadius;
-        public readonly bool UseTransparentMode;
-        public readonly int EdgePaddingSize;
         public readonly int BlurRadius;
-        public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
-        public readonly Action OnCancelled;
 
         public TexelBakerSettings(
             List<Renderer> avatarRenderers,
@@ -364,22 +370,12 @@ namespace NolaTools.FurMaskGenerator.Data
             int blurRadius,
             Action<Dictionary<string, Texture2D>> onCompleted,
             Action onCancelled)
+            : base(avatarRenderers, clothRenderers, sphereMasks, uvIslandMasks,
+                   boneMasks, materialNormalMaps, textureSizeIndex, maxDistance,
+                   gamma, uvIslandNeighborRadius, useTransparentMode, edgePaddingSize,
+                   onCompleted, onCancelled)
         {
-            AvatarRenderers = avatarRenderers;
-            ClothRenderers = clothRenderers;
-            SphereMasks = sphereMasks;
-            UVIslandMasks = uvIslandMasks;
-            BoneMasks = boneMasks ?? new List<BoneMaskData>();
-            MaterialNormalMaps = materialNormalMaps ?? new List<MaterialNormalMapData>();
-            TextureSizeIndex = textureSizeIndex;
-            MaxDistance = maxDistance;
-            Gamma = gamma;
-            UvIslandNeighborRadius = uvIslandNeighborRadius;
-            UseTransparentMode = useTransparentMode;
-            EdgePaddingSize = Mathf.Clamp(edgePaddingSize, 0, 32);
             BlurRadius = Mathf.Clamp(blurRadius, 0, 16);
-            OnCompleted = onCompleted;
-            OnCancelled = onCancelled;
         }
     }
 

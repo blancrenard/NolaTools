@@ -118,53 +118,40 @@ namespace NolaTools.FurMaskGenerator
             HandleSphereSelectionClick(sceneView);
         }
 
-        // UV追加モード: マウスホバー位置の更新（レイキャスト）
-        private void UpdateUVAddHoverPosition()
+        /// <summary>
+        /// マウスホバー位置をレイキャストで取得する共通処理
+        /// </summary>
+        /// <returns>ヒットした場合はワールド座標、しなかった場合はnull</returns>
+        private Vector3? TryRaycastHoverPosition()
         {
             Event e = Event.current;
-            if (e == null) return;
-            if (e.alt)
+            if (e == null || e.alt) return null;
+
+            if (!(e.isMouse || e.type == EventType.MouseMove || e.type == EventType.MouseDrag))
+                return null;
+
+            var picked = HandleUtility.PickGameObject(e.mousePosition, false);
+            if (picked == null) return null;
+            if (!picked.TryGetComponent<Renderer>(out var renderer)) return null;
+            if (!SetupRaycastMesh(renderer)) return null;
+
+            Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
+            if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
             {
-                hasUVAddHover = false;
-                return;
+                return EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
             }
+            return null;
+        }
 
-            if (e.isMouse || e.type == EventType.MouseMove || e.type == EventType.MouseDrag)
-            {
-                var picked = HandleUtility.PickGameObject(e.mousePosition, false);
-                if (picked == null)
-                {
-                    hasUVAddHover = false;
-                    return;
-                }
-                if (!picked.TryGetComponent<Renderer>(out var renderer))
-                {
-                    hasUVAddHover = false;
-                    return;
-                }
-
-                if (!SetupRaycastMesh(renderer))
-                {
-                    hasUVAddHover = false;
-                    return;
-                }
-
-                Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-                if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
-                {
-                    uvAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
-                    hasUVAddHover = true;
-                }
-                else
-                {
-                    hasUVAddHover = false;
-                }
-            }
+        // UV追加モード: マウスホバー位置の更新
+        private void UpdateUVAddHoverPosition()
+        {
+            var hitPos = TryRaycastHoverPosition();
+            hasUVAddHover = hitPos.HasValue;
+            if (hitPos.HasValue) uvAddHoverPosition = hitPos.Value;
 
             if (Event.current.type == EventType.MouseMove || Event.current.type == EventType.MouseDrag)
-            {
                 SceneView.RepaintAll();
-            }
         }
 
         // UV追加モード: 仮十字マーカーの描画
@@ -176,56 +163,15 @@ namespace NolaTools.FurMaskGenerator
             UIDrawingUtils.DrawCross(uvAddHoverPosition, AppSettings.CROSS_DRAW_SIZE, cross);
         }
 
-        // スフィア追加モード: マウスホバー位置の更新（レイキャスト）
+        // スフィア追加モード: マウスホバー位置の更新
         private void UpdateSphereAddHoverPosition()
         {
-            Event e = Event.current;
-            if (e == null) return;
-            if (e.alt)
-            {
-                hasSphereAddHover = false;
-                return;
-            }
+            var hitPos = TryRaycastHoverPosition();
+            hasSphereAddHover = hitPos.HasValue;
+            if (hitPos.HasValue) sphereAddHoverPosition = hitPos.Value;
 
-            // マウスがSceneビュー上にある場合のみ
-            if (e.isMouse || e.type == EventType.MouseMove || e.type == EventType.MouseDrag)
-            {
-                // ピック対象を取得
-                var picked = HandleUtility.PickGameObject(e.mousePosition, false);
-                if (picked == null)
-                {
-                    hasSphereAddHover = false;
-                    return;
-                }
-                if (!picked.TryGetComponent<Renderer>(out var renderer))
-                {
-                    hasSphereAddHover = false;
-                    return;
-                }
-
-                if (!SetupRaycastMesh(renderer))
-                {
-                    hasSphereAddHover = false;
-                    return;
-                }
-
-                Ray ray = HandleUtility.GUIPointToWorldRay(e.mousePosition);
-                if (_raycastHelperCollider != null && _raycastHelperCollider.Raycast(ray, out RaycastHit hit, EditorMeshUtils.RaycastMaxDistance))
-                {
-                    sphereAddHoverPosition = EditorMeshUtils.RoundToPrecision(hit.point, AppSettings.POSITION_PRECISION);
-                    hasSphereAddHover = true;
-                }
-                else
-                {
-                    hasSphereAddHover = false;
-                }
-            }
-
-            // 入力のたびに再描画
             if (Event.current.type == EventType.MouseMove || Event.current.type == EventType.MouseDrag)
-            {
                 SceneView.RepaintAll();
-            }
         }
 
         // スフィア追加モード: 仮スフィアの描画
@@ -233,9 +179,9 @@ namespace NolaTools.FurMaskGenerator
         {
             if (!hasSphereAddHover) return;
             Color baseColor = AppSettings.ADD_MODE_FRAME_COLOR;
-            Color wire = new Color(baseColor.r, baseColor.g, baseColor.b, 0.9f);
+            Color wire = new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.WIRE_ALPHA);
             Color inner = new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.HALF_VALUE);
-            Color grad = new Color(baseColor.r, baseColor.g, baseColor.b, 0.35f);
+            Color grad = new Color(baseColor.r, baseColor.g, baseColor.b, AppSettings.GRADIENT_ALPHA);
 
             EditorGizmoUtils.SetDepthTest(true, () =>
             {
@@ -266,7 +212,7 @@ namespace NolaTools.FurMaskGenerator
                 float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
                 var wireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.HALF_VALUE, AppSettings.NINETY_FIVE_PERCENT, intensity));
                 var innerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT, AppSettings.HIGH_VALUE_MIN, intensity));
-                var gradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, AppSettings.TWENTY_PERCENT * 2, intensity));
+                var gradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.GRADIENT_ALPHA_MIN, AppSettings.TWENTY_PERCENT * 2, intensity));
 
                 // オリジナルスフィアの描画
                 UIDrawingUtils.DrawGradientSpheres(
@@ -285,8 +231,8 @@ namespace NolaTools.FurMaskGenerator
                     
                     // ミラー用の色（薄くする）
                     var mirrorWireColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.TWENTY_PERCENT * 2, AppSettings.HIGH_VALUE_MIN, intensity));
-                    var mirrorInnerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.25f, AppSettings.HALF_VALUE, intensity));
-                    var mirrorGradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(0.15f, AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT, intensity));
+                    var mirrorInnerColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.MIRROR_INNER_ALPHA_MIN, AppSettings.HALF_VALUE, intensity));
+                    var mirrorGradColor = new Color(baseColor.r, baseColor.g, baseColor.b, Mathf.Lerp(AppSettings.GRADIENT_ALPHA_MIN, AppSettings.TWENTY_PERCENT + AppSettings.UV_THRESHOLD_DEFAULT, intensity));
 
                     UIDrawingUtils.DrawGradientSpheres(
                         mirroredPosition,
@@ -556,44 +502,44 @@ namespace NolaTools.FurMaskGenerator
                 int subIdx = DetermineSubmeshIndex(_raycastHelperCollider.sharedMesh, hit2.triangleIndex);
                 string rendererPath = EditorPathUtils.GetGameObjectPath(renderer);
 
-                    int existingIndex = FindExistingUVMarker(rendererPath, subIdx, uv, renderer);
-                    if (existingIndex >= 0)
-                    {
-                        // クリック確定時のみ保存をスケジュール
-                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
-                        settings.uvIslandMasks.RemoveAt(existingIndex);
-                        if (selectedUVIslandIndex > existingIndex) { selectedUVIslandIndex--; }
-                        else if (selectedUVIslandIndex == existingIndex) { selectedUVIslandIndex = 0; }
-                        // 保存はヘルパがスケジュール済み
-                        Repaint();
-                        NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
-                        e.Use();
-                        return;
-                    }
-                    else
-                    {
-                        // クリック確定時のみ保存をスケジュール
-                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
-                    }
-
-                    var data = new UVIslandMaskData
-                    {
-                        rendererPath = rendererPath,
-                        submeshIndex = subIdx,
-                        seedUV = uv,
-                        uvPosition = uv,
-                        targetMatName = TryGetMaterialName(renderer, subIdx),
-                        seedWorldPos = hit2.point,
-                        displayName = renderer.name,
-                        markerColor = ColorGenerator.GenerateMarkerColor(),
-                        uvThreshold = 0.1f
-                    };
-                    settings.uvIslandMasks.Add(data);
-                    selectedUVIslandIndex = Mathf.Max(0, settings.uvIslandMasks.Count - 1);
-                    UndoRedoUtils.SetDirtyAndScheduleSaveOnly(settings);
+                int existingIndex = FindExistingUVMarker(rendererPath, subIdx, uv, renderer);
+                if (existingIndex >= 0)
+                {
+                    // クリック確定時のみ保存をスケジュール
+                    UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
+                    settings.uvIslandMasks.RemoveAt(existingIndex);
+                    if (selectedUVIslandIndex > existingIndex) { selectedUVIslandIndex--; }
+                    else if (selectedUVIslandIndex == existingIndex) { selectedUVIslandIndex = 0; }
+                    // 保存はヘルパがスケジュール済み
                     Repaint();
                     NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
                     e.Use();
+                    return;
+                }
+                else
+                {
+                    // クリック確定時のみ保存をスケジュール
+                    UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
+                }
+
+                var data = new UVIslandMaskData
+                {
+                    rendererPath = rendererPath,
+                    submeshIndex = subIdx,
+                    seedUV = uv,
+                    uvPosition = uv,
+                    targetMatName = TryGetMaterialName(renderer, subIdx),
+                    seedWorldPos = hit2.point,
+                    displayName = renderer.name,
+                    markerColor = ColorGenerator.GenerateMarkerColor(),
+                    uvThreshold = AppSettings.UV_THRESHOLD_DEFAULT
+                };
+                settings.uvIslandMasks.Add(data);
+                selectedUVIslandIndex = Mathf.Max(0, settings.uvIslandMasks.Count - 1);
+                UndoRedoUtils.SetDirtyAndScheduleSaveOnly(settings);
+                Repaint();
+                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                e.Use();
             }
             else
             {

@@ -32,11 +32,34 @@ namespace NolaTools.FurMaskGenerator
             return tail;
         }
 
-        private float GetDefaultValueForGroup(string group)
+        private const float BONE_DEFAULT_VALUE = 0.0f;
+
+        /// <summary>
+        /// ヒューマノイドプリセットに含めるボーン一覧
+        /// </summary>
+        private static readonly HumanBodyBones[] HUMANOID_PRESET_BONES = new[]
         {
-            // 0=無効 / 1=強くマスク の新仕様に合わせて初期値は0
-            return 0.0f;
-        }
+            HumanBodyBones.Hips, HumanBodyBones.Spine, HumanBodyBones.Chest, HumanBodyBones.UpperChest,
+            HumanBodyBones.Neck, HumanBodyBones.Head, HumanBodyBones.Jaw, HumanBodyBones.LeftEye, HumanBodyBones.RightEye,
+            HumanBodyBones.LeftShoulder, HumanBodyBones.RightShoulder,
+            HumanBodyBones.LeftUpperArm, HumanBodyBones.RightUpperArm,
+            HumanBodyBones.LeftLowerArm, HumanBodyBones.RightLowerArm,
+            HumanBodyBones.LeftHand, HumanBodyBones.RightHand,
+            HumanBodyBones.LeftThumbProximal, HumanBodyBones.LeftThumbIntermediate, HumanBodyBones.LeftThumbDistal,
+            HumanBodyBones.LeftIndexProximal, HumanBodyBones.LeftIndexIntermediate, HumanBodyBones.LeftIndexDistal,
+            HumanBodyBones.LeftMiddleProximal, HumanBodyBones.LeftMiddleIntermediate, HumanBodyBones.LeftMiddleDistal,
+            HumanBodyBones.LeftRingProximal, HumanBodyBones.LeftRingIntermediate, HumanBodyBones.LeftRingDistal,
+            HumanBodyBones.LeftLittleProximal, HumanBodyBones.LeftLittleIntermediate, HumanBodyBones.LeftLittleDistal,
+            HumanBodyBones.RightThumbProximal, HumanBodyBones.RightThumbIntermediate, HumanBodyBones.RightThumbDistal,
+            HumanBodyBones.RightIndexProximal, HumanBodyBones.RightIndexIntermediate, HumanBodyBones.RightIndexDistal,
+            HumanBodyBones.RightMiddleProximal, HumanBodyBones.RightMiddleIntermediate, HumanBodyBones.RightMiddleDistal,
+            HumanBodyBones.RightRingProximal, HumanBodyBones.RightRingIntermediate, HumanBodyBones.RightRingDistal,
+            HumanBodyBones.RightLittleProximal, HumanBodyBones.RightLittleIntermediate, HumanBodyBones.RightLittleDistal,
+            HumanBodyBones.LeftUpperLeg, HumanBodyBones.RightUpperLeg,
+            HumanBodyBones.LeftLowerLeg, HumanBodyBones.RightLowerLeg,
+            HumanBodyBones.LeftFoot, HumanBodyBones.RightFoot,
+            HumanBodyBones.LeftToes, HumanBodyBones.RightToes
+        };
 
         void TryAddHumanoidPreset()
         {
@@ -44,75 +67,16 @@ namespace NolaTools.FurMaskGenerator
             var animator = avatarObject.GetComponent<Animator>();
             if (animator == null || !animator.isHuman) return;
 
-            void add(HumanBodyBones bone)
+            foreach (var bone in HUMANOID_PRESET_BONES)
             {
                 var t = animator.GetBoneTransform(bone);
-                if (t == null) return;
+                if (t == null) continue;
                 string path = EditorPathUtils.GetGameObjectPath(t.gameObject);
                 if (settings.boneMasks.Find(b => b.bonePath == path) == null)
                 {
-                    string tail = GetTailName(path);
-                    string grp = GetGroupLabel(tail);
-                    float v = GetDefaultValueForGroup(grp);
-                    settings.boneMasks.Add(new BoneMaskData { bonePath = path, value = v });
+                    settings.boneMasks.Add(new BoneMaskData { bonePath = path, value = BONE_DEFAULT_VALUE });
                 }
             }
-
-            add(HumanBodyBones.Hips);
-            add(HumanBodyBones.Spine);
-            add(HumanBodyBones.Chest);
-            add(HumanBodyBones.UpperChest);
-            add(HumanBodyBones.Neck);
-            add(HumanBodyBones.Head);
-            add(HumanBodyBones.Jaw);
-            add(HumanBodyBones.LeftEye);
-            add(HumanBodyBones.RightEye);
-            add(HumanBodyBones.LeftShoulder);
-            add(HumanBodyBones.RightShoulder);
-            add(HumanBodyBones.LeftUpperArm);
-            add(HumanBodyBones.RightUpperArm);
-            add(HumanBodyBones.LeftLowerArm);
-            add(HumanBodyBones.RightLowerArm);
-            add(HumanBodyBones.LeftHand);
-            add(HumanBodyBones.RightHand);
-            add(HumanBodyBones.LeftThumbProximal);
-            add(HumanBodyBones.LeftThumbIntermediate);
-            add(HumanBodyBones.LeftThumbDistal);
-            add(HumanBodyBones.LeftIndexProximal);
-            add(HumanBodyBones.LeftIndexIntermediate);
-            add(HumanBodyBones.LeftIndexDistal);
-            add(HumanBodyBones.LeftMiddleProximal);
-            add(HumanBodyBones.LeftMiddleIntermediate);
-            add(HumanBodyBones.LeftMiddleDistal);
-            add(HumanBodyBones.LeftRingProximal);
-            add(HumanBodyBones.LeftRingIntermediate);
-            add(HumanBodyBones.LeftRingDistal);
-            add(HumanBodyBones.LeftLittleProximal);
-            add(HumanBodyBones.LeftLittleIntermediate);
-            add(HumanBodyBones.LeftLittleDistal);
-            add(HumanBodyBones.RightThumbProximal);
-            add(HumanBodyBones.RightThumbIntermediate);
-            add(HumanBodyBones.RightThumbDistal);
-            add(HumanBodyBones.RightIndexProximal);
-            add(HumanBodyBones.RightIndexIntermediate);
-            add(HumanBodyBones.RightIndexDistal);
-            add(HumanBodyBones.RightMiddleProximal);
-            add(HumanBodyBones.RightMiddleIntermediate);
-            add(HumanBodyBones.RightMiddleDistal);
-            add(HumanBodyBones.RightRingProximal);
-            add(HumanBodyBones.RightRingIntermediate);
-            add(HumanBodyBones.RightRingDistal);
-            add(HumanBodyBones.RightLittleProximal);
-            add(HumanBodyBones.RightLittleIntermediate);
-            add(HumanBodyBones.RightLittleDistal);
-            add(HumanBodyBones.LeftUpperLeg);
-            add(HumanBodyBones.RightUpperLeg);
-            add(HumanBodyBones.LeftLowerLeg);
-            add(HumanBodyBones.RightLowerLeg);
-            add(HumanBodyBones.LeftFoot);
-            add(HumanBodyBones.RightFoot);
-            add(HumanBodyBones.LeftToes);
-            add(HumanBodyBones.RightToes);
             UndoRedoUtils.RecordUndoAndSetDirty(settings, "Add Humanoid Preset");
         }
 
@@ -147,8 +111,7 @@ namespace NolaTools.FurMaskGenerator
                 if (grp != GameObjectConstants.BONE_GROUP_EAR_GROUP && grp != GameObjectConstants.BONE_GROUP_TAIL_GROUP) continue;
                 string path = EditorPathUtils.GetGameObjectPath(t.gameObject);
                 if (settings.boneMasks.Exists(b => b.bonePath == path)) continue;
-                float v = GetDefaultValueForGroup(grp);
-                settings.boneMasks.Add(new BoneMaskData { bonePath = path, value = v });
+                settings.boneMasks.Add(new BoneMaskData { bonePath = path, value = BONE_DEFAULT_VALUE });
             }
             UndoRedoUtils.RecordUndoAndSetDirty(settings, "Remove Humanoid Preset");
         }

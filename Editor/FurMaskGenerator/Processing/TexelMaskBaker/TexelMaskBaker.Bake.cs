@@ -240,7 +240,7 @@ namespace NolaTools.FurMaskGenerator
         }
 
         /// <summary>
-        /// スフィアマスク値を計算（DistanceMaskBaker と同等のロジック）
+        /// スフィアマスク値を計算（BakerUtils共通ロジックを使用）
         /// </summary>
         private float CheckSphereMasks(Vector3 vertexPosition)
         {
@@ -258,18 +258,7 @@ namespace NolaTools.FurMaskGenerator
                 float dist = Vector3.Distance(vertexPosition, sphere.position);
                 if (dist <= cr)
                 {
-                    float innerRadius = cr * (1f - sphere.gradientWidth);
-                    float v;
-                    if (dist <= innerRadius)
-                    {
-                        v = 0f;
-                    }
-                    else
-                    {
-                        v = (dist - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, cr - innerRadius));
-                    }
-                    float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
-                    float sphereValue = Mathf.Lerp(1f, v, intensity);
+                    float sphereValue = BakerUtils.CalculateSphereMaskValue(dist, cr, sphere);
                     maskValue = Mathf.Min(maskValue, sphereValue);
                 }
 
@@ -280,19 +269,8 @@ namespace NolaTools.FurMaskGenerator
                     float mirroredDist = Vector3.Distance(vertexPosition, mirroredPosition);
                     if (mirroredDist <= cr)
                     {
-                        float innerRadius = cr * (1f - sphere.gradientWidth);
-                        float v;
-                        if (mirroredDist <= innerRadius)
-                        {
-                            v = 0f;
-                        }
-                        else
-                        {
-                            v = (mirroredDist - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, cr - innerRadius));
-                        }
-                        float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
-                        float sphereValue = Mathf.Lerp(1f, v, intensity);
-                        maskValue = Mathf.Min(maskValue, sphereValue);
+                        float mirroredValue = BakerUtils.CalculateSphereMaskValue(mirroredDist, cr, sphere);
+                        maskValue = Mathf.Min(maskValue, mirroredValue);
                     }
                 }
             }

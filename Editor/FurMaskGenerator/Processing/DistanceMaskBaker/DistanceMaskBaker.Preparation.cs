@@ -131,25 +131,7 @@ namespace NolaTools.FurMaskGenerator
 
         private void BuildVertexToMaterialMapping()
         {
-            for (int subIndex = 0; subIndex < subDatas.Count; subIndex++)
-            {
-                var (triangles, materialName) = subDatas[subIndex];
-                if (triangles == null || string.IsNullOrEmpty(materialName)) continue;
-
-                var usedVertices = new HashSet<int>();
-                foreach (int vertexIdx in triangles)
-                {
-                    usedVertices.Add(vertexIdx);
-                }
-
-                foreach (int vertexIdx in usedVertices)
-                {
-                    if (vertexIdx >= 0 && vertexIdx < verts.Count)
-                    {
-                        vertexToMaterialName[vertexIdx] = materialName;
-                    }
-                }
-            }
+            BakerUtils.BuildVertexToMaterialMapping(subDatas, verts.Count, vertexToMaterialName);
         }
 
         #endregion

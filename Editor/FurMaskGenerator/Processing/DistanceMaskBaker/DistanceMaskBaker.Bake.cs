@@ -166,7 +166,7 @@ namespace NolaTools.FurMaskGenerator
                     
                     if (Mathf.Abs(distSquared - closestDistSquared) < 0.001f)
                     {
-                        float sphereMaskValue = CalculateSphereMaskValueOptimized(closestDist, cr, sphere);
+                        float sphereMaskValue = BakerUtils.CalculateSphereMaskValue(closestDist, cr, sphere);
                         minMaskValue = Mathf.Min(minMaskValue, sphereMaskValue);
                     }
                     
@@ -178,7 +178,7 @@ namespace NolaTools.FurMaskGenerator
                         
                         if (Mathf.Abs(mirroredDistSquared - closestDistSquared) < 0.001f)
                         {
-                            float mirroredMaskValue = CalculateSphereMaskValueOptimized(closestDist, cr, sphere);
+                            float mirroredMaskValue = BakerUtils.CalculateSphereMaskValue(closestDist, cr, sphere);
                             minMaskValue = Mathf.Min(minMaskValue, mirroredMaskValue);
                         }
                     }
@@ -190,27 +190,6 @@ namespace NolaTools.FurMaskGenerator
             return maskValue;
         }
 
-        /// <summary>
-        /// 球体マスク値の計算（重複コードを削除）
-        /// </summary>
-        private float CalculateSphereMaskValue(float distance, float radius, SphereData sphere)
-        {
-            float innerRadius = radius * (1f - sphere.gradientWidth);
-            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, radius - innerRadius));
-            float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
-            return Mathf.Lerp(1f, v, intensity);
-        }
-
-        /// <summary>
-        /// 最適化された球体マスク値の計算（平方根計算を最小限に抑制）
-        /// </summary>
-        private float CalculateSphereMaskValueOptimized(float distance, float radius, SphereData sphere)
-        {
-            float innerRadius = radius * (1f - sphere.gradientWidth);
-            float v = (distance <= innerRadius) ? 0f : (distance - innerRadius) / (Mathf.Max(AppSettings.POSITION_PRECISION * AppSettings.POSITION_PRECISION, radius - innerRadius));
-            float intensity = Mathf.Clamp(sphere.intensity, AppSettings.SPHERE_INTENSITY_MIN, AppSettings.SPHERE_INTENSITY_MAX);
-            return Mathf.Lerp(1f, v, intensity);
-        }
 
         #endregion
     }

@@ -56,6 +56,8 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const float DEFAULT_MAX_DISTANCE = 0.04f;
         public const float DEFAULT_GAMMA = 2f;
         public const int DEFAULT_TEXTURE_SIZE_INDEX = 1;
+        public const float DEFAULT_UV_ISLAND_NEIGHBOR_RADIUS = 0.015f;
+        public const int DEFAULT_EDGE_PADDING_SIZE = 4;
         #endregion
 
         #region 計算・処理定数
@@ -83,6 +85,10 @@ namespace NolaTools.FurMaskGenerator.Constants
 
         #region 色生成定数
         public const float HIGH_VALUE_MIN = 0.7f;
+        public const float WIRE_ALPHA = 0.9f;
+        public const float GRADIENT_ALPHA = 0.35f;
+        public const float GRADIENT_ALPHA_MIN = 0.15f;
+        public const float MIRROR_INNER_ALPHA_MIN = 0.25f;
         #endregion
 
         #region UIプレビュー定数

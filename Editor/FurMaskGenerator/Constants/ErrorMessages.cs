@@ -54,6 +54,13 @@ namespace NolaTools.FurMaskGenerator.Constants
         public const string ERROR_BAKE_EXCEPTION = "ベイク処理中にエラーが発生しました: {0}";
         public const string WARNING_NORMAL_MAP_NOT_READABLE = "ノーマルマップ '{0}' が読み取り可能になっていません。Texture Import Settings で 'Read/Write Enabled' を有効にしてください。";
         #endregion
+
+        #region ノーマルマップ自動検出
+        public const string ERROR_RENDERERS_NOT_CONFIGURED = "レンダラーが設定されていません。先にアバターとレンダラーを設定してください。";
+        public const string INFO_NORMAL_MAP_NOT_FOUND_LENGTH_SET = "ノーマルマップは見つかりませんでしたが、長さを自動設定しました。";
+        public const string INFO_NORMAL_MAP_AND_LENGTH_NOT_FOUND = "ノーマルマップと長さの設定が見つかりませんでした。";
+        public const string LOG_PREFIX = "[FurMaskGenerator] {0}";
+        #endregion
     }
 }
 #endif

@@ -182,7 +182,7 @@ namespace NolaTools.FurMaskGenerator
             {
                 EditorUtility.DisplayDialog(
                     UILabels.ERROR_DIALOG_TITLE, 
-                    "レンダラーが設定されていません。先にアバターとレンダラーを設定してください。", 
+                    ErrorMessages.ERROR_RENDERERS_NOT_CONFIGURED, 
                     UILabels.ERROR_DIALOG_OK);
                 return;
             }
@@ -223,11 +223,11 @@ namespace NolaTools.FurMaskGenerator
                 UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "ファーの長さの自動設定");
                 settings.maxDistance = optimalFurLength;
                 
-                string message = optimalFurLength != 0.04f 
-                    ? $"ノーマルマップは見つかりませんでしたが、長さを自動設定しました。"
-                    : "ノーマルマップと長さの設定が見つかりませんでした。";
+                string message = optimalFurLength != AppSettings.DEFAULT_MAX_DISTANCE 
+                    ? ErrorMessages.INFO_NORMAL_MAP_NOT_FOUND_LENGTH_SET
+                    : ErrorMessages.INFO_NORMAL_MAP_AND_LENGTH_NOT_FOUND;
                 
-                Debug.Log($"[FurMaskGenerator] {message}");
+                Debug.Log(string.Format(ErrorMessages.LOG_PREFIX, message));
             }
 
             // 変更は遅延一括保存に任せる（二重保存を避ける）
