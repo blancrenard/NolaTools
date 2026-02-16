@@ -200,7 +200,7 @@ namespace NolaTools.FurMaskGenerator
                             }
                             else
                             {
-                                buffer[colorIndex] = new Color(distValue, distValue, distValue, 0f);
+                                buffer[colorIndex] = new Color(0f, 0f, 0f, 0f);
                             }
                         }
                         else

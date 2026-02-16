@@ -333,7 +333,7 @@ namespace NolaTools.FurMaskGenerator
                 {
                     materialSet.Add(mat);
                     Color[] buffer = new Color[texSize * texSize];
-                    Color initialColor = settings.UseTransparentMode ? new Color(1f, 1f, 1f, 0f) : Color.white;
+                    Color initialColor = settings.UseTransparentMode ? new Color(0f, 0f, 0f, 0f) : Color.white;
                     for (int i = 0; i < buffer.Length; i++) buffer[i] = initialColor;
                     materialBuffers[mat] = buffer;
                     materialRasterizedPixels[mat] = new HashSet<int>();

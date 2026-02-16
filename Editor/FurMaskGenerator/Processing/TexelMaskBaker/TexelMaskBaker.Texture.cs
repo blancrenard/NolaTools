@@ -86,12 +86,31 @@ namespace NolaTools.FurMaskGenerator
             Color[] alphaPixels = new Color[lengthPixels.Length];
             float threshold = 0.4f; // #666666
 
+            bool useAlpha = settings.UseTransparentMode;
+
             for (int i = 0; i < lengthPixels.Length; i++)
             {
-                // LengthMaskの明るさが閾値を超えているか判定
-                if (lengthPixels[i].maxColorComponent > threshold)
+                float val;
+                if (useAlpha)
                 {
-                    alphaPixels[i] = Color.white;
+                    val = 1f - lengthPixels[i].a;
+                }
+                else
+                {
+                    val = lengthPixels[i].maxColorComponent;
+                }
+
+                // LengthMaskの明るさが閾値を超えているか判定
+                if (val > threshold)
+                {
+                    if (useAlpha)
+                    {
+                        alphaPixels[i] = new Color(0f, 0f, 0f, 0f);
+                    }
+                    else
+                    {
+                        alphaPixels[i] = Color.white;
+                    }
                 }
                 else
                 {
