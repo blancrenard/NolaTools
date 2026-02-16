@@ -135,6 +135,13 @@ namespace NolaTools.FurMaskGenerator
                 var mesh = EditorMeshUtils.GetMeshForRenderer(r, out bool isTemp);
                 if (mesh == null) continue;
 
+                // BakeMeshではタンジェントがスキニング変形と不整合になる場合があるため、
+                // 現在のジオメトリに基づいてタンジェントを再計算する
+                if (isTemp && normalMapCache.Count > 0)
+                {
+                    mesh.RecalculateTangents();
+                }
+
                 AddMeshData(r, mesh);
                 ProcessSubMeshes(r, mesh);
 
@@ -302,15 +309,7 @@ namespace NolaTools.FurMaskGenerator
             rayDirections = new Vector3[verts.Count];
             for (int i = 0; i < verts.Count; i++)
             {
-                Vector3 n = norms[i].normalized;
-
-                // ノーマルマップがあればサンプリング
-                if (vertexToMaterialName.TryGetValue(i, out string matName) && normalMapCache.ContainsKey(matName))
-                {
-                    n = SampleNormalMap(matName, uvs[i], n, i);
-                }
-
-                rayDirections[i] = n;
+                rayDirections[i] = norms[i].normalized;
             }
         }
 

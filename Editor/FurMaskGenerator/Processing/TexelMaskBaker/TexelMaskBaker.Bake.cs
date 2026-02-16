@@ -42,7 +42,7 @@ namespace NolaTools.FurMaskGenerator
                         BakeTriangleTexels(buffer, texSize, texSize,
                             uvs[i0], uvs[i1], uvs[i2],
                             i0, i1, i2,
-                            rasterizedPixels);
+                            rasterizedPixels, mat);
 
                         currentTriIndex++;
                         processedThisFrame++;
@@ -99,7 +99,7 @@ namespace NolaTools.FurMaskGenerator
         private void BakeTriangleTexels(Color[] buffer, int width, int height,
             Vector2 uv0, Vector2 uv1, Vector2 uv2,
             int vertIdx0, int vertIdx1, int vertIdx2,
-            HashSet<int> rasterizedPixels)
+            HashSet<int> rasterizedPixels, string materialName)
         {
             // UV座標をピクセル座標に変換
             Vector2 p0 = new Vector2(uv0.x * width, uv0.y * height);
@@ -122,6 +122,16 @@ namespace NolaTools.FurMaskGenerator
             Vector3 normal1 = rayDirections[vertIdx1];
             Vector3 normal2 = rayDirections[vertIdx2];
 
+            // ノーマルマップ用のタンジェントデータ（テクセル単位サンプリング）
+            bool hasNormalMap = !string.IsNullOrEmpty(materialName) && normalMapCache.ContainsKey(materialName);
+            Vector4 tan0 = default, tan1 = default, tan2 = default;
+            if (hasNormalMap)
+            {
+                tan0 = (vertIdx0 < tangents.Count) ? tangents[vertIdx0] : new Vector4(1, 0, 0, 1);
+                tan1 = (vertIdx1 < tangents.Count) ? tangents[vertIdx1] : new Vector4(1, 0, 0, 1);
+                tan2 = (vertIdx2 < tangents.Count) ? tangents[vertIdx2] : new Vector4(1, 0, 0, 1);
+            }
+
             // ボーンマスク値を取得
             float bone0 = (boneMaskValues != null && vertIdx0 < boneMaskValues.Count) ? boneMaskValues[vertIdx0] : 0f;
             float bone1 = (boneMaskValues != null && vertIdx1 < boneMaskValues.Count) ? boneMaskValues[vertIdx1] : 0f;
@@ -143,6 +153,18 @@ namespace NolaTools.FurMaskGenerator
                     // UV→3D位置の逆変換（バリセントリック補間）
                     Vector3 worldPos = worldPos0 * bary.x + worldPos1 * bary.y + worldPos2 * bary.z;
                     Vector3 normal = (normal0 * bary.x + normal1 * bary.y + normal2 * bary.z).normalized;
+
+                    // テクセル単位でノーマルマップをサンプリング
+                    if (hasNormalMap)
+                    {
+                        Vector2 texelUV = uv0 * bary.x + uv1 * bary.y + uv2 * bary.z;
+                        Vector3 interpTangent = new Vector3(
+                            tan0.x * bary.x + tan1.x * bary.y + tan2.x * bary.z,
+                            tan0.y * bary.x + tan1.y * bary.y + tan2.y * bary.z,
+                            tan0.z * bary.x + tan1.z * bary.y + tan2.z * bary.z
+                        );
+                        normal = SampleNormalMapForTexel(materialName, texelUV, normal, interpTangent, tan0.w);
+                    }
 
                     // ボーンマスク値を補間
                     float boneControl = bone0 * bary.x + bone1 * bary.y + bone2 * bary.z;

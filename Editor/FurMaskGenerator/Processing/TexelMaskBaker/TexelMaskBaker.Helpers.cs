@@ -157,6 +157,84 @@ namespace NolaTools.FurMaskGenerator
             return rotatedFallback;
         }
 
+        /// <summary>
+        /// テクセル単位でノーマルマップをサンプリングして法線方向を修正
+        /// 補間済みのタンジェントデータを使用してTBN変換を行う
+        /// </summary>
+        private Vector3 SampleNormalMapForTexel(string materialName, Vector2 texelUV, Vector3 interpolatedNormal, Vector3 interpolatedTangent, float tangentW)
+        {
+            if (!normalMapCache.TryGetValue(materialName, out var normalMapData))
+                return interpolatedNormal;
+
+            if (normalMapData.normalMap == null)
+                return interpolatedNormal;
+
+            if (Mathf.Abs(normalMapData.normalStrength) < AppSettings.POSITION_PRECISION)
+                return interpolatedNormal;
+
+            if (!cachedIsPackedAG.ContainsKey(materialName))
+                TryAutoDetectMaterialFlags(materialName, normalMapData);
+
+            Color normalColor = normalMapData.normalMap.GetPixelBilinear(texelUV.x, texelUV.y);
+
+            Vector3 tangentSpaceNormal;
+            bool usePackedAG = cachedIsPackedAG.TryGetValue(materialName, out bool cIsAG) ? cIsAG : normalMapData.isPackedAG;
+
+            if (usePackedAG)
+            {
+                float nx = (normalColor.a * 2f - 1f) * normalMapData.normalStrength;
+                float ny = (normalColor.g * 2f - 1f) * normalMapData.normalStrength;
+                float nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
+                tangentSpaceNormal = new Vector3(nx, ny, nz);
+            }
+            else
+            {
+                float nx = (normalColor.r * 2f - 1f) * normalMapData.normalStrength;
+                float ny = (normalColor.g * 2f - 1f) * normalMapData.normalStrength;
+                float nz = Mathf.Sqrt(Mathf.Max(0f, 1f - nx * nx - ny * ny));
+                tangentSpaceNormal = new Vector3(nx, ny, nz);
+            }
+
+            // TBN行列でタンジェント空間→ワールド空間に変換
+            Vector3 normal = interpolatedNormal.normalized;
+            Vector3 tangent = interpolatedTangent.normalized;
+
+            if (tangent.sqrMagnitude < AppSettings.POSITION_PRECISION)
+            {
+                tangent = Vector3.Cross(normal, Vector3.up);
+                if (tangent.sqrMagnitude < AppSettings.POSITION_PRECISION * 100f)
+                    tangent = Vector3.Cross(normal, Vector3.right);
+                tangent.Normalize();
+            }
+
+            // Gram-Schmidt直交化: 補間後のタンジェントが法線と直交することを保証
+            tangent = (tangent - normal * Vector3.Dot(normal, tangent)).normalized;
+            if (tangent.sqrMagnitude < AppSettings.POSITION_PRECISION)
+            {
+                tangent = Vector3.Cross(normal, Vector3.up);
+                if (tangent.sqrMagnitude < AppSettings.POSITION_PRECISION * 100f)
+                    tangent = Vector3.Cross(normal, Vector3.right);
+                tangent.Normalize();
+            }
+
+            Vector3 bitangent = Vector3.Cross(normal, tangent) * tangentW;
+            Matrix4x4 tbnMatrix = new Matrix4x4(
+                new Vector4(tangent.x, tangent.y, tangent.z, 0),
+                new Vector4(bitangent.x, bitangent.y, bitangent.z, 0),
+                new Vector4(normal.x, normal.y, normal.z, 0),
+                new Vector4(0, 0, 0, 1)
+            );
+
+            Vector3 world = tbnMatrix.MultiplyVector(tangentSpaceNormal).normalized;
+            if (float.IsNaN(world.x) || float.IsNaN(world.y) || float.IsNaN(world.z) || world.sqrMagnitude < AppSettings.UV_THRESHOLD_DEFAULT)
+            {
+                return interpolatedNormal;
+            }
+
+            float influence = Mathf.Clamp01(Mathf.Abs(normalMapData.normalStrength));
+            return Vector3.Lerp(interpolatedNormal, world, influence).normalized;
+        }
+
         private void TryAutoDetectMaterialFlags(string materialName, MaterialNormalMapData data)
         {
             if (string.IsNullOrEmpty(materialName) || data == null || data.normalMap == null) return;
