@@ -66,32 +66,41 @@ namespace NolaTools.FurMaskGenerator
                 }
 
 
-                // Alpha Mask生成 (長さマスクの閾値処理: #666666(0.4)より上は白、以下は黒)
-                Texture2D alphaTex = new Texture2D(texSize, texSize, TextureFormat.RGBA32, false);
-                Color[] lengthPixels = tex.GetPixels();
-                Color[] alphaPixels = new Color[lengthPixels.Length];
-                float threshold = 0.4f; // #666666
-
-                for (int i = 0; i < lengthPixels.Length; i++)
-                {
-                    // LengthMaskの明るさが閾値を超えているか判定
-                    if (lengthPixels[i].maxColorComponent > threshold)
-                    {
-                        alphaPixels[i] = Color.white;
-                    }
-                    else
-                    {
-                        alphaPixels[i] = Color.black;
-                    }
-                }
-                alphaTex.SetPixels(alphaPixels);
-                alphaTex.Apply(false);
+                // Alpha Mask生成
+                Texture2D alphaTex = GenerateAlphaMask(tex);
 
                 finalPreview[matKey] = new MaskResult(tex, alphaTex);
             }
 
             EditorCoreUtils.ClearProgress();
             return finalPreview;
+        }
+
+        /// <summary>
+        /// 長さマスクからアルファマスク（2値化）を生成
+        /// </summary>
+        private Texture2D GenerateAlphaMask(Texture2D lengthMask)
+        {
+            Texture2D alphaTex = new Texture2D(texSize, texSize, TextureFormat.RGBA32, false);
+            Color[] lengthPixels = lengthMask.GetPixels();
+            Color[] alphaPixels = new Color[lengthPixels.Length];
+            float threshold = 0.4f; // #666666
+
+            for (int i = 0; i < lengthPixels.Length; i++)
+            {
+                // LengthMaskの明るさが閾値を超えているか判定
+                if (lengthPixels[i].maxColorComponent > threshold)
+                {
+                    alphaPixels[i] = Color.white;
+                }
+                else
+                {
+                    alphaPixels[i] = Color.black;
+                }
+            }
+            alphaTex.SetPixels(alphaPixels);
+            alphaTex.Apply(false);
+            return alphaTex;
         }
 
         /// <summary>

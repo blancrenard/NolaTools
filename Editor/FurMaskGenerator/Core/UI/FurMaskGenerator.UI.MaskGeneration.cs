@@ -56,12 +56,36 @@ namespace NolaTools.FurMaskGenerator
 
         private void DrawNormalMapSettings()
         {
-            // データ初期化 (if needed)
+            EnsureNormalMapDataInitialized();
+
+            var targetMatName = settings.targetMaterial.name;
+            var normalMapData = settings.materialNormalMaps.FirstOrDefault(m => m.materialName == targetMatName);
+            
+            // Should be initialized by EnsureNormalMapDataInitialized, but safety check
+            if (normalMapData == null) return;
+
+            EditorGUILayout.BeginHorizontal();
+            
+            DrawNormalMapLabel();
+
+            int pickerID = GUIUtility.GetControlID(FocusType.Keyboard);
+            
+            DrawNormalMapTextureField(normalMapData, pickerID);
+            DrawNormalMapControls(normalMapData, pickerID);
+            HandleNormalMapObjectPicker(normalMapData, pickerID);
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void EnsureNormalMapDataInitialized()
+        {
             if (settings.materialNormalMaps == null)
             {
                 settings.materialNormalMaps = new List<MaterialNormalMapData>();
                 UndoRedoUtils.RecordUndoAndSetDirty(settings, "Initialize Material Normal Maps");
             }
+
+            if (settings.targetMaterial == null) return;
 
             var targetMatName = settings.targetMaterial.name;
             var normalMapData = settings.materialNormalMaps.FirstOrDefault(m => m.materialName == targetMatName);
@@ -72,18 +96,19 @@ namespace NolaTools.FurMaskGenerator
                 settings.materialNormalMaps.Add(normalMapData);
                 UndoRedoUtils.RecordUndoAndSetDirty(settings, "Add Material Normal Map for Target");
             }
+        }
 
-            EditorGUILayout.BeginHorizontal();
-            
-            // Label (Left aligned like other properties)
+        private void DrawNormalMapLabel()
+        {
             var labelRect = EditorGUILayout.GetControlRect(false, 18, GUILayout.Width(EditorGUIUtility.labelWidth));
             var centeredLabelStyle = new GUIStyle(EditorStyles.label);
             centeredLabelStyle.alignment = TextAnchor.MiddleLeft;
             GUI.Label(labelRect, "ノーマルマップ", centeredLabelStyle);
+        }
 
-            // Texture Object Field (Custom)
+        private void DrawNormalMapTextureField(MaterialNormalMapData normalMapData, int pickerID)
+        {
             var texRect = EditorGUILayout.GetControlRect(false, 18, GUILayout.Width(18));
-            int pickerID = GUIUtility.GetControlID(FocusType.Keyboard);
 
             // Draw Box (Empty or Preview)
             if (GUIUtility.keyboardControl == pickerID)
@@ -127,8 +152,6 @@ namespace NolaTools.FurMaskGenerator
                     {
                         UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "Change Normal Map");
                         normalMapData.normalMap = droppedTex;
-
-
                     }
                     GUIUtility.keyboardControl = pickerID; // Auto-focus on drop
                     evt.Use();
@@ -147,8 +170,10 @@ namespace NolaTools.FurMaskGenerator
                     evt.Use();
                 }
             }
+        }
 
-            // Picker Button (Circle) & Strength Slider
+        private void DrawNormalMapControls(MaterialNormalMapData normalMapData, int pickerID)
+        {
             EditorGUILayout.BeginVertical();
             GUILayout.Space(2); // Center vertically: (28 - 18) / 2 = 5
             
@@ -161,7 +186,7 @@ namespace NolaTools.FurMaskGenerator
             if (GUILayout.Button(GUIContent.none, selectorStyle, GUILayout.Width(18), GUILayout.Height(18)))
             {
                 EditorGUIUtility.ShowObjectPicker<Texture2D>(normalMapData.normalMap, false, "", pickerID);
-                evt.Use();
+                Event.current.Use();
             }
 
             // Strength Slider
@@ -171,15 +196,17 @@ namespace NolaTools.FurMaskGenerator
                 -10f,
                 10f);
             normalMapData.normalStrength = (float)System.Math.Round(newStrength, 1);
-                if (EditorGUI.EndChangeCheck())
+            if (EditorGUI.EndChangeCheck())
             {
                 UndoRedoUtils.SetDirtyOnly(settings);
             }
             
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndVertical();
+        }
 
-            // Handle Picker Selection Result (Must cover entire area or be checked here)
+        private void HandleNormalMapObjectPicker(MaterialNormalMapData normalMapData, int pickerID)
+        {
             if (Event.current.commandName == "ObjectSelectorUpdated" && EditorGUIUtility.GetObjectPickerControlID() == pickerID)
             {
                 var picked = EditorGUIUtility.GetObjectPickerObject() as Texture2D;
@@ -187,12 +214,8 @@ namespace NolaTools.FurMaskGenerator
                 {
                     UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "Change Normal Map");
                     normalMapData.normalMap = picked;
-                    
-
                 }
             }
-
-            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawFurLengthSettings(bool showAutoSetButton)
