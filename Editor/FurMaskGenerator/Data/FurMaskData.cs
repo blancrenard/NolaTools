@@ -30,7 +30,10 @@ namespace NolaTools.FurMaskGenerator.Data
 
         // Basic settings (These remain as is)
         public int textureSizeIndex = AppSettings.DEFAULT_TEXTURE_SIZE_INDEX;
+        // 特定のマテリアルのみ生成する場合に使用（nullの場合は全生成）
+        public Material targetMaterial;
         public float maxDistance = AppSettings.DEFAULT_MAX_DISTANCE;
+
         public float gamma = AppSettings.DEFAULT_GAMMA;
 
         // 透過モード設定
@@ -237,8 +240,11 @@ namespace NolaTools.FurMaskGenerator.Data
         public readonly List<UVIslandMaskData> UVIslandMasks;
         public readonly List<BoneMaskData> BoneMasks;
         public readonly List<MaterialNormalMapData> MaterialNormalMaps;
+
         public readonly int TextureSizeIndex;
+        public readonly Material TargetMaterial;
         public readonly float MaxDistance;
+
         public readonly float Gamma;
         public readonly float UvIslandNeighborRadius;
         public readonly bool UseTransparentMode;
@@ -253,7 +259,9 @@ namespace NolaTools.FurMaskGenerator.Data
             List<UVIslandMaskData> uvIslandMasks,
             List<BoneMaskData> boneMasks,
             List<MaterialNormalMapData> materialNormalMaps,
+
             int textureSizeIndex,
+            Material targetMaterial,
             float maxDistance,
             float gamma,
             float uvIslandNeighborRadius,
@@ -269,6 +277,7 @@ namespace NolaTools.FurMaskGenerator.Data
             BoneMasks = boneMasks ?? new List<BoneMaskData>();
             MaterialNormalMaps = materialNormalMaps ?? new List<MaterialNormalMapData>();
             TextureSizeIndex = textureSizeIndex;
+            TargetMaterial = targetMaterial;
             MaxDistance = maxDistance;
             Gamma = gamma;
             UvIslandNeighborRadius = uvIslandNeighborRadius;
@@ -300,7 +309,9 @@ namespace NolaTools.FurMaskGenerator.Data
             List<UVIslandMaskData> uvIslandMasks,
             List<BoneMaskData> boneMasks,
             List<MaterialNormalMapData> materialNormalMaps,
+
             int textureSizeIndex,
+            Material targetMaterial,
             float maxDistance,
             float gamma,
             float uvIslandNeighborRadius,
@@ -310,7 +321,7 @@ namespace NolaTools.FurMaskGenerator.Data
             Action<Dictionary<string, Texture2D>> onCompleted,
             Action onCancelled)
             : base(avatarRenderers, clothRenderers, sphereMasks, uvIslandMasks,
-                   boneMasks, materialNormalMaps, textureSizeIndex, maxDistance,
+                   boneMasks, materialNormalMaps, textureSizeIndex, targetMaterial, maxDistance,
                    gamma, uvIslandNeighborRadius, useTransparentMode, edgePaddingSize,
                    onCompleted, onCancelled)
         {

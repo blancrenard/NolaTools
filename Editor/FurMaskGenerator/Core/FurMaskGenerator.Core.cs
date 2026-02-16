@@ -33,7 +33,7 @@ namespace NolaTools.FurMaskGenerator
         [SerializeField] private bool foldoutSphereSection = false;
         [SerializeField] private bool foldoutUVSection = false;
         [SerializeField] private bool foldoutBoneSection = false;
-        [SerializeField] private bool foldoutNormalMapSection = false;
+
         private Vector2 boneMaskScroll;
         private List<bool> sphereFoldoutStates = new List<bool>();
         private bool addSphereOnClick = false;

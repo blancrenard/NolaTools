@@ -51,7 +51,7 @@ namespace NolaTools.FurMaskGenerator.Constants
 
         #region テクスチャ・マスク生成関連
         public const string TEXTURE_SIZE_LABEL = "テクスチャサイズ";
-        public const string DISTANCE_LABEL = "長さ";
+        public const string DISTANCE_LABEL = "ファーの長さ";
         public const string MASK_INTENSITY_LABEL = "マスクの濃さ";
         public const string SUBDIVISION_ITERATIONS_LABEL = "細分化回数";
         public const string SUBDIVISION_ITERATIONS_TOOLTIP = "メッシュの細分化回数（0=細分化なし、1=4倍、2=16倍、3=64倍）";

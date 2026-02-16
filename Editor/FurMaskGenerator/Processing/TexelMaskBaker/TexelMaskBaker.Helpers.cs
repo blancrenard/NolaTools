@@ -88,10 +88,7 @@ namespace NolaTools.FurMaskGenerator
                 return originalNormal;
             }
 
-            if (!normalMapData.normalMap.isReadable)
-            {
-                return originalNormal;
-            }
+
 
             if (!cachedIsPackedAG.ContainsKey(materialName))
             {

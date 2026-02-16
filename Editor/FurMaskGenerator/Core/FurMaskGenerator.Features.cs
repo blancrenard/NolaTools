@@ -79,6 +79,7 @@ namespace NolaTools.FurMaskGenerator
                 new List<BoneMaskData>(settings.boneMasks),
                 new List<MaterialNormalMapData>(settings.materialNormalMaps),
                 settings.textureSizeIndex,
+                settings.targetMaterial,
                 internalMaxDistance,
                 settings.gamma,
                 settings.uvIslandNeighborRadius,

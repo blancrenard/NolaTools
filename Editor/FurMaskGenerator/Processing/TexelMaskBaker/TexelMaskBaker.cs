@@ -67,6 +67,9 @@ namespace NolaTools.FurMaskGenerator
         // プレビュー結果
         private Dictionary<string, Texture2D> preview = new();
 
+        // **NEW** 一時テクスチャ（読み取り不能なノーマルマップの対策用）
+        private List<Texture2D> temporaryTextures = new();
+
         #endregion
 
         #region コンストラクタとライフサイクル
@@ -107,6 +110,7 @@ namespace NolaTools.FurMaskGenerator
             Physics.queriesHitBackfaces = originalQueriesHitBackfaces;
             CleanupCreatedMeshes();
             CleanupClothCollider();
+            CleanupTemporaryTextures(); // **NEW**
         }
 
         private void Finish()
@@ -155,6 +159,21 @@ namespace NolaTools.FurMaskGenerator
             {
                 EditorObjectUtils.SafeDestroy(clothColliderObject);
                 clothColliderObject = null;
+            }
+        }
+
+        private void CleanupTemporaryTextures()
+        {
+            if (temporaryTextures != null)
+            {
+                foreach (var tex in temporaryTextures)
+                {
+                    if (tex != null)
+                    {
+                        EditorObjectUtils.SafeDestroy(tex);
+                    }
+                }
+                temporaryTextures.Clear();
             }
         }
 

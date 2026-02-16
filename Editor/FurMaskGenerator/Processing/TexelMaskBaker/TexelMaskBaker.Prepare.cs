@@ -55,7 +55,30 @@ namespace NolaTools.FurMaskGenerator
                 foreach (var nm in settings.MaterialNormalMaps)
                 {
                     if (nm == null || string.IsNullOrEmpty(nm.materialName) || nm.normalMap == null) continue;
-                    normalMapCache[nm.materialName] = nm;
+                    
+                    if (nm.normalMap.isReadable)
+                    {
+                        normalMapCache[nm.materialName] = nm;
+                    }
+                    else
+                    {
+                        // 読み取り不可能な場合は一時的に複製を作成
+                        Texture2D readableCopy = DuplicateTextureReadable(nm.normalMap);
+                        if (readableCopy != null)
+                        {
+                            // ヒープ割り当てを避けるため、既存のデータをコピーしてテクスチャ参照だけ差し替えた一時オブジェクトを作成
+                            var tempNM = new MaterialNormalMapData
+                            {
+                                materialName = nm.materialName,
+                                normalMap = readableCopy,
+                                normalStrength = nm.normalStrength,
+                                isPackedAG = nm.isPackedAG
+                            };
+                            
+                            normalMapCache[nm.materialName] = tempNM;
+                            temporaryTextures.Add(readableCopy);
+                        }
+                    }
                 }
             }
 
@@ -63,6 +86,24 @@ namespace NolaTools.FurMaskGenerator
             foreach (var r in settings.AvatarRenderers)
             {
                 if (r == null) continue;
+
+                // Check if renderer contains target material
+                if (settings.TargetMaterial != null)
+                {
+                    bool hasTarget = false;
+                    if (r.sharedMaterials != null)
+                    {
+                        foreach (var m in r.sharedMaterials)
+                        {
+                            if (m == settings.TargetMaterial)
+                            {
+                                hasTarget = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!hasTarget) continue;
+                }
 
                 var mesh = EditorMeshUtils.GetMeshForRenderer(r, out bool isTemp);
                 if (mesh == null) continue;
@@ -75,6 +116,16 @@ namespace NolaTools.FurMaskGenerator
 
                 for (int smi = 0; smi < subMeshCount; smi++)
                 {
+                    // Filter by target material
+                    if (settings.TargetMaterial != null)
+                    {
+                        var currentMaterial = (r.sharedMaterials != null && smi < r.sharedMaterials.Length) ? r.sharedMaterials[smi] : null;
+                        if (currentMaterial != settings.TargetMaterial)
+                        {
+                            continue;
+                        }
+                    }
+
                     int[] triLocal = mesh.GetTriangles(smi);
                     if (triLocal == null || triLocal.Length == 0) continue;
 
@@ -350,6 +401,38 @@ namespace NolaTools.FurMaskGenerator
         }
 
         #endregion
+
+
+        /// <summary>
+        /// 読み取り不可能なテクスチャをRenderTexture経由で複製して読み取り可能にする
+        /// </summary>
+        private Texture2D DuplicateTextureReadable(Texture2D source)
+        {
+            if (source == null) return null;
+
+            RenderTexture renderTex = RenderTexture.GetTemporary(
+                source.width, 
+                source.height, 
+                0, 
+                RenderTextureFormat.Default, 
+                RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(source, renderTex);
+            
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTex;
+            
+            Texture2D readableText = new Texture2D(source.width, source.height);
+            readableText.ReadPixels(new Rect(0, 0, renderTex.width, renderTex.height), 0, 0);
+            readableText.Apply();
+            
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTex);
+            
+            return readableText;
+        }
+
+
     }
 }
 #endif

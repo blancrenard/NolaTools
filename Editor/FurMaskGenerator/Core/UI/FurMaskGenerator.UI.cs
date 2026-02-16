@@ -40,11 +40,7 @@ namespace NolaTools.FurMaskGenerator
                     }
                     else
                     {
-                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
-                        DrawNormalMapSettings();
-
-                        GUILayout.Space(AppSettings.LARGE_SPACE);
 
                         DrawSphereMaskSettings();
 
