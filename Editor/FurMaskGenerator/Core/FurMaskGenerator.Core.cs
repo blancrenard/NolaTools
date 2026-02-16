@@ -24,7 +24,7 @@ namespace NolaTools.FurMaskGenerator
         public List<SphereData> sphereMasks => settings?.sphereMasks;
         // Note: 内部API依存を排除。リスト描画は UIDrawingUtils.DrawRendererList に委譲
         private bool baking => currentTexelBaker != null;
-        Dictionary<string, Texture2D> preview = new();
+        Dictionary<string, MaskResult> preview = new();
         Vector2 scr;
         private bool addUVIslandOnClick = false;
         private bool showUVMarkers = true;
@@ -178,7 +178,18 @@ namespace NolaTools.FurMaskGenerator
         void CleanupTextures()
         {
             // 生成済みプレビューの破棄クリア
-            EditorObjectUtils.DestroyAndClearDictionaryValues(preview);
+            if (preview != null)
+            {
+                foreach (var result in preview.Values)
+                {
+                    if (result != null)
+                    {
+                        if (result.LengthMask != null) EditorObjectUtils.SafeDestroy(result.LengthMask);
+                        if (result.AlphaMask != null) EditorObjectUtils.SafeDestroy(result.AlphaMask);
+                    }
+                }
+                preview.Clear();
+            }
         }
 
         private void RegisterEvents()

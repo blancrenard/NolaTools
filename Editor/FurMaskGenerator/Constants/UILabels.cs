@@ -108,6 +108,8 @@ namespace NolaTools.FurMaskGenerator.Constants
         #region プレビュー関連
         public const string PREVIEW_SECTION_TITLE = "プレビュー";
         public const string SAVE_MASK_BUTTON = "Save Mask";
+        public const string LENGTH_MASK_LABEL = "長さマスク";
+        public const string ALPHA_MASK_LABEL = "アルファマスク";
         #endregion
 
         #region 追加モード表示

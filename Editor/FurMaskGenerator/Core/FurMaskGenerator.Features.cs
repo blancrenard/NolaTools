@@ -97,7 +97,7 @@ namespace NolaTools.FurMaskGenerator
             currentTexelBaker.StartBake();
         }
 
-        private void OnBakeCompleted(Dictionary<string, Texture2D> result)
+        private void OnBakeCompleted(Dictionary<string, MaskResult> result)
         {
             preview = result;
 

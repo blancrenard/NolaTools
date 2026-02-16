@@ -19,13 +19,33 @@ namespace NolaTools.FurMaskGenerator
                 {
                     foreach (var kvp in preview)
                     {
+                        EditorGUILayout.LabelField(kvp.Key, EditorStyles.boldLabel);
+                        EditorGUILayout.BeginHorizontal();
+
+                        // Length Mask
+                        EditorGUILayout.BeginVertical();
                         TextureOperationUtils.DrawTexturePreviewItem(
-                            kvp.Value,
-                            $"{kvp.Key}",
+                            kvp.Value.LengthMask,
+                            UILabels.LENGTH_MASK_LABEL,
                             UILabels.MASK_SAVE_BUTTON,
-                            kvp.Key,
+                            $"{kvp.Key}_Length",
                             128,
                             UILabels.SAVE_MASK_BUTTON);
+                        EditorGUILayout.EndVertical();
+
+                        // Alpha Mask
+                        EditorGUILayout.BeginVertical();
+                        TextureOperationUtils.DrawTexturePreviewItem(
+                            kvp.Value.AlphaMask,
+                            UILabels.ALPHA_MASK_LABEL,
+                            UILabels.MASK_SAVE_BUTTON,
+                            $"{kvp.Key}_Alpha",
+                            128,
+                            UILabels.SAVE_MASK_BUTTON);
+                        EditorGUILayout.EndVertical();
+
+                        EditorGUILayout.EndHorizontal();
+                        GUILayout.Space(10);
                     }
                 }
                 else

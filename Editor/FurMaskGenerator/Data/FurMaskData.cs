@@ -8,7 +8,6 @@ using NolaTools.FurMaskGenerator.Utils;
 namespace NolaTools.FurMaskGenerator.Data
 {
 
-
     #region メイン設定
 
     /// <summary>
@@ -249,7 +248,7 @@ namespace NolaTools.FurMaskGenerator.Data
         public readonly float UvIslandNeighborRadius;
         public readonly bool UseTransparentMode;
         public readonly int EdgePaddingSize;
-        public readonly Action<Dictionary<string, Texture2D>> OnCompleted;
+        public readonly Action<Dictionary<string, MaskResult>> OnCompleted;
         public readonly Action OnCancelled;
 
         protected BaseBakerSettings(
@@ -267,7 +266,7 @@ namespace NolaTools.FurMaskGenerator.Data
             float uvIslandNeighborRadius,
             bool useTransparentMode,
             int edgePaddingSize,
-            Action<Dictionary<string, Texture2D>> onCompleted,
+            Action<Dictionary<string, MaskResult>> onCompleted,
             Action onCancelled)
         {
             AvatarRenderers = avatarRenderers;
@@ -318,7 +317,7 @@ namespace NolaTools.FurMaskGenerator.Data
             bool useTransparentMode,
             int edgePaddingSize,
             int blurRadius,
-            Action<Dictionary<string, Texture2D>> onCompleted,
+            Action<Dictionary<string, MaskResult>> onCompleted,
             Action onCancelled)
             : base(avatarRenderers, clothRenderers, sphereMasks, uvIslandMasks,
                    boneMasks, materialNormalMaps, textureSizeIndex, targetMaterial, maxDistance,
@@ -326,6 +325,22 @@ namespace NolaTools.FurMaskGenerator.Data
                    onCompleted, onCancelled)
         {
             BlurRadius = Mathf.Clamp(blurRadius, 0, 16);
+        }
+    }
+
+    #endregion
+    #region 結果データ
+
+    [Serializable]
+    public class MaskResult
+    {
+        public Texture2D LengthMask;
+        public Texture2D AlphaMask;
+
+        public MaskResult(Texture2D lengthMask, Texture2D alphaMask)
+        {
+            LengthMask = lengthMask;
+            AlphaMask = alphaMask;
         }
     }
 

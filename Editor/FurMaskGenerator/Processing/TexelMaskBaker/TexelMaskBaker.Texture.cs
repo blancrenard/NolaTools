@@ -16,9 +16,9 @@ namespace NolaTools.FurMaskGenerator
         /// <summary>
         /// ベイク結果のバッファからテクスチャを生成し、エッジパディングを適用
         /// </summary>
-        private Dictionary<string, Texture2D> BuildFinalTextures()
+        private Dictionary<string, MaskResult> BuildFinalTextures()
         {
-            var finalPreview = new Dictionary<string, Texture2D>();
+            var finalPreview = new Dictionary<string, MaskResult>();
 
             foreach (var kv in materialBuffers)
             {
@@ -65,7 +65,29 @@ namespace NolaTools.FurMaskGenerator
                     tex.Apply(false);
                 }
 
-                finalPreview[matKey] = tex;
+
+                // Alpha Mask生成 (長さマスクの閾値処理: #666666(0.4)より上は白、以下は黒)
+                Texture2D alphaTex = new Texture2D(texSize, texSize, TextureFormat.RGBA32, false);
+                Color[] lengthPixels = tex.GetPixels();
+                Color[] alphaPixels = new Color[lengthPixels.Length];
+                float threshold = 0.4f; // #666666
+
+                for (int i = 0; i < lengthPixels.Length; i++)
+                {
+                    // LengthMaskの明るさが閾値を超えているか判定
+                    if (lengthPixels[i].maxColorComponent > threshold)
+                    {
+                        alphaPixels[i] = Color.white;
+                    }
+                    else
+                    {
+                        alphaPixels[i] = Color.black;
+                    }
+                }
+                alphaTex.SetPixels(alphaPixels);
+                alphaTex.Apply(false);
+
+                finalPreview[matKey] = new MaskResult(tex, alphaTex);
             }
 
             EditorCoreUtils.ClearProgress();
