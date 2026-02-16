@@ -153,6 +153,7 @@ namespace NolaTools.FurMaskGenerator
                     // UV→3D位置の逆変換（バリセントリック補間）
                     Vector3 worldPos = worldPos0 * bary.x + worldPos1 * bary.y + worldPos2 * bary.z;
                     Vector3 normal = (normal0 * bary.x + normal1 * bary.y + normal2 * bary.z).normalized;
+                    Vector3 geometricNormal = normal; // ノーマルマップ適用前の幾何法線を保存
 
                     // テクセル単位でノーマルマップをサンプリング
                     if (hasNormalMap)
@@ -171,7 +172,7 @@ namespace NolaTools.FurMaskGenerator
                     float boneMaskValue = 1f - Mathf.Clamp01(boneControl);
 
                     // このテクセルの距離を計算
-                    float distValue = CalculateTexelDistance(worldPos, normal, boneMaskValue);
+                    float distValue = CalculateTexelDistance(worldPos, normal, geometricNormal, boneMaskValue);
 
                     // ガンマ補正
                     distValue = Mathf.Clamp01(distValue);
@@ -214,12 +215,12 @@ namespace NolaTools.FurMaskGenerator
                     }
                     else
                     {
-                        // 既に描画されている場合はより暗い方を採用
-                        if (!rasterizedPixels.Contains(colorIndex) || distValue < buffer[colorIndex].r)
-                        {
-                            buffer[colorIndex] = new Color(distValue, distValue, distValue, 1f);
+            // より暗い値を採用
+                            if (!rasterizedPixels.Contains(colorIndex) || distValue < buffer[colorIndex].r)
+                            {
+                                buffer[colorIndex] = new Color(distValue, distValue, distValue, 1f);
+                            }
                         }
-                    }
 
                     rasterizedPixels.Add(colorIndex);
                 }
@@ -229,8 +230,9 @@ namespace NolaTools.FurMaskGenerator
         /// <summary>
         /// テクセル位置における距離値を計算
         /// スフィアマスク・ボーンマスク・コライダーレイキャストを統合
+        /// ノーマルマップ適用時は幾何法線によるセーフティチェックも行う
         /// </summary>
-        private float CalculateTexelDistance(Vector3 worldPos, Vector3 normal, float boneMaskValue)
+        private float CalculateTexelDistance(Vector3 worldPos, Vector3 normal, Vector3 geometricNormal, float boneMaskValue)
         {
             // スフィアマスク計算
             float sphereMaskValue = CheckSphereMasks(worldPos);
@@ -248,17 +250,39 @@ namespace NolaTools.FurMaskGenerator
                 return minMaskValue;
             }
 
+            // メインのレイキャスト（ノーマルマップ反映後の法線方向）
+            float hitDistance = PerformRaycast(worldPos, normal);
+
+            // セーフティチェック（幾何法線方向）
+            // ノーマルマップによって法線が大きく曲げられている場合、
+            // 「本来は服の下だが、斜めにレイを飛ばすことで服の隙間をすり抜けてしまう（リークする）」現象を防ぐため、
+            // 傾きを少し緩めた方向（ノーマルマップ反映後と幾何法線の中間）でもチェックを行い、遮蔽されている場合はマスクを適用する
+            if (Vector3.Dot(normal, geometricNormal) < 0.99f) // 角度差がある程度ある場合のみ
+            {
+                // 完全な幾何法線ではなく、少し傾きを残した方向（0.5でブレンド）を使用
+                Vector3 safetyDirection = Vector3.Lerp(normal, geometricNormal, 0.5f).normalized;
+                float safetyHitDistance = PerformRaycast(worldPos, safetyDirection);
+                hitDistance = Mathf.Min(hitDistance, safetyHitDistance);
+            }
+
+            float distMask = hitDistance / maxM;
+            return Mathf.Min(minMaskValue, distMask);
+        }
+
+        private float PerformRaycast(Vector3 worldPos, Vector3 direction)
+        {
             float hitDistance = maxM;
-            const float rayOffset = AppSettings.POSITION_PRECISION * AppSettings.RAY_OFFSET_MULTIPLIER;
-            var ray = new Ray(worldPos - normal * rayOffset, normal);
+            const float rayOffsetMultiplier = AppSettings.RAY_OFFSET_MULTIPLIER;
+            float rayOffset = AppSettings.POSITION_PRECISION * rayOffsetMultiplier;
+            
+            // 始点を少し内側にずらすことで、表面ギリギリのコライダーとの接触漏れを防ぐ
+            var ray = new Ray(worldPos - direction * rayOffset, direction);
 
             if (clothCollider.Raycast(ray, out RaycastHit hitInfo, maxM + rayOffset))
             {
                 hitDistance = Mathf.Max(0, hitInfo.distance - rayOffset);
             }
-
-            float distMask = hitDistance / maxM;
-            return Mathf.Min(minMaskValue, distMask);
+            return hitDistance;
         }
 
         /// <summary>
