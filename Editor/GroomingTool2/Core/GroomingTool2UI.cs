@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using GroomingTool2.Constants;
 using GroomingTool2.Core;
 using GroomingTool2.Managers;
 using GroomingTool2.State;
@@ -24,7 +25,7 @@ namespace GroomingTool2.Core
         private readonly MaskModeUI maskModeUI;
 
         // モード定義
-        private static readonly GUIContent[] ModeContents = {
+        private static GUIContent[] ModeContents => new[] {
             GroomingTool2Styles.BrushModeLabel,
             GroomingTool2Styles.EraserModeLabel,
             GroomingTool2Styles.BlurModeLabel,
@@ -150,8 +151,8 @@ namespace GroomingTool2.Core
         {
             if (state == null)
             {
-                EditorGUILayout.HelpBox("State の初期化に失敗しました。", MessageType.Error);
-                if (GUILayout.Button("State を作成/再読み込み"))
+                EditorGUILayout.HelpBox(GroomingTool2Labels.STATE_INIT_FAILED, MessageType.Error);
+                if (GUILayout.Button(GroomingTool2Labels.STATE_RELOAD_BUTTON))
                 {
                     // この処理はメインクラスに委譲
                 }
@@ -302,7 +303,7 @@ namespace GroomingTool2.Core
         private void DrawMenuBar()
         {
             // ファイルメニュー
-            if (GUILayout.Button("ファイル", EditorStyles.toolbarButton, GUILayout.Width(60)))
+            if (GUILayout.Button(GroomingTool2Labels.FILE_MENU, EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 ShowFileMenu();
             }
@@ -312,7 +313,7 @@ namespace GroomingTool2.Core
             }
 
             // 編集メニュー
-            if (GUILayout.Button("編集", EditorStyles.toolbarButton, GUILayout.Width(60)))
+            if (GUILayout.Button(GroomingTool2Labels.EDIT_MENU, EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 ShowEditMenu();
             }
@@ -322,7 +323,7 @@ namespace GroomingTool2.Core
             }
 
             // 表示メニュー
-            if (GUILayout.Button("表示", EditorStyles.toolbarButton, GUILayout.Width(60)))
+            if (GUILayout.Button(GroomingTool2Labels.VIEW_MENU, EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 ShowViewMenu();
             }
@@ -332,13 +333,23 @@ namespace GroomingTool2.Core
             }
 
             // 設定メニュー
-            if (GUILayout.Button("設定", EditorStyles.toolbarButton, GUILayout.Width(60)))
+            if (GUILayout.Button(GroomingTool2Labels.SETTINGS_MENU, EditorStyles.toolbarButton, GUILayout.Width(60)))
             {
                 ShowSettingsMenu();
             }
             if (Event.current.type == EventType.Repaint)
             {
                 settingsMenuRect = GUILayoutUtility.GetLastRect();
+            }
+
+            // 言語切り替えボタン
+            GUILayout.FlexibleSpace();
+            bool isJP = NolaToolsLocalization.Current == NolaToolsLocalization.Language.Japanese;
+            if (GUILayout.Button(isJP ? "EN" : "JP", EditorStyles.toolbarButton, GUILayout.Width(30)))
+            {
+                NolaToolsLocalization.Current = isJP
+                    ? NolaToolsLocalization.Language.English
+                    : NolaToolsLocalization.Language.Japanese;
             }
         }
 
@@ -348,13 +359,13 @@ namespace GroomingTool2.Core
         private void ShowFileMenu()
         {
             var menu = new GenericMenu();
-            
-            menu.AddItem(new GUIContent("毛データ読込"), false, () => OnLoadFurData?.Invoke());
-            menu.AddItem(new GUIContent("ノーマル読込"), false, () => OnImportNormalMap?.Invoke());
+
+            menu.AddItem(new GUIContent(GroomingTool2Labels.LOAD_FUR_DATA), false, () => OnLoadFurData?.Invoke());
+            menu.AddItem(new GUIContent(GroomingTool2Labels.IMPORT_NORMAL_MAP), false, () => OnImportNormalMap?.Invoke());
             menu.AddSeparator("");
-            menu.AddItem(new GUIContent("毛データ保存"), false, () => OnSaveFurData?.Invoke());
-            menu.AddItem(new GUIContent("ノーマル保存"), false, () => OnExportNormalMap?.Invoke());
-            
+            menu.AddItem(new GUIContent(GroomingTool2Labels.SAVE_FUR_DATA), false, () => OnSaveFurData?.Invoke());
+            menu.AddItem(new GUIContent(GroomingTool2Labels.EXPORT_NORMAL_MAP), false, () => OnExportNormalMap?.Invoke());
+
             menu.DropDown(fileMenuRect);
         }
 
@@ -367,20 +378,20 @@ namespace GroomingTool2.Core
             
             if (undoManager.CanUndo)
             {
-                menu.AddItem(new GUIContent("元に戻す（Undo）"), false, () => OnUndo?.Invoke());
+                menu.AddItem(new GUIContent(GroomingTool2Labels.UNDO), false, () => OnUndo?.Invoke());
             }
             else
             {
-                menu.AddDisabledItem(new GUIContent("元に戻す（Undo）"));
+                menu.AddDisabledItem(new GUIContent(GroomingTool2Labels.UNDO));
             }
-            
+
             if (undoManager.CanRedo)
             {
-                menu.AddItem(new GUIContent("やり直し（Redo）"), false, () => OnRedo?.Invoke());
+                menu.AddItem(new GUIContent(GroomingTool2Labels.REDO), false, () => OnRedo?.Invoke());
             }
             else
             {
-                menu.AddDisabledItem(new GUIContent("やり直し（Redo）"));
+                menu.AddDisabledItem(new GUIContent(GroomingTool2Labels.REDO));
             }
             
             menu.DropDown(editMenuRect);
@@ -394,13 +405,14 @@ namespace GroomingTool2.Core
             var menu = new GenericMenu();
             
             // UVの色サブメニュー
+            string uvColorLabel = GroomingTool2Labels.UV_COLOR_SUBMENU;
             var uvColorOptions = new (string name, Color color)[]
             {
-                ("白", new Color(1f, 1f, 1f, 0.3f)),
-                ("赤", new Color(1f, 0f, 0f, 0.3f)),
-                ("緑", new Color(0f, 1f, 0f, 0.3f)),
-                ("青", new Color(0f, 0f, 1f, 0.3f)),
-                ("黒", new Color(0f, 0f, 0f, 0.3f)),
+                (GroomingTool2Labels.COLOR_WHITE, new Color(1f, 1f, 1f, 0.3f)),
+                (GroomingTool2Labels.COLOR_RED,   new Color(1f, 0f, 0f, 0.3f)),
+                (GroomingTool2Labels.COLOR_GREEN, new Color(0f, 1f, 0f, 0.3f)),
+                (GroomingTool2Labels.COLOR_BLUE,  new Color(0f, 0f, 1f, 0.3f)),
+                (GroomingTool2Labels.COLOR_BLACK, new Color(0f, 0f, 0f, 0.3f)),
             };
             foreach (var (name, color) in uvColorOptions)
             {
@@ -408,50 +420,53 @@ namespace GroomingTool2.Core
                 bool isSelected = Mathf.Approximately(state.WireframeColor.r, color.r) &&
                                   Mathf.Approximately(state.WireframeColor.g, color.g) &&
                                   Mathf.Approximately(state.WireframeColor.b, color.b);
-                menu.AddItem(new GUIContent($"UVの色/{name}"), isSelected, () =>
+                menu.AddItem(new GUIContent($"{uvColorLabel}/{name}"), isSelected, () =>
                 {
                     state.WireframeColor = color;
                     OnWireframeColorChanged?.Invoke();
                 });
             }
-            
+
             // ドット間隔サブメニュー
+            string dotIntervalLabel = GroomingTool2Labels.DOT_INTERVAL_SUBMENU;
             int[] intervals = { 12, 16, 24, 32 };
             foreach (int interval in intervals)
             {
                 bool isSelected = state.DisplayInterval == interval;
-                menu.AddItem(new GUIContent($"ドット間隔/{interval}"), isSelected, () => state.DisplayInterval = interval);
+                menu.AddItem(new GUIContent($"{dotIntervalLabel}/{interval}"), isSelected, () => state.DisplayInterval = interval);
             }
-            
+
             // Scene毛の色サブメニュー
+            string sceneHairColorLabel = GroomingTool2Labels.SCENE_HAIR_COLOR_SUBMENU;
             var hairColorOptions = new (string name, Color color)[]
             {
-                ("白", Color.white),
-                ("赤", Color.red),
-                ("緑", Color.green),
-                ("青", Color.blue),
-                ("黒", Color.black),
+                (GroomingTool2Labels.COLOR_WHITE, Color.white),
+                (GroomingTool2Labels.COLOR_RED,   Color.red),
+                (GroomingTool2Labels.COLOR_GREEN, Color.green),
+                (GroomingTool2Labels.COLOR_BLUE,  Color.blue),
+                (GroomingTool2Labels.COLOR_BLACK, Color.black),
             };
             foreach (var (name, color) in hairColorOptions)
             {
                 bool isSelected = state.SceneViewHairColor == color;
-                menu.AddItem(new GUIContent($"Scene毛の色/{name}"), isSelected, () =>
+                menu.AddItem(new GUIContent($"{sceneHairColorLabel}/{name}"), isSelected, () =>
                 {
                     state.SceneViewHairColor = color;
                     SceneView.RepaintAll();
                 });
             }
-            
+
             // Scene毛密度サブメニュー
+            string sceneDensityLabel = GroomingTool2Labels.SCENE_DENSITY_SUBMENU;
             var sceneViewDensityOptions = new (string name, int interval)[]
             {
-                ("高密度", 1),
-                ("低密度", 2),
+                (GroomingTool2Labels.DENSITY_HIGH, 1),
+                (GroomingTool2Labels.DENSITY_LOW,  2),
             };
             foreach (var (name, interval) in sceneViewDensityOptions)
             {
                 bool isSelected = state.SceneViewDisplayInterval == interval;
-                menu.AddItem(new GUIContent($"Scene毛密度/{name}"), isSelected, () =>
+                menu.AddItem(new GUIContent($"{sceneDensityLabel}/{name}"), isSelected, () =>
                 {
                     state.SceneViewDisplayInterval = interval;
                     SceneView.RepaintAll(); // Sceneビューを再描画してサンプルポイントを再構築
@@ -480,7 +495,8 @@ namespace GroomingTool2.Core
             // menu.AddSeparator("");
 
             // レンダリングモードサブメニュー
-            menu.AddItem(new GUIContent("レンダリング/GPU（高速）"), state.UseGpuRendering, () =>
+            string renderingLabel = GroomingTool2Labels.RENDERING_SUBMENU;
+            menu.AddItem(new GUIContent($"{renderingLabel}/{GroomingTool2Labels.GPU_RENDERING}"), state.UseGpuRendering, () =>
             {
                 if (!state.UseGpuRendering)
                 {
@@ -488,7 +504,7 @@ namespace GroomingTool2.Core
                     OnRenderingModeChanged?.Invoke(true);
                 }
             });
-            menu.AddItem(new GUIContent("レンダリング/CPU（互換性重視）"), !state.UseGpuRendering, () =>
+            menu.AddItem(new GUIContent($"{renderingLabel}/{GroomingTool2Labels.CPU_RENDERING}"), !state.UseGpuRendering, () =>
             {
                 if (state.UseGpuRendering)
                 {
@@ -496,20 +512,20 @@ namespace GroomingTool2.Core
                     OnRenderingModeChanged?.Invoke(false);
                 }
             });
-            
 
             // UV内のみ編集する
-            menu.AddItem(new GUIContent("UV内のみ編集する"), state.RestrictEditToUvRegion, () =>
+            menu.AddItem(new GUIContent(GroomingTool2Labels.EDIT_WITHIN_UV_ONLY), state.RestrictEditToUvRegion, () =>
             {
                 state.RestrictEditToUvRegion = !state.RestrictEditToUvRegion;
             });
 
             // UVパディングサブメニュー
+            string uvPaddingLabel = GroomingTool2Labels.UV_PADDING_SUBMENU;
             int[] paddingValues = { 0, 2, 4, 8, 16, 32 };
             foreach (int padding in paddingValues)
             {
                 bool isSelected = state.UvPadding == padding;
-                menu.AddItem(new GUIContent($"UVパディング/{padding}px"), isSelected, () =>
+                menu.AddItem(new GUIContent($"{uvPaddingLabel}/{padding}px"), isSelected, () =>
                 {
                     state.UvPadding = padding;
                 });

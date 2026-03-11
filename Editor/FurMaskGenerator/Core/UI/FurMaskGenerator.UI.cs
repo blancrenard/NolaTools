@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using NolaTools;
 using NolaTools.FurMaskGenerator.Data;
 using NolaTools.FurMaskGenerator.Utils;
 using NolaTools.FurMaskGenerator.Constants;
@@ -21,6 +22,19 @@ namespace NolaTools.FurMaskGenerator
 
             // 一時メッシュ用の固定値は保存せず、使用時にのみ適用する（OnGUIでは書き込まない）
 
+            // 言語切り替えボタン
+            using (new GUILayout.HorizontalScope())
+            {
+                GUILayout.FlexibleSpace();
+                bool isJP = NolaToolsLocalization.Current == NolaToolsLocalization.Language.Japanese;
+                if (GUILayout.Button(isJP ? "EN" : "JP", GUILayout.Width(30)))
+                {
+                    NolaToolsLocalization.Current = isJP
+                        ? NolaToolsLocalization.Language.English
+                        : NolaToolsLocalization.Language.Japanese;
+                }
+            }
+
             bool scrollBegun = false;
             try
             {
@@ -36,7 +50,7 @@ namespace NolaTools.FurMaskGenerator
                     if (avatarObject == null)
                     {
                         EditorGUILayout.Space(AppSettings.LARGE_SPACE);
-                        EditorGUILayout.HelpBox("アバターオブジェクトを選択してください。", MessageType.Info);
+                        EditorGUILayout.HelpBox(UILabels.AVATAR_NOT_SELECTED_HINT, MessageType.Info);
                     }
                     else
                     {

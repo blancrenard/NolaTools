@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using GroomingTool2.Constants;
 using GroomingTool2.Core;
 using GroomingTool2.Managers;
 using GroomingTool2.Rendering;
 using GroomingTool2.Services;
 using GroomingTool2.State;
+using NolaTools;
 using UnityEditor;
 using UnityEngine;
 
@@ -55,6 +57,10 @@ namespace GroomingTool2
                 // Unityエディタ終了時の自動保存を購読
                 EditorApplication.quitting -= OnEditorQuitting;
                 EditorApplication.quitting += OnEditorQuitting;
+
+                // 言語変更時の再描画を購読
+                NolaToolsLocalization.OnLanguageChanged -= Repaint;
+                NolaToolsLocalization.OnLanguageChanged += Repaint;
             }
             catch (Exception ex)
             {
@@ -157,7 +163,10 @@ namespace GroomingTool2
         {
             // ツールを閉じる前に自動保存
             autoSaveHelper?.AutoSave(context?.FurDataManager);
-            
+
+            // 言語変更イベントの購読解除
+            NolaToolsLocalization.OnLanguageChanged -= Repaint;
+
             // Unityエディタ終了イベントの購読解除
             EditorApplication.quitting -= OnEditorQuitting;
             
@@ -391,7 +400,7 @@ namespace GroomingTool2
             using (new GUILayout.VerticalScope(EditorStyles.helpBox, GUILayout.ExpandWidth(true)))
             {
                 // アバター選択セクション
-                GUILayout.Label("アバター", EditorStyles.boldLabel);
+                GUILayout.Label(GroomingTool2Labels.AVATAR_LABEL, EditorStyles.boldLabel);
                 EditorGUILayout.Space(4);
 
                 EditorGUI.BeginChangeCheck();
@@ -405,13 +414,13 @@ namespace GroomingTool2
                 if (context.State.Avatar == null)
                 {
                     EditorGUILayout.Space(8);
-                    EditorGUILayout.HelpBox("アバターを指定してください。", MessageType.Warning);
+                    EditorGUILayout.HelpBox(GroomingTool2Labels.AVATAR_NOT_SET_WARNING, MessageType.Warning);
                 }
 
                 EditorGUILayout.Space(12);
 
                 // 背景（マテリアル）選択セクション
-                GUILayout.Label("背景", EditorStyles.boldLabel);
+                GUILayout.Label(GroomingTool2Labels.BACKGROUND_LABEL, EditorStyles.boldLabel);
                 EditorGUILayout.Space(4);
 
                 var materialEntries = context.MaterialManager?.MaterialEntries;
@@ -432,7 +441,7 @@ namespace GroomingTool2
                 {
                     using (new EditorGUI.DisabledGroupScope(true))
                     {
-                        EditorGUILayout.Popup(0, new[] { "（マテリアルなし）" });
+                        EditorGUILayout.Popup(0, new[] { GroomingTool2Labels.NO_MATERIAL });
                     }
                 }
             }
@@ -442,7 +451,7 @@ namespace GroomingTool2
             // 自動設定セクション
             using (new GUILayout.VerticalScope(EditorStyles.helpBox, GUILayout.ExpandWidth(true)))
             {
-                GUILayout.Label("自動設定", EditorStyles.boldLabel);
+                GUILayout.Label(GroomingTool2Labels.AUTO_SETUP_SECTION, EditorStyles.boldLabel);
                 EditorGUILayout.Space(4);
 
                 // スライダーのテキストボックス幅を狭くする
@@ -469,7 +478,7 @@ namespace GroomingTool2
                     && hasHumanoidAvatar;
                 using (new EditorGUI.DisabledGroupScope(!canExecute))
                 {
-                    if (GUILayout.Button("自動設定"))
+                    if (GUILayout.Button(GroomingTool2Labels.AUTO_SETUP_BUTTON))
                     {
                         EditorApplication.delayCall += ExecuteAutoSetup;
                     }
@@ -839,16 +848,19 @@ namespace GroomingTool2
 
             if (avatar == null || !materialEntry.HasValue)
             {
-                EditorUtility.DisplayDialog("エラー", "アバターとマテリアルを選択してください。", "OK");
+                EditorUtility.DisplayDialog(
+                    GroomingTool2Labels.AUTO_SETUP_ERROR_TITLE,
+                    GroomingTool2Labels.AUTO_SETUP_ERROR_NO_AVATAR,
+                    "OK");
                 return;
             }
 
             // 確認ダイアログ
             if (!EditorUtility.DisplayDialog(
-                "自動設定",
-                "現在の毛データを上書きして自動設定を実行しますか？",
-                "実行",
-                "キャンセル"))
+                GroomingTool2Labels.AUTO_SETUP_CONFIRM_TITLE,
+                GroomingTool2Labels.AUTO_SETUP_CONFIRM_MESSAGE,
+                GroomingTool2Labels.AUTO_SETUP_RUN,
+                GroomingTool2Labels.AUTO_SETUP_CANCEL))
             {
                 return;
             }
@@ -857,7 +869,7 @@ namespace GroomingTool2
             if (Mathf.Approximately(context.State.AutoSetupSurfaceLift, 0f))
             {
                 context.FurDataManager.ClearAllData();
-                SaveUndo("自動設定");
+                SaveUndo(GroomingTool2Labels.AUTO_SETUP_UNDO);
                 Repaint();
                 return;
             }
@@ -875,14 +887,17 @@ namespace GroomingTool2
 
                 if (success)
                 {
-                    SaveUndo("自動設定");
+                    SaveUndo(GroomingTool2Labels.AUTO_SETUP_UNDO);
                     Repaint();
                 }
             }
             catch (Exception ex)
             {
-                EditorUtility.DisplayDialog("エラー", $"自動設定中にエラーが発生しました:\n{ex.Message}", "OK");
-                Debug.LogError($"自動設定エラー: {ex}");
+                EditorUtility.DisplayDialog(
+                    GroomingTool2Labels.AUTO_SETUP_ERROR_TITLE,
+                    GroomingTool2Labels.AUTO_SETUP_ERROR_MESSAGE(ex.Message),
+                    "OK");
+                Debug.LogError($"Auto-Setup error: {ex}");
             }
         }
 

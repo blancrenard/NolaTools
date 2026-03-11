@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
+using NolaTools;
 using NolaTools.FurMaskGenerator.Data;
 using NolaTools.FurMaskGenerator.Utils;
 using NolaTools.FurMaskGenerator.Constants;
@@ -56,11 +57,13 @@ namespace NolaTools.FurMaskGenerator
             LoadOrCreateSettings();
             RestoreAvatarAndRendererReferences();
             RegisterEvents();
+            NolaToolsLocalization.OnLanguageChanged += Repaint;
         }
 
         void OnDisable()
         {
             isShuttingDown = true;
+            NolaToolsLocalization.OnLanguageChanged -= Repaint;
             // Unity終了時にアバター情報を保存
             StoreAvatarAndRendererReferences();
             EditorAssetUtils.SaveIfDirty(settings);

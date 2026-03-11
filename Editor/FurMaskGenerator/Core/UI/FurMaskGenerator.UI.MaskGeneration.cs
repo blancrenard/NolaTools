@@ -103,7 +103,7 @@ namespace NolaTools.FurMaskGenerator
             var labelRect = EditorGUILayout.GetControlRect(false, 18, GUILayout.Width(EditorGUIUtility.labelWidth));
             var centeredLabelStyle = new GUIStyle(EditorStyles.label);
             centeredLabelStyle.alignment = TextAnchor.MiddleLeft;
-            GUI.Label(labelRect, "ノーマルマップ", centeredLabelStyle);
+            GUI.Label(labelRect, UILabels.NORMAL_MAP_SECTION_TITLE, centeredLabelStyle);
         }
 
         private void DrawNormalMapTextureField(MaterialNormalMapData normalMapData, int pickerID)
@@ -265,7 +265,7 @@ namespace NolaTools.FurMaskGenerator
             // 頂点ベースモード専用の設定
             // テクセルモード用ぼかし設定
             settings.texelBlurRadius = EditorGUILayout.IntSlider(
-                new GUIContent("ぼかし半径", "マスクのぼかし半径（ピクセル単位、ガウシアンブラー）。\n毛の向きのばらつきを吸収します。"),
+                new GUIContent(UILabels.BLUR_RADIUS_LABEL, UILabels.BLUR_RADIUS_TOOLTIP),
                 settings.texelBlurRadius,
                 0,
                 16);
@@ -337,7 +337,7 @@ namespace NolaTools.FurMaskGenerator
 
             EditorGUI.BeginChangeCheck();
             int newIndex = EditorGUILayout.Popup(
-                new GUIContent("出力マテリアル", "指定したマテリアルのみマスクを生成します。\nBody, Ears, Tailなどのリストにあるレンダラーから可能なマテリアルを列挙しています。"),
+                new GUIContent(UILabels.OUTPUT_MATERIAL_LABEL, UILabels.OUTPUT_MATERIAL_TOOLTIP),
                 currentIndex,
                 displayNames.ToArray()
             );

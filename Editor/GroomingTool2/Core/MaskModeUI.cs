@@ -1,3 +1,4 @@
+using GroomingTool2.Constants;
 using GroomingTool2.Managers;
 using GroomingTool2.State;
 using UnityEditor;
@@ -41,10 +42,10 @@ namespace GroomingTool2.Core
             using (new GUILayout.HorizontalScope(GUILayout.ExpandWidth(false)))
             {
                 // 選択モード
-                GUILayout.Label("選択モード", EditorStyles.boldLabel, GUILayout.Width(80));
+                GUILayout.Label(GroomingTool2Labels.SELECTION_MODE, EditorStyles.boldLabel, GUILayout.Width(80));
                 maskSelectionMode = (MaskSelectionMode)GUILayout.SelectionGrid(
                     (int)maskSelectionMode,
-                    new[] { "クリック", "矩形", "投げ縄" },
+                    new[] { GroomingTool2Labels.MASK_CLICK, GroomingTool2Labels.MASK_RECT, GroomingTool2Labels.MASK_LASSO },
                     3,
                     EditorStyles.miniButton,
                     GUILayout.Width(240),
@@ -54,9 +55,9 @@ namespace GroomingTool2.Core
                 GUILayout.Space(4f);
 
                 // マスククリアボタン
-                if (GUILayout.Button("マスクをクリア", EditorStyles.miniButton, GUILayout.Width(100), GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(GroomingTool2Labels.CLEAR_MASK_BUTTON, EditorStyles.miniButton, GUILayout.Width(100), GUILayout.ExpandWidth(false)))
                 {
-                    undoManager.SaveState(furDataManager.Data, maskState, "マスククリア");
+                    undoManager.SaveState(furDataManager.Data, maskState, GroomingTool2Labels.CLEAR_MASK_UNDO);
                     maskState.Clear();
                     maskState.RecalculateEffective();
                     onMaskChanged?.Invoke();
