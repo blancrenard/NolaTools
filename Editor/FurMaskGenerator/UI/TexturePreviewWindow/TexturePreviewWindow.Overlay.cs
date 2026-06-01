@@ -38,6 +38,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     if (uvMask == null) continue;
                     if (pathToRenderer.TryGetValue(uvMask.rendererPath, out var r))
                     {
+                        if (!MaskMatchesPreviewMaterial(uvMask, r)) continue;
                         DrawUVMaskOnTextureForRenderer(pixels, uvMask, r);
                     }
                 }

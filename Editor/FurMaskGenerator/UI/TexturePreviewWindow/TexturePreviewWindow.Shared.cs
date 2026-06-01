@@ -95,12 +95,12 @@ namespace NolaTools.FurMaskGenerator.UI
         private Dictionary<string, Renderer> BuildRendererPathMap()
         {
             var map = new Dictionary<string, Renderer>();
-            if (targets != null && targets.Count > 0)
+            if (targets != null && targets.Count > 0 && currentPreviewMaterial != null)
             {
                 for (int i = 0; i < targets.Count; i++)
                 {
                     var t = targets[i];
-                    if (t == null || t.Texture != texture || t.Renderer == null) continue;
+                    if (!TargetMatchesPreviewMaterial(t) || t.Renderer == null) continue;
                     string p = EditorPathUtils.GetGameObjectPath(t.Renderer);
                     if (!string.IsNullOrEmpty(p) && !map.ContainsKey(p))
                     {

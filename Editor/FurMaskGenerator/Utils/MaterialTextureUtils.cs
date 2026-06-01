@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Constants;
@@ -11,6 +12,53 @@ namespace NolaTools.FurMaskGenerator.Utils
     /// </summary>
     public static class MaterialTextureUtils
     {
+        /// <summary>
+        /// Unity のランタイムインスタンス名サフィックスを除去して比較用キーにする
+        /// </summary>
+        public static string NormalizeMaterialName(string materialName)
+        {
+            if (string.IsNullOrEmpty(materialName)) return string.Empty;
+            const string instanceSuffix = " (Instance)";
+            if (materialName.EndsWith(instanceSuffix, System.StringComparison.Ordinal))
+                return materialName.Substring(0, materialName.Length - instanceSuffix.Length);
+            return materialName;
+        }
+
+        /// <summary>
+        /// ターゲットマテリアルと候補が同一か判定（参照・アセットパス・正規化名の順で照合）
+        /// </summary>
+        public static bool MatchesTargetMaterial(Material candidate, Material target)
+        {
+            if (target == null) return true;
+            if (candidate == null) return false;
+            if (ReferenceEquals(candidate, target)) return true;
+
+            string pathA = AssetDatabase.GetAssetPath(candidate);
+            string pathB = AssetDatabase.GetAssetPath(target);
+            if (!string.IsNullOrEmpty(pathA) && !string.IsNullOrEmpty(pathB))
+                return pathA == pathB;
+
+            return NormalizeMaterialName(candidate.name) == NormalizeMaterialName(target.name);
+        }
+
+        /// <summary>
+        /// レンダラー一覧からターゲットに一致するマテリアル参照を取得（設定保存参照の解決用）
+        /// </summary>
+        public static Material FindMatchingMaterialOnRenderers(IEnumerable<Renderer> renderers, Material target)
+        {
+            if (target == null || renderers == null) return null;
+            foreach (var r in renderers)
+            {
+                if (r == null || r.sharedMaterials == null) continue;
+                foreach (var m in r.sharedMaterials)
+                {
+                    if (MatchesTargetMaterial(m, target))
+                        return m;
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// 指定されたレンダラーとサブメッシュのメインテクスチャを取得
         /// </summary>

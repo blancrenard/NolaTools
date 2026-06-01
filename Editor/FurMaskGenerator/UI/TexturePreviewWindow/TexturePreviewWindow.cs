@@ -51,10 +51,8 @@ namespace NolaTools.FurMaskGenerator.UI
         private List<Target> targets;
         private int currentTargetIndex = 0;
 
-        // GC削減用の一時リスト
-        private readonly List<Texture2D> _tmpUniqueTextures = new List<Texture2D>();
+        // GC削減用の一時リスト（マテリアル名表示に流用）
         private readonly List<string> _tmpTextureNames = new List<string>();
-        private readonly HashSet<int> _tmpSeen = new HashSet<int>();
 
         // 遅延ズーム用の状態
         private bool deferredScrollZoom;
@@ -148,21 +146,31 @@ namespace NolaTools.FurMaskGenerator.UI
                     Label = string.IsNullOrEmpty(mt.label) ? null : mt.label
                 });
             }
-            window.currentTargetIndex = idx;
-            window.texture = t.texture;
             window.uvMasks = uvMasks;
-            window.targetRenderer = t.renderer;
-            window.submeshIndex = t.submesh;
             window.onAddMaskCallback = onAddMask;
             window.onRemoveMaskCallback = onRemoveMask;
 
             // UVマスク編集モードではデフォルトで表示ON
             window.showUVMasks = true;
             window.showUVWireframe = true;
-
             window.showMouseCrosshair = true;
             window.minSize = new Vector2(AppSettings.MIN_WINDOW_WIDTH, AppSettings.MIN_WINDOW_HEIGHT);
-            window.GenerateOverlayTexture();
+
+            window.RebuildPreviewMaterialList();
+            Material initialMaterial = GetTargetMaterial(window.targets[idx]);
+            if (initialMaterial != null)
+            {
+                window.ApplyPreviewMaterial(initialMaterial);
+            }
+            else
+            {
+                window.currentTargetIndex = idx;
+                window.texture = t.texture;
+                window.targetRenderer = t.renderer;
+                window.submeshIndex = t.submesh;
+                window.GenerateOverlayTexture();
+            }
+
             window.EnsureGLMaterial();
             window.Show();
         }
@@ -322,8 +330,8 @@ namespace NolaTools.FurMaskGenerator.UI
         {
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            // 左側: テクスチャ選択
-            DrawTextureSelector();
+            // 左側: マテリアル選択（出力マテリアルと同様）
+            DrawMaterialSelector();
 
             GUILayout.FlexibleSpace();
 
@@ -334,65 +342,6 @@ namespace NolaTools.FurMaskGenerator.UI
             DrawZoomControls();
 
             GUILayout.EndHorizontal();
-        }
-
-        /// <summary>
-        /// テクスチャ選択ドロップダウンを描画
-        /// </summary>
-        private void DrawTextureSelector()
-        {
-            if (targets != null && targets.Count > 0)
-            {
-                // 重複排除したテクスチャ一覧を作成
-                _tmpUniqueTextures.Clear();
-                _tmpTextureNames.Clear();
-                _tmpSeen.Clear();
-                for (int i = 0; i < targets.Count; i++)
-                {
-                    var tex = targets[i].Texture;
-                    if (tex == null) continue;
-                    int id = tex.GetInstanceID();
-                    if (_tmpSeen.Add(id))
-                    {
-                        _tmpUniqueTextures.Add(tex);
-                        _tmpTextureNames.Add(tex.name);
-                    }
-                }
-
-                // 現在のテクスチャに対応する選択インデックスを決定
-                int currentTextureIndex = 0;
-                for (int i = 0; i < _tmpUniqueTextures.Count; i++)
-                {
-                    if (_tmpUniqueTextures[i] == texture)
-                    {
-                        currentTextureIndex = i;
-                        break;
-                    }
-                }
-
-                int newTextureIndex = EditorGUILayout.Popup(currentTextureIndex, _tmpTextureNames.ToArray(), GUILayout.MaxWidth(300));
-                if (newTextureIndex != currentTextureIndex && newTextureIndex >= 0 && newTextureIndex < _tmpUniqueTextures.Count)
-                {
-                    Texture2D selectedTex = _tmpUniqueTextures[newTextureIndex];
-                    int targetIndex = -1;
-                    for (int i = 0; i < targets.Count; i++)
-                    {
-                        if (targets[i].Texture == selectedTex)
-                        {
-                            targetIndex = i;
-                            break;
-                        }
-                    }
-                    if (targetIndex >= 0)
-                    {
-                        SwitchTarget(targetIndex);
-                    }
-                }
-            }
-            else
-            {
-                GUILayout.Label(texture.name, EditorStyles.toolbarButton);
-            }
         }
 
         /// <summary>

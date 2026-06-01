@@ -263,10 +263,13 @@ namespace NolaTools.FurMaskGenerator.UI
         /// </summary>
         private void CollectTargetsWireframeData(List<WireframeDrawData> result)
         {
+            if (currentPreviewMaterial == null) return;
+
             for (int i = 0; i < targets.Count; i++)
             {
                 var t = targets[i];
-                if (t == null || t.Texture != texture || t.Renderer == null) continue;
+                if (!TargetMatchesPreviewMaterial(t) || t.Renderer == null) continue;
+
                 Mesh mesh = EditorMeshUtils.GetMeshForRenderer(t.Renderer, out bool isBaked);
                 if (mesh == null) continue;
                 try

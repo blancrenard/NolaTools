@@ -122,7 +122,7 @@ namespace NolaTools.FurMaskGenerator
                     {
                         foreach (var m in r.sharedMaterials)
                         {
-                            if (m == settings.TargetMaterial)
+                            if (MaterialTextureUtils.MatchesTargetMaterial(m, settings.TargetMaterial))
                             {
                                 hasTarget = true;
                                 break;
@@ -161,7 +161,7 @@ namespace NolaTools.FurMaskGenerator
                 if (settings.TargetMaterial != null)
                 {
                     var currentMaterial = (r.sharedMaterials != null && smi < r.sharedMaterials.Length) ? r.sharedMaterials[smi] : null;
-                    if (currentMaterial != settings.TargetMaterial) continue;
+                    if (!MaterialTextureUtils.MatchesTargetMaterial(currentMaterial, settings.TargetMaterial)) continue;
                 }
 
                 int[] triLocal = mesh.GetTriangles(smi);

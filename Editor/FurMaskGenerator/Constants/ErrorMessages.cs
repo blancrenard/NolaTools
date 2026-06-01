@@ -41,6 +41,9 @@ namespace NolaTools.FurMaskGenerator.Constants
         public static string ERROR_NO_VALID_RENDERERS => L(
             "有効なSkinnedMeshRendererが見つかりません。自動設定を実行してください。",
             "No valid SkinnedMeshRenderer found. Please run auto-detect.");
+        public static string ERROR_TARGET_MATERIAL_NO_MESH => L(
+            "対象マテリアル '{0}' に一致するメッシュが見つかりませんでした。出力マテリアルを再選択してください。",
+            "No mesh found for target material '{0}'. Please re-select the output material.");
         #endregion
 
         #region UV関連エラー

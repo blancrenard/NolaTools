@@ -88,6 +88,13 @@ namespace NolaTools.FurMaskGenerator
                 cancelRequested = false;
                 Prepare();
                 if (cancelRequested) { return; }
+                if (subDatas == null || subDatas.Count == 0)
+                {
+                    Physics.queriesHitBackfaces = originalQueriesHitBackfaces;
+                    PerformCommonCleanup();
+                    settings.OnCompleted?.Invoke(new Dictionary<string, MaskResult>());
+                    return;
+                }
                 EditorApplication.update += BakeStep;
             }
             catch (System.Exception e)

@@ -174,34 +174,45 @@ namespace NolaTools.FurMaskGenerator
         }
 
         /// <summary>
+        /// アバターレンダラー一覧から UV プレビュー用ターゲットを構築（リスト順を維持）
+        /// </summary>
+        private List<(Renderer renderer, int submesh, Texture2D texture, string label)> CollectUVMaskPreviewTargets(IEnumerable<Renderer> renderers)
+        {
+            var result = new List<(Renderer renderer, int submesh, Texture2D texture, string label)>();
+            if (renderers == null) return result;
+
+            foreach (var r in renderers)
+            {
+                if (r == null || r.sharedMaterials == null || r.sharedMaterials.Length == 0) continue;
+                for (int sub = 0; sub < r.sharedMaterials.Length; sub++)
+                {
+                    var tex = GetMainTextureForRenderer(r, sub);
+                    if (tex == null) continue;
+                    string label = r.name + " / Sub " + sub + " / " + (r.sharedMaterials[sub] != null ? r.sharedMaterials[sub].name : tex.name);
+                    result.Add((r, sub, tex, label));
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// UVマスク可視化用のテクスチャプレビューを表示
         /// </summary>
         private void ShowUVMaskPreview()
         {
+            var avatarOnly = new List<Renderer>();
+            if (avatarRenderers != null) avatarOnly.AddRange(avatarRenderers);
+
             // 1) マスクが空なら、対象レンダラーのテクスチャを列挙して、切替可能な単一ウィンドウで開く
             if (settings?.uvIslandMasks == null || settings.uvIslandMasks.Count == 0)
             {
-                var rs = new List<Renderer>();
-                if (avatarRenderers != null) rs.AddRange(avatarRenderers);
-                if (clothRenderers != null) rs.AddRange(clothRenderers);
-                if (rs.Count == 0)
+                if (avatarOnly.Count == 0)
                 {
                     EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERERS_NOT_SET, UILabels.ERROR_DIALOG_OK);
                     return;
                 }
 
-                var multiTargets = new List<(Renderer renderer, int submesh, Texture2D texture, string label)>();
-                foreach (var r in rs)
-                {
-                    if (r == null || r.sharedMaterials == null || r.sharedMaterials.Length == 0) continue;
-                    for (int sub = 0; sub < r.sharedMaterials.Length; sub++)
-                    {
-                        var tex = GetMainTextureForRenderer(r, sub);
-                        if (tex == null) continue;
-                        string label = r.name + " / Sub " + sub + " / " + (r.sharedMaterials[sub] != null ? r.sharedMaterials[sub].name : tex.name);
-                        multiTargets.Add((r, sub, tex, label));
-                    }
-                }
+                var multiTargets = CollectUVMaskPreviewTargets(avatarOnly);
                 if (multiTargets.Count == 0)
                 {
                     EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_VALID_UV_MASKS_NOT_FOUND, UILabels.ERROR_DIALOG_OK);
@@ -229,27 +240,13 @@ namespace NolaTools.FurMaskGenerator
             }
 
             // 2) 既存マスクあり: すべての使用テクスチャを列挙して、プルダウンで切替可能な単一ウィンドウで開く
-            var allRenderers = new List<Renderer>();
-            if (avatarRenderers != null) allRenderers.AddRange(avatarRenderers);
-            if (clothRenderers != null) allRenderers.AddRange(clothRenderers);
-            if (allRenderers.Count == 0)
+            if (avatarOnly.Count == 0)
             {
                 EditorUtility.DisplayDialog(UILabels.ERROR_DIALOG_TITLE, ErrorMessages.ERROR_RENDERERS_NOT_SET, UILabels.ERROR_DIALOG_OK);
                 return;
             }
 
-            var allTargets = new List<(Renderer renderer, int submesh, Texture2D texture, string label)>();
-            foreach (var r in allRenderers)
-            {
-                if (r == null || r.sharedMaterials == null || r.sharedMaterials.Length == 0) continue;
-                for (int sub = 0; sub < r.sharedMaterials.Length; sub++)
-                {
-                    var tex = GetMainTextureForRenderer(r, sub);
-                    if (tex == null) continue;
-                    string label = r.name + " / Sub " + sub + " / " + (r.sharedMaterials[sub] != null ? r.sharedMaterials[sub].name : tex.name);
-                    allTargets.Add((r, sub, tex, label));
-                }
-            }
+            var allTargets = CollectUVMaskPreviewTargets(avatarOnly);
 
             if (allTargets.Count == 0)
             {

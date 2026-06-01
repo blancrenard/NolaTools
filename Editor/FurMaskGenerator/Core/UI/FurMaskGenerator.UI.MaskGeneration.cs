@@ -325,7 +325,22 @@ namespace NolaTools.FurMaskGenerator
             if (settings.targetMaterial != null)
             {
                 int index = materialList.IndexOf(settings.targetMaterial);
+                if (index < 0)
+                {
+                    index = materialList.FindIndex(m => MaterialTextureUtils.MatchesTargetMaterial(m, settings.targetMaterial));
+                    if (index >= 0 && !ReferenceEquals(settings.targetMaterial, materialList[index]))
+                    {
+                        UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "Resolve Target Material");
+                        settings.targetMaterial = materialList[index];
+                    }
+                }
                 if (index >= 0) currentIndex = index;
+                else if (materialList.Count > 0)
+                {
+                    UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, "Reset Target Material");
+                    settings.targetMaterial = materialList[0];
+                    currentIndex = 0;
+                }
             }
             
             // リストが空でなければ、未選択状態(null)を回避して最初の要素を選択済みにする

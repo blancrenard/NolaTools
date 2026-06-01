@@ -77,13 +77,16 @@ namespace NolaTools.FurMaskGenerator.UI
             if (targets != null && targets.Count > 0)
             {
                 var order = new List<int>();
-                if (currentTargetIndex >= 0 && currentTargetIndex < targets.Count && targets[currentTargetIndex].Texture == texture)
+                if (currentTargetIndex >= 0 && currentTargetIndex < targets.Count
+                    && TargetMatchesPreviewMaterial(targets[currentTargetIndex])
+                    && targets[currentTargetIndex].Texture == texture)
                 {
                     order.Add(currentTargetIndex);
                 }
                 for (int i = 0; i < targets.Count; i++)
                 {
                     if (i == currentTargetIndex) continue;
+                    if (!TargetMatchesPreviewMaterial(targets[i])) continue;
                     if (targets[i].Texture == texture) order.Add(i);
                 }
 

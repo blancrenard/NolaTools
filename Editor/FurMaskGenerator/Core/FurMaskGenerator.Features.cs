@@ -67,6 +67,15 @@ namespace NolaTools.FurMaskGenerator
                 ignoreHierarchyChangeDuringBake = false;
                 return;
             }
+
+            if (settings.targetMaterial != null)
+            {
+                var resolved = MaterialTextureUtils.FindMatchingMaterialOnRenderers(avatarRenderers, settings.targetMaterial);
+                if (resolved != null && !ReferenceEquals(resolved, settings.targetMaterial))
+                {
+                    settings.targetMaterial = resolved;
+                }
+            }
             // UIの値に0.001を加算して内部計算に使用
             float internalMaxDistance = settings.maxDistance + AppSettings.POSITION_PRECISION;
 
@@ -99,7 +108,17 @@ namespace NolaTools.FurMaskGenerator
 
         private void OnBakeCompleted(Dictionary<string, MaskResult> result)
         {
-            preview = result;
+            if (result == null || result.Count == 0)
+            {
+                string matName = settings?.targetMaterial != null ? settings.targetMaterial.name : "?";
+                Debug.LogWarning(string.Format(ErrorMessages.LOG_PREFIX, string.Format(ErrorMessages.ERROR_TARGET_MATERIAL_NO_MESH, matName)));
+                EditorUtility.DisplayDialog(
+                    UILabels.ERROR_DIALOG_TITLE,
+                    string.Format(ErrorMessages.ERROR_TARGET_MATERIAL_NO_MESH, matName),
+                    UILabels.ERROR_DIALOG_OK);
+            }
+
+            preview = result ?? new Dictionary<string, MaskResult>();
 
             currentTexelBaker = null;
 
@@ -111,7 +130,6 @@ namespace NolaTools.FurMaskGenerator
 
         private void OnBakeCancelled()
         {
-
             currentTexelBaker = null;
 
             // ベイクキャンセル後にフラグをクリア
