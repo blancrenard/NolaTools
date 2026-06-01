@@ -305,8 +305,8 @@ namespace NolaTools.FurMaskGenerator
             UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
             if (settings.uvIslandMasks == null) { settings.uvIslandMasks = new List<UVIslandMaskData>(); }
             settings.uvIslandMasks.Add(newMask);
-            UIDrawingUtils.RefreshUI();
-            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+            UIDrawingUtils.RefreshUI(repaintSceneView: false);
+            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyMaskAdded(newMask);
         }
 
         private void RemoveUvIslandMask(UVIslandMaskData removeMask)

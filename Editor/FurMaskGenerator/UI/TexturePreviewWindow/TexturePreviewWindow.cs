@@ -31,6 +31,7 @@ namespace NolaTools.FurMaskGenerator.UI
         private int submeshIndex;
         private bool showUVMasks = true;
         private Texture2D overlayTexture;
+        private Color[] _overlayPixels;
         private bool addUVMasksOnPreview = true;
         private System.Action<UVIslandMaskData> onAddMaskCallback;
         private System.Action<UVIslandMaskData> onRemoveMaskCallback;
@@ -106,7 +107,7 @@ namespace NolaTools.FurMaskGenerator.UI
             _openWindows.Remove(this);
         }
 
-        // シーン側からUVマスク変更を通知
+        // シーン側からUVマスク変更を通知（削除・Undo 等は全量再生成）
         public static void NotifyUVMasksChanged()
         {
             if (_openWindows == null || _openWindows.Count == 0) return;
@@ -116,6 +117,26 @@ namespace NolaTools.FurMaskGenerator.UI
                 if (w.showUVMasks)
                 {
                     w.GenerateOverlayTexture();
+                }
+                w.Repaint();
+            }
+        }
+
+        /// <summary>
+        /// UVマスク1件追加時：オーバーレイへ差分追記のみ（失敗時は全量再生成）
+        /// </summary>
+        public static void NotifyMaskAdded(UVIslandMaskData addedMask)
+        {
+            if (_openWindows == null || _openWindows.Count == 0) return;
+            foreach (var w in _openWindows)
+            {
+                if (w == null) continue;
+                if (w.showUVMasks)
+                {
+                    if (addedMask == null || !w.TryAppendMaskToOverlay(addedMask))
+                    {
+                        w.GenerateOverlayTexture();
+                    }
                 }
                 w.Repaint();
             }

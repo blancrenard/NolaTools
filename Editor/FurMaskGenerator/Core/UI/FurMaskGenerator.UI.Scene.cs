@@ -538,7 +538,11 @@ namespace NolaTools.FurMaskGenerator
                 selectedUVIslandIndex = Mathf.Max(0, settings.uvIslandMasks.Count - 1);
                 UndoRedoUtils.SetDirtyAndScheduleSaveOnly(settings);
                 Repaint();
-                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                if (showUVMarkers)
+                {
+                    SceneView.RepaintAll();
+                }
+                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyMaskAdded(data);
                 e.Use();
             }
             else

@@ -10,6 +10,76 @@ namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {
+        private void ClearOverlayTexture()
+        {
+            ClearTexture(ref overlayTexture);
+            _overlayPixels = null;
+        }
+
+        private bool EnsureOverlayBacking()
+        {
+            if (texture == null) return false;
+
+            int w = texture.width;
+            int h = texture.height;
+            int pixelCount = w * h;
+
+            if (overlayTexture != null
+                && overlayTexture.width == w
+                && overlayTexture.height == h
+                && _overlayPixels != null
+                && _overlayPixels.Length == pixelCount)
+            {
+                return true;
+            }
+
+            ClearTexture(ref overlayTexture);
+            _overlayPixels = null;
+            overlayTexture = CreateClearTextureAndPixels(w, h, out _overlayPixels);
+            return overlayTexture != null && _overlayPixels != null;
+        }
+
+        private void ClearOverlayPixelBuffer()
+        {
+            if (_overlayPixels == null) return;
+            for (int i = 0; i < _overlayPixels.Length; i++)
+            {
+                _overlayPixels[i] = Color.clear;
+            }
+        }
+
+        private void FlushOverlayPixels()
+        {
+            if (overlayTexture != null && _overlayPixels != null)
+            {
+                TextureOperationUtils.UpdateTexturePixels(overlayTexture, _overlayPixels);
+            }
+        }
+
+        /// <summary>
+        /// 追加されたマスク1件だけオーバーレイに描画する（成功時 true）
+        /// </summary>
+        private bool TryAppendMaskToOverlay(UVIslandMaskData mask)
+        {
+            if (!showUVMasks || texture == null || mask == null) return false;
+            if (!EnsureOverlayBacking()) return false;
+
+            var pathToRenderer = BuildRendererPathMap();
+            if (!pathToRenderer.TryGetValue(mask.rendererPath, out var renderer))
+            {
+                return false;
+            }
+
+            if (!MaskMatchesPreviewMaterial(mask, renderer))
+            {
+                return true;
+            }
+
+            DrawUVMaskOnTextureForRenderer(_overlayPixels, mask, renderer);
+            FlushOverlayPixels();
+            return true;
+        }
+
         private void GenerateOverlayTexture()
         {
             if (texture == null)
@@ -26,10 +96,13 @@ namespace NolaTools.FurMaskGenerator.UI
 
             try
             {
-                ClearTexture(ref overlayTexture);
+                if (!EnsureOverlayBacking())
+                {
+                    ClearOverlayTexture();
+                    return;
+                }
 
-                Color[] pixels;
-                overlayTexture = CreateClearTextureAndPixels(texture.width, texture.height, out pixels);
+                ClearOverlayPixelBuffer();
 
                 var pathToRenderer = BuildRendererPathMap();
 
@@ -39,11 +112,11 @@ namespace NolaTools.FurMaskGenerator.UI
                     if (pathToRenderer.TryGetValue(uvMask.rendererPath, out var r))
                     {
                         if (!MaskMatchesPreviewMaterial(uvMask, r)) continue;
-                        DrawUVMaskOnTextureForRenderer(pixels, uvMask, r);
+                        DrawUVMaskOnTextureForRenderer(_overlayPixels, uvMask, r);
                     }
                 }
 
-                TextureOperationUtils.UpdateTexturePixels(overlayTexture, pixels);
+                FlushOverlayPixels();
             }
             catch (System.Exception ex)
             {
@@ -59,7 +132,10 @@ namespace NolaTools.FurMaskGenerator.UI
             if (mesh == null) return;
             try
             {
-                var islandTriangles = GetUVIslandTriangles(mesh, uvMask.submeshIndex, uvMask.seedUV);
+                string rendererPath = !string.IsNullOrEmpty(uvMask.rendererPath)
+                    ? uvMask.rendererPath
+                    : EditorPathUtils.GetGameObjectPath(renderer);
+                var islandTriangles = GetUVIslandTriangles(rendererPath, mesh, uvMask.submeshIndex, uvMask.seedUV);
                 if (islandTriangles.Count == 0) return;
 
                 Color maskColor = uvMask.markerColor;
@@ -96,4 +172,3 @@ namespace NolaTools.FurMaskGenerator.UI
     }
 }
 #endif
-

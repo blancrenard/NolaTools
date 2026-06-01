@@ -1,14 +1,29 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.Utils;
 
 namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {
-        private HashSet<int> GetUVIslandTriangles(Mesh mesh, int submeshIndex, Vector2 seedUV)
+        private HashSet<int> GetUVIslandTriangles(string rendererPath, Mesh mesh, int submeshIndex, Vector2 seedUV)
+        {
+            if (!string.IsNullOrEmpty(rendererPath)
+                && EditorUvUtils.TryGetUVIslandTriangles(rendererPath, mesh, submeshIndex, seedUV, out var cached)
+                && cached != null)
+            {
+                return cached;
+            }
+
+            return GetUVIslandTrianglesUncached(mesh, submeshIndex, seedUV);
+        }
+
+        /// <summary>
+        /// 共有キャッシュが使えない場合のフォールバック（従来と同じ flood fill）
+        /// </summary>
+        private HashSet<int> GetUVIslandTrianglesUncached(Mesh mesh, int submeshIndex, Vector2 seedUV)
         {
             var result = new HashSet<int>();
             if (mesh == null || submeshIndex < 0 || submeshIndex >= mesh.subMeshCount)
@@ -24,12 +39,11 @@ namespace NolaTools.FurMaskGenerator.UI
                 if (uvs == null || uvs.Length != mesh.vertexCount)
                     return result;
 
-                int seedTriangle = FindSeedTriangleByUV(triangles, uvs, seedUV);
+                int seedTriangle = EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
                 if (seedTriangle < 0)
                     return result;
 
-                var adjacency = BuildTriangleAdjacency(triangles);
-
+                var adjacency = EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
                 var visited = new bool[triangles.Length / 3];
                 var stack = new Stack<int>();
 
@@ -45,8 +59,9 @@ namespace NolaTools.FurMaskGenerator.UI
                     {
                         foreach (int neighborTriangle in adjacency[currentTriangle])
                         {
-                            if (!visited[neighborTriangle] &&
-                                AreUVTrianglesConnected(triangles, uvs, currentTriangle, neighborTriangle, AppSettings.UV_THRESHOLD_DEFAULT))
+                            if (!visited[neighborTriangle]
+                                && EditorUvUtils.AreUVTrianglesConnected(
+                                    triangles, uvs, currentTriangle, neighborTriangle, AppSettings.UV_THRESHOLD_DEFAULT))
                             {
                                 visited[neighborTriangle] = true;
                                 stack.Push(neighborTriangle);
@@ -63,22 +78,6 @@ namespace NolaTools.FurMaskGenerator.UI
                 return result;
             }
         }
-
-        private int FindSeedTriangleByUV(int[] triangles, Vector2[] uvs, Vector2 seedUV)
-        {
-            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, seedUV);
-        }
-
-        private System.Collections.Generic.List<System.Collections.Generic.List<int>> BuildTriangleAdjacency(int[] triangles)
-        {
-            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.BuildTriangleAdjacencyListList(triangles);
-        }
-
-        private bool AreUVTrianglesConnected(int[] triangles, Vector2[] uvs, int triA, int triB, float uvThreshold)
-        {
-            return NolaTools.FurMaskGenerator.Utils.EditorUvUtils.AreUVTrianglesConnected(triangles, uvs, triA, triB, uvThreshold);
-        }
     }
 }
 #endif
-

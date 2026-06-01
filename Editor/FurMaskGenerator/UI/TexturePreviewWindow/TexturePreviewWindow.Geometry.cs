@@ -25,7 +25,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     return false;
                 }
 
-                int triIdx = FindSeedTriangleByUV(triangles, uvs, uv);
+                int triIdx = EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, uv);
                 if (triIdx >= 0)
                 {
                     int baseIdx = triIdx * 3;
@@ -94,7 +94,7 @@ namespace NolaTools.FurMaskGenerator.UI
                 int[] triangles = mesh.GetTriangles(sub);
                 Vector2[] uvs = mesh.uv;
                 if (triangles == null || triangles.Length == 0 || uvs == null || uvs.Length != mesh.vertexCount) return false;
-                int triIdx = FindSeedTriangleByUV(triangles, uvs, uv);
+                int triIdx = EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, uv);
                 if (triIdx < 0) return false;
                 int ia = triangles[triIdx * 3 + 0];
                 int ib = triangles[triIdx * 3 + 1];
@@ -131,7 +131,7 @@ namespace NolaTools.FurMaskGenerator.UI
                 int[] triangles = mesh.GetTriangles(sub);
                 Vector2[] uvs = mesh.uv;
                 if (triangles == null || triangles.Length == 0 || uvs == null || uvs.Length != mesh.vertexCount) return false;
-                int triIdx = FindSeedTriangleByUV(triangles, uvs, uv);
+                int triIdx = EditorUvUtils.FindSeedTriangleByUV(triangles, uvs, uv);
                 if (triIdx < 0) return false;
                 int ia = triangles[triIdx * 3 + 0];
                 int ib = triangles[triIdx * 3 + 1];

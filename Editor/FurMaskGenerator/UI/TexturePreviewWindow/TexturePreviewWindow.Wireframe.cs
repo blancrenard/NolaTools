@@ -9,8 +9,6 @@ namespace NolaTools.FurMaskGenerator.UI
 {
     public partial class TexturePreviewWindow
     {
-        private void ClearOverlayTexture() => ClearTexture(ref overlayTexture);
-
         // GL描画用マテリアル
         private Material glWireframeMaterial;
 

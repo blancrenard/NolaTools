@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using NolaTools.FurMaskGenerator.Constants;
+using NolaTools.FurMaskGenerator.UI;
+using FurMaskGeneratorWindow = NolaTools.FurMaskGenerator.FurMaskGenerator;
 
 namespace NolaTools.FurMaskGenerator.Utils
 {
@@ -160,12 +162,28 @@ namespace NolaTools.FurMaskGenerator.Utils
         /// <summary>
         /// UIを更新します
         /// </summary>
-        public static void RefreshUI()
+        public static void RefreshUI(bool repaintSceneView = true)
         {
-            SceneView.RepaintAll();
-            if (EditorWindow.focusedWindow != null)
+            if (repaintSceneView)
             {
-                EditorWindow.focusedWindow.Repaint();
+                SceneView.RepaintAll();
+            }
+
+            RepaintFurMaskToolWindows();
+        }
+
+        /// <summary>
+        /// FurMaskGenerator と TexturePreviewWindow のみ再描画
+        /// </summary>
+        public static void RepaintFurMaskToolWindows()
+        {
+            foreach (var window in Resources.FindObjectsOfTypeAll<EditorWindow>())
+            {
+                if (window == null) continue;
+                if (window is FurMaskGeneratorWindow || window is TexturePreviewWindow)
+                {
+                    window.Repaint();
+                }
             }
         }
 

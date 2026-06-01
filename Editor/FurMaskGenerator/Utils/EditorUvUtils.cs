@@ -21,17 +21,22 @@ namespace NolaTools.FurMaskGenerator.Utils
             GetOrBuildIslandCache(string rendererPath, Mesh mesh, int submeshIndex)
         {
             if (mesh == null || submeshIndex < 0 || submeshIndex >= mesh.subMeshCount) return null;
-            string key = rendererPath + "|" + mesh.GetInstanceID().ToString();
-            if (!SharedIslandCache.TryGetValue(key, out var perSub))
+            string key = rendererPath + "|" + mesh.GetInstanceID() + "|" + submeshIndex;
+            if (SharedIslandCache.TryGetValue(key, out var cached))
             {
-                perSub = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.HashSet<int>>();
-                SharedIslandCache[key] = perSub;
+                return cached;
             }
-            if (perSub.ContainsKey(submeshIndex)) return perSub;
+
+            var perSub = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.HashSet<int>>();
+            SharedIslandCache[key] = perSub;
 
             int[] triangles = mesh.GetTriangles(submeshIndex);
             Vector2[] uvs = mesh.uv;
-            if (triangles == null || uvs == null) return null;
+            if (triangles == null || uvs == null || uvs.Length != mesh.vertexCount)
+            {
+                SharedIslandCache.Remove(key);
+                return null;
+            }
             var adjacency = BuildTriangleAdjacencyListList(triangles);
             int triCount = triangles.Length / 3;
             var processed = new bool[triCount];
@@ -52,7 +57,35 @@ namespace NolaTools.FurMaskGenerator.Utils
                 }
                 foreach (int t in island) perSub[t] = island;
             }
-            return perSub;
+            return SharedIslandCache[key];
+        }
+
+        /// <summary>
+        /// キャッシュから seedUV に対応する UV アイランド三角形集合を取得する（未構築時は構築）
+        /// </summary>
+        public static bool TryGetUVIslandTriangles(
+            string rendererPath,
+            Mesh mesh,
+            int submeshIndex,
+            Vector2 seedUV,
+            out HashSet<int> islandTriangles)
+        {
+            islandTriangles = null;
+            if (mesh == null || submeshIndex < 0 || submeshIndex >= mesh.subMeshCount) return false;
+
+            int[] triangles = mesh.GetTriangles(submeshIndex);
+            if (triangles == null || triangles.Length == 0) return false;
+
+            Vector2[] uvs = mesh.uv;
+            if (uvs == null || uvs.Length != mesh.vertexCount) return false;
+
+            int seedTriangle = FindSeedTriangleByUV(triangles, uvs, seedUV);
+            if (seedTriangle < 0) return false;
+
+            var cache = GetOrBuildIslandCache(rendererPath, mesh, submeshIndex);
+            if (cache == null) return false;
+
+            return cache.TryGetValue(seedTriangle, out islandTriangles) && islandTriangles != null && islandTriangles.Count > 0;
         }
         /// <summary>
         /// 三角形隣接（List<List<int>> 版）を構築

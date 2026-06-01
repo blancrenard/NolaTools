@@ -224,7 +224,10 @@ namespace NolaTools.FurMaskGenerator.UI
             uvMasks.Add(data);
             if (showUVMasks)
             {
-                GenerateOverlayTexture();
+                if (!TryAppendMaskToOverlay(data))
+                {
+                    GenerateOverlayTexture();
+                }
             }
             Repaint();
             e.Use();
@@ -241,26 +244,55 @@ namespace NolaTools.FurMaskGenerator.UI
             }
             try
             {
-                var clickedIsland = GetUVIslandTriangles(mesh, submeshIndex, uv);
-                if (clickedIsland == null || clickedIsland.Count == 0) return -1;
+                var islandCache = EditorUvUtils.GetOrBuildIslandCache(rPath, mesh, submeshIndex);
+                if (islandCache != null)
+                {
+                    int[] tris = mesh.GetTriangles(submeshIndex);
+                    Vector2[] uvs = mesh.uv;
+                    if (tris == null || uvs == null || uvs.Length != mesh.vertexCount) return -1;
+
+                    int clickedTri = EditorUvUtils.FindSeedTriangleByUV(tris, uvs, uv);
+                    if (clickedTri < 0
+                        || !islandCache.TryGetValue(clickedTri, out var clickedIsland)
+                        || clickedIsland == null
+                        || clickedIsland.Count == 0)
+                    {
+                        return -1;
+                    }
+
+                    for (int i = 0; i < uvMasks.Count; i++)
+                    {
+                        var m = uvMasks[i];
+                        if (m == null) continue;
+                        if (m.rendererPath != rPath || m.submeshIndex != submeshIndex) continue;
+
+                        int existingTri = EditorUvUtils.FindSeedTriangleByUV(tris, uvs, m.seedUV);
+                        if (existingTri >= 0
+                            && islandCache.TryGetValue(existingTri, out var existingIsland)
+                            && ReferenceEquals(clickedIsland, existingIsland))
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                }
+
+                var clickedIslandFallback = GetUVIslandTrianglesUncached(mesh, submeshIndex, uv);
+                if (clickedIslandFallback == null || clickedIslandFallback.Count == 0) return -1;
 
                 for (int i = 0; i < uvMasks.Count; i++)
                 {
                     var m = uvMasks[i];
                     if (m == null) continue;
                     if (m.rendererPath != rPath || m.submeshIndex != submeshIndex) continue;
-                    var island = GetUVIslandTriangles(mesh, m.submeshIndex, m.seedUV);
-                    if (island != null && island.Count > 0)
+                    var island = GetUVIslandTrianglesUncached(mesh, m.submeshIndex, m.seedUV);
+                    if (island != null && island.Count > 0 && island.Overlaps(clickedIslandFallback))
                     {
-                        foreach (int tri in island)
-                        {
-                            if (clickedIsland.Contains(tri))
-                            {
-                                return i;
-                            }
-                        }
+                        return i;
                     }
                 }
+
                 return -1;
             }
             finally
