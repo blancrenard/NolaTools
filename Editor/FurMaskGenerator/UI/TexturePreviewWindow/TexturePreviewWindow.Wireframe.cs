@@ -76,7 +76,7 @@ namespace NolaTools.FurMaskGenerator.UI
             GL.LoadPixelMatrix();
 
             GL.Begin(GL.LINES);
-            GL.Color(AppSettings.WIREFRAME_COLOR);
+            GL.Color(uvWireframeColor);
 
             float clipW = canvasRect.width;
             float clipH = canvasRect.height;

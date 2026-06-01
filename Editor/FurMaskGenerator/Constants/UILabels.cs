@@ -109,6 +109,7 @@ namespace NolaTools.FurMaskGenerator.Constants
         public static string UV_MASK_TOGGLE => L("UVマスクを表示", "Show UV Mask");
         public static string UV_MASK_ADD_ON_PREVIEW_TOGGLE => L("プレビュー上クリックでUVマスク追加", "Click on Preview to Add UV Mask");
         public static string UV_WIREFRAME_TOGGLE => L("UVワイヤーフレーム", "UV Wireframe");
+        public static string UV_WIREFRAME_COLOR_LABEL => L("UV色", "UV Color");
         public const string ZOOM_FIT_LABEL = "Fit";
         #endregion
 

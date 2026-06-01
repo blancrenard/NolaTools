@@ -38,6 +38,7 @@ namespace NolaTools.FurMaskGenerator.UI
 
         // UVワイヤーフレーム表示用
         private bool showUVWireframe = true;
+        private Color uvWireframeColor = AppSettings.WIREFRAME_COLOR;
         private Rect lastTextureRect;
         private Rect lastCanvasRect;
 
@@ -406,6 +407,26 @@ namespace NolaTools.FurMaskGenerator.UI
             if (newShowWire != showUVWireframe)
             {
                 showUVWireframe = newShowWire;
+                Repaint();
+            }
+
+            if (showUVWireframe)
+            {
+                DrawWireframeColorControl();
+            }
+        }
+
+        /// <summary>
+        /// UVワイヤーフレームの色を変更するコントロール
+        /// </summary>
+        private void DrawWireframeColorControl()
+        {
+            GUILayout.Label(UILabels.UV_WIREFRAME_COLOR_LABEL, EditorStyles.toolbarButton, GUILayout.Width(36));
+            EditorGUI.BeginChangeCheck();
+            var newColor = EditorGUILayout.ColorField(GUIContent.none, uvWireframeColor, false, true, false, GUILayout.Width(40));
+            if (EditorGUI.EndChangeCheck())
+            {
+                uvWireframeColor = newColor;
                 Repaint();
             }
         }
