@@ -107,7 +107,7 @@ namespace NolaTools.FurMaskGenerator.UI
             _openWindows.Remove(this);
         }
 
-        // シーン側からUVマスク変更を通知（削除・Undo 等は全量再生成）
+        // 一覧の一括変更・Undo 等（オーバーレイをリストと同期するため全量再生成）
         public static void NotifyUVMasksChanged()
         {
             if (_openWindows == null || _openWindows.Count == 0) return;
@@ -123,7 +123,7 @@ namespace NolaTools.FurMaskGenerator.UI
         }
 
         /// <summary>
-        /// UVマスク1件追加時：オーバーレイへ差分追記のみ（失敗時は全量再生成）
+        /// UVマスク1件追加時：オーバーレイへ差分追記のみ（バッファ未準備時のみ全量再生成）
         /// </summary>
         public static void NotifyMaskAdded(UVIslandMaskData addedMask)
         {
@@ -134,6 +134,26 @@ namespace NolaTools.FurMaskGenerator.UI
                 if (w.showUVMasks)
                 {
                     if (addedMask == null || !w.TryAppendMaskToOverlay(addedMask))
+                    {
+                        w.GenerateOverlayTexture();
+                    }
+                }
+                w.Repaint();
+            }
+        }
+
+        /// <summary>
+        /// UVマスク1件削除時：オーバーレイから差分消去のみ（バッファ未準備時のみ全量再生成）
+        /// </summary>
+        public static void NotifyMaskRemoved(UVIslandMaskData removedMask)
+        {
+            if (_openWindows == null || _openWindows.Count == 0) return;
+            foreach (var w in _openWindows)
+            {
+                if (w == null) continue;
+                if (w.showUVMasks)
+                {
+                    if (!w.TryEraseMaskFromOverlay(removedMask))
                     {
                         w.GenerateOverlayTexture();
                     }

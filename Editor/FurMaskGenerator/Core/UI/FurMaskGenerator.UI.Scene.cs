@@ -505,6 +505,7 @@ namespace NolaTools.FurMaskGenerator
                 int existingIndex = FindExistingUVMarker(rendererPath, subIdx, uv, renderer);
                 if (existingIndex >= 0)
                 {
+                    var removed = settings.uvIslandMasks[existingIndex];
                     // クリック確定時のみ保存をスケジュール
                     UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
                     settings.uvIslandMasks.RemoveAt(existingIndex);
@@ -512,7 +513,11 @@ namespace NolaTools.FurMaskGenerator
                     else if (selectedUVIslandIndex == existingIndex) { selectedUVIslandIndex = 0; }
                     // 保存はヘルパがスケジュール済み
                     Repaint();
-                    NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                    if (showUVMarkers)
+                    {
+                        SceneView.RepaintAll();
+                    }
+                    NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyMaskRemoved(removed);
                     e.Use();
                     return;
                 }

@@ -75,9 +75,58 @@ namespace NolaTools.FurMaskGenerator.UI
                 return true;
             }
 
-            DrawUVMaskOnTextureForRenderer(_overlayPixels, mask, renderer);
+            RasterizeUVMaskIsland(_overlayPixels, mask, renderer, GetOverlayMaskColor(mask));
             FlushOverlayPixels();
             return true;
+        }
+
+        /// <summary>
+        /// 削除されたマスク1件だけオーバーレイから消す（成功時 true。未描画なら true）
+        /// </summary>
+        private bool TryEraseMaskFromOverlay(UVIslandMaskData mask)
+        {
+            if (!showUVMasks || texture == null) return true;
+
+            if (uvMasks == null || uvMasks.Count == 0)
+            {
+                ClearOverlayTexture();
+                return true;
+            }
+
+            if (mask == null) return true;
+
+            if (_overlayPixels == null || overlayTexture == null)
+            {
+                return false;
+            }
+
+            if (!EnsureOverlayBacking()) return false;
+
+            var pathToRenderer = BuildRendererPathMap();
+            if (!pathToRenderer.TryGetValue(mask.rendererPath, out var renderer))
+            {
+                return false;
+            }
+
+            if (!MaskMatchesPreviewMaterial(mask, renderer))
+            {
+                return true;
+            }
+
+            RasterizeUVMaskIsland(_overlayPixels, mask, renderer, Color.clear);
+            FlushOverlayPixels();
+            return true;
+        }
+
+        private static Color GetOverlayMaskColor(UVIslandMaskData uvMask)
+        {
+            Color maskColor = uvMask.markerColor;
+            Color.RGBToHSV(maskColor, out float h, out float s, out float v);
+            s = Mathf.Clamp01(s * 1.2f);
+            v = Mathf.Clamp01(v * 0.9f);
+            maskColor = Color.HSVToRGB(h, s, v);
+            maskColor.a = 0.35f;
+            return maskColor;
         }
 
         private void GenerateOverlayTexture()
@@ -112,7 +161,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     if (pathToRenderer.TryGetValue(uvMask.rendererPath, out var r))
                     {
                         if (!MaskMatchesPreviewMaterial(uvMask, r)) continue;
-                        DrawUVMaskOnTextureForRenderer(_overlayPixels, uvMask, r);
+                        RasterizeUVMaskIsland(_overlayPixels, uvMask, r, GetOverlayMaskColor(uvMask));
                     }
                 }
 
@@ -125,7 +174,7 @@ namespace NolaTools.FurMaskGenerator.UI
             }
         }
 
-        private void DrawUVMaskOnTextureForRenderer(Color[] pixels, UVIslandMaskData uvMask, Renderer renderer)
+        private void RasterizeUVMaskIsland(Color[] pixels, UVIslandMaskData uvMask, Renderer renderer, Color color)
         {
             if (pixels == null || uvMask == null || renderer == null) return;
             Mesh mesh = EditorMeshUtils.GetMeshForRenderer(renderer, out bool isBakedTempMesh);
@@ -138,13 +187,6 @@ namespace NolaTools.FurMaskGenerator.UI
                 var islandTriangles = GetUVIslandTriangles(rendererPath, mesh, uvMask.submeshIndex, uvMask.seedUV);
                 if (islandTriangles.Count == 0) return;
 
-                Color maskColor = uvMask.markerColor;
-                Color.RGBToHSV(maskColor, out float h, out float s, out float v);
-                s = Mathf.Clamp01(s * 1.2f);
-                v = Mathf.Clamp01(v * 0.9f);
-                maskColor = Color.HSVToRGB(h, s, v);
-                maskColor.a = 0.35f;
-
                 int[] triangles = mesh.GetTriangles(uvMask.submeshIndex);
                 Vector2[] uvs = mesh.uv;
 
@@ -155,10 +197,7 @@ namespace NolaTools.FurMaskGenerator.UI
                     int v1 = triangles[triangleIndex * 3 + 1];
                     int v2 = triangles[triangleIndex * 3 + 2];
                     if (v0 >= uvs.Length || v1 >= uvs.Length || v2 >= uvs.Length) continue;
-                    Vector2 uv0 = uvs[v0];
-                    Vector2 uv1 = uvs[v1];
-                    Vector2 uv2 = uvs[v2];
-                    FillTriangleOnTexture(pixels, uv0, uv1, uv2, maskColor);
+                    FillTriangleOnTexture(pixels, uvs[v0], uvs[v1], uvs[v2], color);
                 }
             }
             finally

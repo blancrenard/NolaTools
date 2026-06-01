@@ -164,8 +164,10 @@ namespace NolaTools.FurMaskGenerator.UI
                         uvMasks.RemoveAt(existingIndex);
                         if (showUVMasks)
                         {
-                            ClearOverlayTexture();
-                            GenerateOverlayTexture();
+                            if (!TryEraseMaskFromOverlay(toRemove))
+                            {
+                                GenerateOverlayTexture();
+                            }
                         }
                         Repaint();
                     }

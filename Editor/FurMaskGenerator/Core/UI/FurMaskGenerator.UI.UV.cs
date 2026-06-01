@@ -143,11 +143,12 @@ namespace NolaTools.FurMaskGenerator
             // 削除ボタン
             if (GUILayout.Button(UILabels.DELETE_BUTTON, GUILayout.Width(AppSettings.DELETE_BUTTON_WIDTH)))
             {
+                var removed = settings.uvIslandMasks[index];
                 UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
                 settings.uvIslandMasks.RemoveAt(index);
                 if (selectedUVIslandIndex >= index) selectedUVIslandIndex = Mathf.Max(0, selectedUVIslandIndex - 1);
-                UIDrawingUtils.RefreshUI();
-                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+                UIDrawingUtils.RefreshUI(repaintSceneView: showUVMarkers);
+                NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyMaskRemoved(removed);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -313,8 +314,8 @@ namespace NolaTools.FurMaskGenerator
         {
             UndoRedoUtils.RecordUndoSetDirtyAndScheduleSave(settings, UndoMessages.ADD_UV_ISLAND_MASK);
             settings.uvIslandMasks.Remove(removeMask);
-            UIDrawingUtils.RefreshUI();
-            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyUVMasksChanged();
+            UIDrawingUtils.RefreshUI(repaintSceneView: false);
+            NolaTools.FurMaskGenerator.UI.TexturePreviewWindow.NotifyMaskRemoved(removeMask);
         }
 
         /// <summary>
