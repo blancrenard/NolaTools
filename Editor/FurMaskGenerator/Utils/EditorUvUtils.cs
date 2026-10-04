@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NolaTools.FurMaskGenerator.Constants;
+#if UNITY_6000_4_OR_NEWER
+using MeshId = UnityEngine.EntityId;
+#else
+using MeshId = System.Int32;
+#endif
 
 namespace NolaTools.FurMaskGenerator.Utils
 {
@@ -12,8 +17,9 @@ namespace NolaTools.FurMaskGenerator.Utils
     public static class EditorUvUtils
     {
         // 共有UVアイランドキャッシュ
-        private static readonly System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<int, System.Collections.Generic.HashSet<int>>> SharedIslandCache
-            = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<int, System.Collections.Generic.HashSet<int>>>();
+        // EntityIdをそのまま保持し、文字列化やintへの変換による識別情報の欠落を避ける。
+        private static readonly Dictionary<(string rendererPath, MeshId meshId, int submeshIndex), Dictionary<int, HashSet<int>>> SharedIslandCache
+            = new Dictionary<(string rendererPath, MeshId meshId, int submeshIndex), Dictionary<int, HashSet<int>>>();
 
         public static void ClearSharedIslandCache() => SharedIslandCache.Clear();
 
@@ -21,7 +27,12 @@ namespace NolaTools.FurMaskGenerator.Utils
             GetOrBuildIslandCache(string rendererPath, Mesh mesh, int submeshIndex)
         {
             if (mesh == null || submeshIndex < 0 || submeshIndex >= mesh.subMeshCount) return null;
-            string key = rendererPath + "|" + mesh.GetInstanceID() + "|" + submeshIndex;
+#if UNITY_6000_4_OR_NEWER
+            MeshId meshId = mesh.GetEntityId();
+#else
+            MeshId meshId = mesh.GetInstanceID();
+#endif
+            var key = (rendererPath ?? string.Empty, meshId, submeshIndex);
             if (SharedIslandCache.TryGetValue(key, out var cached))
             {
                 return cached;
