@@ -204,8 +204,13 @@ namespace NolaTools.FurMaskGenerator
                     var mesh = EditorMeshUtils.GetMeshForRenderer(r, out bool isTemp);
                     if (mesh == null) continue;
 
-                    var ci = new CombineInstance { mesh = mesh, transform = r.transform.localToWorldMatrix };
-                    combine.Add(ci);
+                    // CombineInstance は subMeshIndex で指定した1サブメッシュしか結合しないため、
+                    // 複数マテリアルの服でも全サブメッシュをコライダーに含める
+                    for (int smi = 0; smi < mesh.subMeshCount; smi++)
+                    {
+                        var ci = new CombineInstance { mesh = mesh, subMeshIndex = smi, transform = r.transform.localToWorldMatrix };
+                        combine.Add(ci);
+                    }
                     if (isTemp) createdMeshes.Add(mesh);
                 }
             }
