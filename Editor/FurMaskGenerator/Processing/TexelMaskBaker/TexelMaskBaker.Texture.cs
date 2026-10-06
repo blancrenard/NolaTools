@@ -33,11 +33,7 @@ namespace NolaTools.FurMaskGenerator
                 int blurRadius = settings.BlurRadius;
                 if (blurRadius > 0)
                 {
-                    bool[] validMask = null;
-                    if (materialRasterizedPixels.TryGetValue(matKey, out var rasterized))
-                    {
-                        validMask = EditorTextureUtils.BuildValidMaskFromRasterized(rasterized, texSize * texSize);
-                    }
+                    materialRasterizedPixels.TryGetValue(matKey, out bool[] validMask);
                     buffer = ApplyGaussianBlur(buffer, texSize, texSize, blurRadius, validMask);
                 }
 
@@ -48,12 +44,7 @@ namespace NolaTools.FurMaskGenerator
                 int paddingSize = settings.EdgePaddingSize;
                 if (paddingSize > 0)
                 {
-                    bool[] validMask;
-                    if (materialRasterizedPixels.TryGetValue(matKey, out var rasterized))
-                    {
-                        validMask = EditorTextureUtils.BuildValidMaskFromRasterized(rasterized, texSize * texSize);
-                    }
-                    else
+                    if (!materialRasterizedPixels.TryGetValue(matKey, out bool[] validMask))
                     {
                         Color[] pixels = tex.GetPixels();
                         validMask = EditorTextureUtils.BuildValidMaskFromPixels(pixels, AppSettings.VALID_PIXEL_THRESHOLD);

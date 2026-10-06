@@ -17,9 +17,10 @@ namespace NolaTools.FurMaskGenerator
         {
             try
             {
-                int processedThisFrame = 0;
+                // 三角形ごとのテクセル数・レイキャスト数は大きく異なるため、処理量は件数ではなく経過時間で区切る
+                var frameTimer = System.Diagnostics.Stopwatch.StartNew();
 
-                while (currentSubIndex < subDatas.Count && processedThisFrame < batchSize)
+                while (currentSubIndex < subDatas.Count && frameTimer.ElapsedMilliseconds < FrameTimeBudgetMs)
                 {
                     var (tri, mat) = subDatas[currentSubIndex];
                     int triCount = tri.Length / 3;
@@ -33,7 +34,7 @@ namespace NolaTools.FurMaskGenerator
 
                     var rasterizedPixels = materialRasterizedPixels[mat];
 
-                    while (currentTriIndex < triCount && processedThisFrame < batchSize)
+                    while (currentTriIndex < triCount && frameTimer.ElapsedMilliseconds < FrameTimeBudgetMs)
                     {
                         int i0 = tri[currentTriIndex * 3];
                         int i1 = tri[currentTriIndex * 3 + 1];
@@ -45,7 +46,6 @@ namespace NolaTools.FurMaskGenerator
                             rasterizedPixels, mat);
 
                         currentTriIndex++;
-                        processedThisFrame++;
                         processedTexels++;
                     }
 
@@ -56,19 +56,16 @@ namespace NolaTools.FurMaskGenerator
                     }
                 }
 
-                // 進捗更新
-                if (processedTexels % progressUpdateInterval == 0 || currentSubIndex >= subDatas.Count)
-                {
-                    float progress = totalTexelsToProcess > 0
-                        ? (float)processedTexels / totalTexelsToProcess
-                        : 1f;
+                // 進捗更新（毎フレーム。表示の間引きは ShouldUpdateProgressBar 側で行う）
+                float progress = totalTexelsToProcess > 0
+                    ? (float)processedTexels / totalTexelsToProcess
+                    : 1f;
 
-                    float displayProgress = progress * 0.8f; // 0〜0.8 をベイク工程に使用
-                    if (ShouldUpdateProgressBar(displayProgress, $"{processedTexels}/{totalTexelsToProcess}"))
-                    {
-                        Cancel();
-                        return;
-                    }
+                float displayProgress = progress * 0.8f; // 0〜0.8 をベイク工程に使用
+                if (ShouldUpdateProgressBar(displayProgress, $"{processedTexels}/{totalTexelsToProcess}"))
+                {
+                    Cancel();
+                    return;
                 }
 
                 // 全三角形処理完了
@@ -99,20 +96,34 @@ namespace NolaTools.FurMaskGenerator
         private void BakeTriangleTexels(Color[] buffer, int width, int height,
             Vector2 uv0, Vector2 uv1, Vector2 uv2,
             int vertIdx0, int vertIdx1, int vertIdx2,
-            HashSet<int> rasterizedPixels, string materialName)
+            bool[] rasterizedPixels, string materialName)
         {
             // UV座標をピクセル座標に変換
             Vector2 p0 = new Vector2(uv0.x * width, uv0.y * height);
             Vector2 p1 = new Vector2(uv1.x * width, uv1.y * height);
             Vector2 p2 = new Vector2(uv2.x * width, uv2.y * height);
 
-            // バウンディングボックス
-            int minX = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(p0.x, p1.x, p2.x)), 0, width - 1);
-            int maxX = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(p0.x, p1.x, p2.x)), 0, width - 1);
-            int minY = Mathf.Clamp(Mathf.FloorToInt(Mathf.Min(p0.y, p1.y, p2.y)), 0, height - 1);
-            int maxY = Mathf.Clamp(Mathf.CeilToInt(Mathf.Max(p0.y, p1.y, p2.y)), 0, height - 1);
+            float minPx = Mathf.Min(p0.x, p1.x, p2.x);
+            float minPy = Mathf.Min(p0.y, p1.y, p2.y);
+            if (float.IsNaN(minPx) || float.IsInfinity(minPx) || float.IsNaN(minPy) || float.IsInfinity(minPy)) return;
+
+            // UVが0〜1の外にある三角形（タイリングUV）は、タイル単位でずらして0タイル付近に寄せる
+            Vector2 tileOffset = new Vector2(Mathf.Floor(minPx / width) * width, Mathf.Floor(minPy / height) * height);
+            p0 -= tileOffset;
+            p1 -= tileOffset;
+            p2 -= tileOffset;
+
+            // バウンディングボックス（クランプせず、バッファへの書き込み位置だけ折り返す）
+            int minX = Mathf.FloorToInt(Mathf.Min(p0.x, p1.x, p2.x));
+            int maxX = Mathf.CeilToInt(Mathf.Max(p0.x, p1.x, p2.x));
+            int minY = Mathf.FloorToInt(Mathf.Min(p0.y, p1.y, p2.y));
+            int maxY = Mathf.CeilToInt(Mathf.Max(p0.y, p1.y, p2.y));
 
             if (maxX < minX || maxY < minY) return;
+
+            // 1タイルを超える三角形は走査幅を1タイル分に制限する（重複走査・過大な走査を防ぐ）
+            if (maxX - minX + 1 > width) maxX = minX + width - 1;
+            if (maxY - minY + 1 > height) maxY = minY + height - 1;
 
             // 頂点の3D位置・法線を取得
             Vector3 worldPos0 = verts[vertIdx0];
@@ -141,7 +152,7 @@ namespace NolaTools.FurMaskGenerator
 
             for (int y = minY; y <= maxY; y++)
             {
-                int yOffset = y * width;
+                int yOffset = (((y % height) + height) % height) * width;
                 float yPos = y + 0.5f;
 
                 for (int x = minX; x <= maxX; x++)
@@ -181,7 +192,7 @@ namespace NolaTools.FurMaskGenerator
                         distValue = Mathf.Pow(distValue, settings.Gamma);
                     }
 
-                    int colorIndex = yOffset + x;
+                    int colorIndex = yOffset + ((x % width) + width) % width;
 
                     if (settings.UseTransparentMode)
                     {
@@ -207,7 +218,7 @@ namespace NolaTools.FurMaskGenerator
                         {
                             float alpha = 1f - distValue;
                             // より暗い値を採用
-                            if (!rasterizedPixels.Contains(colorIndex) || alpha > buffer[colorIndex].a)
+                            if (!rasterizedPixels[colorIndex] || alpha > buffer[colorIndex].a)
                             {
                                 buffer[colorIndex] = new Color(0f, 0f, 0f, alpha);
                             }
@@ -216,13 +227,13 @@ namespace NolaTools.FurMaskGenerator
                     else
                     {
             // より暗い値を採用
-                            if (!rasterizedPixels.Contains(colorIndex) || distValue < buffer[colorIndex].r)
+                            if (!rasterizedPixels[colorIndex] || distValue < buffer[colorIndex].r)
                             {
                                 buffer[colorIndex] = new Color(distValue, distValue, distValue, 1f);
                             }
                         }
 
-                    rasterizedPixels.Add(colorIndex);
+                    rasterizedPixels[colorIndex] = true;
                 }
             }
         }
@@ -326,10 +337,14 @@ namespace NolaTools.FurMaskGenerator
 
         private bool ShouldUpdateProgressBar(float progress, string info)
         {
-            if (progress - lastProgressBarUpdate < 0.01f && progress < 0.99f)
+            // 進捗が1%進んだとき、または一定時間経過したとき（キャンセル操作を拾うため）に更新する
+            double now = EditorApplication.timeSinceStartup;
+            if (progress - lastProgressBarUpdate < 0.01f && progress < 0.99f
+                && now - lastProgressBarTime < ProgressBarMinIntervalSeconds)
                 return false;
 
             lastProgressBarUpdate = progress;
+            lastProgressBarTime = now;
             return EditorCoreUtils.ShowCancelableProgressAutoClear(
                 UILabels.PROGRESS_BAR_TITLE_TEXEL, info, progress);
         }

@@ -32,7 +32,7 @@ namespace NolaTools.FurMaskGenerator
             // テクセルバッファ初期化
             InitializeTexelBuffers();
 
-            // バッチサイズと進捗更新間隔を設定
+            // 進捗表示とベイク開始位置を初期化
             InitializeProgressParams();
         }
 
@@ -239,9 +239,8 @@ namespace NolaTools.FurMaskGenerator
 
         private void InitializeProgressParams()
         {
-            batchSize = Mathf.Max(100, texSize * texSize / 100);
-            progressUpdateInterval = Mathf.Max(1, totalTexelsToProcess / 100);
             lastProgressBarUpdate = 0f;
+            lastProgressBarTime = 0d;
 
             // ベイク開始位置
             currentSubIndex = 0;
@@ -321,7 +320,7 @@ namespace NolaTools.FurMaskGenerator
         private void InitializeTexelBuffers()
         {
             materialBuffers = new Dictionary<string, Color[]>();
-            materialRasterizedPixels = new Dictionary<string, HashSet<int>>();
+            materialRasterizedPixels = new Dictionary<string, bool[]>();
             totalTexelsToProcess = 0;
 
             // 三角形数の合計を予測用に計算
@@ -341,7 +340,7 @@ namespace NolaTools.FurMaskGenerator
                     Color initialColor = settings.UseTransparentMode ? new Color(0f, 0f, 0f, 0f) : Color.white;
                     for (int i = 0; i < buffer.Length; i++) buffer[i] = initialColor;
                     materialBuffers[mat] = buffer;
-                    materialRasterizedPixels[mat] = new HashSet<int>();
+                    materialRasterizedPixels[mat] = new bool[texSize * texSize];
                 }
             }
         }

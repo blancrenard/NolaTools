@@ -172,8 +172,9 @@ namespace NolaTools.FurMaskGenerator.Utils
 
                 Vector2 uvA = uvs[a], uvB = uvs[b], uvC = uvs[c];
 
-                Vector3 bCoords = EditorMeshUtils.GetBarycentric(seedUV, uvA, uvB, uvC);
-                if (bCoords.x >= 0 && bCoords.y >= 0 && bCoords.z >= 0)
+                // GetBarycentric の縮退しきい値はピクセル空間向けで、UV空間では小さな三角形がすべて縮退扱いになるため、
+                // しきい値に依存しない辺の外積の符号で内側判定する
+                if (IsPointInTriangle(seedUV, uvA, uvB, uvC))
                 {
                     return ti;
                 }
@@ -189,6 +190,25 @@ namespace NolaTools.FurMaskGenerator.Utils
 
             return bestIdx;
         }
+
+        /// <summary>
+        /// 点が三角形の内側（辺上を含む）にあるかを判定する。面積0の三角形は常に false
+        /// </summary>
+        private static bool IsPointInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
+        {
+            float area = Cross(b - a, c - a);
+            if (area == 0f) return false;
+
+            float d0 = Cross(b - a, p - a);
+            float d1 = Cross(c - b, p - b);
+            float d2 = Cross(a - c, p - c);
+
+            bool hasNeg = d0 < 0f || d1 < 0f || d2 < 0f;
+            bool hasPos = d0 > 0f || d1 > 0f || d2 > 0f;
+            return !(hasNeg && hasPos);
+        }
+
+        private static float Cross(Vector2 u, Vector2 v) => u.x * v.y - u.y * v.x;
 
         /// <summary>
         /// 2つの三角形がUV空間で接続されているかを判定

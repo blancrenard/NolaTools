@@ -48,16 +48,19 @@ namespace NolaTools.FurMaskGenerator
 
         // テクセルベイク用
         private Dictionary<string, Color[]> materialBuffers;
-        private Dictionary<string, HashSet<int>> materialRasterizedPixels;
+        private Dictionary<string, bool[]> materialRasterizedPixels;
         private int totalTexelsToProcess;
         private int processedTexels;
         private int currentSubIndex;
         private int currentTriIndex;
-        private int batchSize;
+
+        // 1フレームあたりのベイク処理時間の上限（ミリ秒）
+        private const long FrameTimeBudgetMs = 33;
 
         // 進捗管理
-        private int progressUpdateInterval;
+        private const double ProgressBarMinIntervalSeconds = 0.25;
         private float lastProgressBarUpdate;
+        private double lastProgressBarTime;
         private bool cancelRequested;
         private bool originalQueriesHitBackfaces;
 
